@@ -12,7 +12,10 @@ export const mockGalleryItems = [
     duration: '۳ ماه',
     views: '۵٫۲ هزار',
     comments: '۱۲۳',
-    technologies: ['Vue.js', 'Node.js', 'MongoDB', 'Chart.js', 'Socket.io']
+    technologies: ['Vue.js', 'Node.js', 'MongoDB', 'Chart.js', 'Socket.io'],
+    image: '',
+    images: [],
+    likes: 234
   },
   {
     id: 2,
@@ -26,7 +29,10 @@ export const mockGalleryItems = [
     duration: '۴ ماه',
     views: '۷٫۸ هزار',
     comments: '۲۴۵',
-    technologies: ['React Native', 'Redux', 'Firebase', 'Stripe']
+    technologies: ['React Native', 'Redux', 'Firebase', 'Stripe'],
+    image: '',
+    images: [],
+    likes: 456
   },
   {
     id: 3,
@@ -40,7 +46,10 @@ export const mockGalleryItems = [
     duration: '۲ ماه',
     views: '۳٫۵ هزار',
     comments: '۸۹',
-    technologies: ['Next.js', 'TailwindCSS', 'Framer Motion']
+    technologies: ['Next.js', 'TailwindCSS', 'Framer Motion'],
+    image: '',
+    images: [],
+    likes: 789
   },
   {
     id: 4,
@@ -54,7 +63,10 @@ export const mockGalleryItems = [
     duration: '۵ ماه',
     views: '۴٫۳ هزار',
     comments: '۱۵۶',
-    technologies: ['Laravel', 'Vue.js', 'MySQL', 'Redis']
+    technologies: ['Laravel', 'Vue.js', 'MySQL', 'Redis'],
+    image: '',
+    images: [],
+    likes: 321
   },
   {
     id: 5,
@@ -68,7 +80,10 @@ export const mockGalleryItems = [
     duration: '۶ ماه',
     views: '۹٫۱ هزار',
     comments: '۴۲۳',
-    technologies: ['React', 'Express', 'PostgreSQL', 'WebSocket']
+    technologies: ['React', 'Express', 'PostgreSQL', 'WebSocket'],
+    image: '',
+    images: [],
+    likes: 567
   },
   {
     id: 6,
@@ -82,7 +97,10 @@ export const mockGalleryItems = [
     duration: '۷ ماه',
     views: '۱۲٫۵ هزار',
     comments: '۶۷۸',
-    technologies: ['Flutter', 'WebRTC', 'Node.js', 'MongoDB']
+    technologies: ['Flutter', 'WebRTC', 'Node.js', 'MongoDB'],
+    image: '',
+    images: [],
+    likes: 890
   },
   {
     id: 7,
@@ -96,7 +114,10 @@ export const mockGalleryItems = [
     duration: '۳ ماه',
     views: '۶٫۷ هزار',
     comments: '۲۱۲',
-    technologies: ['Angular', 'TypeScript', 'RxJS', 'Material UI']
+    technologies: ['Angular', 'TypeScript', 'RxJS', 'Material UI'],
+    image: '',
+    images: [],
+    likes: 645
   },
   {
     id: 8,
@@ -110,6 +131,9 @@ export const mockGalleryItems = [
     duration: '۴ ماه',
     views: '۵٫۷ هزار',
     comments: '۱۸۹',
-    technologies: ['Flutter', 'Firebase', 'TensorFlow Lite']
+    technologies: ['Flutter', 'Firebase', 'TensorFlow Lite'],
+    image: '',
+    images: [],
+    likes: 432
   }
 ]

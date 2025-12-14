@@ -42,18 +42,21 @@
           class="gallery-card"
           @click="openModal(item)"
         >
-          <div class="card-image" :style="{ background: item.gradient }">
-            <div class="card-icon-main">{{ item.icon }}</div>
-            <div class="card-overlay">
-              <div class="overlay-content">
-                <span class="view-btn">مشاهده پروژه</span>
-              </div>
+          <ImageSlider 
+            class="card-image"
+            :image="item.image"
+            :images="item.images"
+            :icon="item.icon"
+            :gradient="item.gradient"
+          />
+          <div class="card-overlay">
+            <div class="overlay-content">
+              <span class="view-btn">مشاهده پروژه</span>
             </div>
-            <div class="card-badge" :style="{ background: item.categoryColor }">{{ item.category }}</div>
-            <div class="card-stats">
-              <span>👁️ {{ item.views }}</span>
-              <span>❤️ {{ item.likes }}</span>
-            </div>
+          </div>
+          <div class="card-badge" :style="{ background: item.categoryColor }">{{ item.category }}</div>
+          <div class="card-stats">
+            <span>❤️ {{ item.likes }}</span>
           </div>
           <div class="card-body">
             <h3 class="card-title">{{ item.title }}</h3>
@@ -165,6 +168,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import ImageSlider from './ImageSlider.vue'
 
 const props = defineProps({
   showViewAll: {

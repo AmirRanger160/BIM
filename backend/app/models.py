@@ -14,6 +14,9 @@ class Article(Base):
     category = Column(String(100), nullable=False, index=True)
     icon = Column(String(10), default="📝")
     gradient = Column(String(255))
+    # تصاویر
+    image = Column(String(500), nullable=True)  # تصویر شاخص
+    slider_id = Column(Integer, nullable=True)  # اسلایدر (بجای images)
     author = Column(String(100), nullable=False)
     author_avatar = Column(String(10))
     author_role = Column(String(100))
@@ -34,6 +37,9 @@ class GalleryItem(Base):
     description = Column(Text, nullable=False)
     icon = Column(String(10), default="🎨")
     gradient = Column(String(255))
+    # تصاویر
+    image = Column(String(500), nullable=True)  # تصویر شاخص
+    slider_id = Column(Integer, nullable=True)  # اسلایدر (بجای images)
     category = Column(String(100), nullable=False, index=True)
     category_color = Column(String(50))
     date = Column(String(50))
@@ -106,6 +112,18 @@ class Newsletter(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Slider(Base):
+    """مدل اسلایدرها (مجموعه تصاویر برای گالری/مقالات)"""
+    __tablename__ = "sliders"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False, unique=True, index=True)  # نام slider
+    description = Column(Text, nullable=True)
+    images = Column(JSON, nullable=True, default=[])  # لیست URL های تصاویر
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class User(Base):

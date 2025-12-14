@@ -65,20 +65,20 @@
             class="gallery-card"
             @click="openModal(item)"
           >
-            <div class="card-image" :style="{ background: item.gradient }">
-              <div class="card-overlay">
-                <div class="card-icon">{{ item.icon }}</div>
-                <div class="overlay-content">
-                  <span class="view-btn">مشاهده پروژه</span>
-                </div>
+            <ImageSlider 
+              class="card-image"
+              :image="item.image"
+              :images="item.images"
+              :icon="item.icon"
+              :gradient="item.gradient"
+            />
+            <div class="card-overlay">
+              <div class="overlay-content">
+                <span class="view-btn">مشاهده پروژه</span>
               </div>
-              <div class="card-badge" :style="{ background: item.categoryColor }">
-                {{ item.category }}
-              </div>
-              <div class="card-stats">
-                <span>👁️ {{ item.views }}</span>
-                <span>💬 {{ item.comments }}</span>
-              </div>
+            </div>
+            <div class="card-badge" :style="{ background: item.categoryColor }">
+              {{ item.category }}
             </div>
             
             <div class="card-content">
@@ -192,6 +192,7 @@
 
 <script setup>
 import { ref, computed, inject } from 'vue'
+import ImageSlider from '../components/ImageSlider.vue'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 
@@ -608,19 +609,12 @@ const previousItem = () => {
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
+  pointer-events: none;
+  z-index: 5;
 }
 
 .gallery-card:hover .card-overlay {
   background: rgba(0, 0, 0, 0.7);
-}
-
-.card-icon {
-  font-size: 4rem;
-  transition: all 0.3s;
-}
-
-.gallery-card:hover .card-icon {
-  transform: scale(1.2);
 }
 
 .overlay-content {
@@ -652,16 +646,6 @@ const previousItem = () => {
   color: white;
   font-size: 0.85rem;
   font-weight: 600;
-}
-
-.card-stats {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  display: flex;
-  gap: 1rem;
-  color: white;
-  font-size: 0.9rem;
 }
 
 .card-content {

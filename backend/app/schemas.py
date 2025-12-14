@@ -12,6 +12,8 @@ class ArticleBase(BaseModel):
     category: str
     icon: str = "📝"
     gradient: Optional[str] = None
+    image: Optional[str] = None  # تصویر شاخص
+    images: Optional[List[str]] = None  # اسلایدر تصاویر
     author: str
     author_avatar: Optional[str] = None
     author_role: Optional[str] = None
@@ -31,6 +33,8 @@ class ArticleUpdate(BaseModel):
     category: Optional[str] = None
     icon: Optional[str] = None
     gradient: Optional[str] = None
+    image: Optional[str] = None
+    images: Optional[List[str]] = None
     author: Optional[str] = None
     author_avatar: Optional[str] = None
     author_role: Optional[str] = None
@@ -56,6 +60,8 @@ class GalleryItemBase(BaseModel):
     description: str
     icon: str = "🎨"
     gradient: Optional[str] = None
+    image: Optional[str] = None  # تصویر شاخص
+    images: Optional[List[str]] = None  # اسلایدر تصاویر
     category: str
     category_color: Optional[str] = None
     date: Optional[str] = None
@@ -72,6 +78,8 @@ class GalleryItemUpdate(BaseModel):
     description: Optional[str] = None
     icon: Optional[str] = None
     gradient: Optional[str] = None
+    image: Optional[str] = None
+    images: Optional[List[str]] = None
     category: Optional[str] = None
     category_color: Optional[str] = None
     date: Optional[str] = None
@@ -225,6 +233,33 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+
+# ============= Slider Schemas =============
+
+class SliderBase(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    images: List[str] = []  # لیست URL های تصاویر
+
+
+class SliderCreate(SliderBase):
+    pass
+
+
+class SliderUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    images: Optional[List[str]] = None
+
+
+class Slider(SliderBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
 
 
 # ============= Response Schemas =============

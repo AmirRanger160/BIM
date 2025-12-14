@@ -16,7 +16,9 @@ export const mockArticles = [
     viewsNum: 3500,
     featured: true,
     tags: ['Vue.js', 'JavaScript', 'Frontend', 'Tutorial'],
-    fullContent: `<h2>مقدمه‌ای بر Vue.js 3</h2><p>Vue.js یکی از محبوب‌ترین فریمورک‌های جاوااسکریپت است که برای ساخت رابط کاربری استفاده می‌شود...</p>`
+    fullContent: `<h2>مقدمه‌ای بر Vue.js 3</h2><p>Vue.js یکی از محبوب‌ترین فریمورک‌های جاوااسکریپت است که برای ساخت رابط کاربری استفاده می‌شود...</p>`,
+    image: '',
+    images: []
   },
   {
     id: 2,
@@ -34,7 +36,9 @@ export const mockArticles = [
     viewsNum: 4200,
     featured: true,
     tags: ['UI/UX', 'Design', 'Mobile', 'User Experience'],
-    fullContent: `<h2>اهمیت طراحی موبایل</h2><p>امروزه بیش از 70٪ از کاربران از طریق موبایل به وب دسترسی دارند...</p>`
+    fullContent: `<h2>اهمیت طراحی موبایل</h2><p>امروزه بیش از 70٪ از کاربران از طریق موبایل به وب دسترسی دارند...</p>`,
+    image: '',
+    images: []
   },
   {
     id: 3,
@@ -52,7 +56,9 @@ export const mockArticles = [
     viewsNum: 1900,
     featured: false,
     tags: ['امنیت', 'Security', 'Best Practices', 'Cybersecurity'],
-    fullContent: `<h2>اهمیت امنیت در برنامه‌نویسی</h2><p>امنیت یکی از مهم‌ترین جنبه‌های توسعه نرم‌افزار است...</p>`
+    fullContent: `<h2>اهمیت امنیت در برنامه‌نویسی</h2><p>امنیت یکی از مهم‌ترین جنبه‌های توسعه نرم‌افزار است...</p>`,
+    image: '',
+    images: []
   },
   {
     id: 4,
@@ -70,7 +76,9 @@ export const mockArticles = [
     viewsNum: 5200,
     featured: true,
     tags: ['هوش مصنوعی', 'ChatGPT', 'AI', 'Machine Learning'],
-    fullContent: `<h2>ChatGPT چیست؟</h2><p>ChatGPT یک مدل زبانی قدرتمند است که توسط OpenAI توسعه یافته...</p>`
+    fullContent: `<h2>ChatGPT چیست؟</h2><p>ChatGPT یک مدل زبانی قدرتمند است که توسط OpenAI توسعه یافته...</p>`,
+    image: '',
+    images: []
   },
   {
     id: 5,
@@ -88,7 +96,9 @@ export const mockArticles = [
     viewsNum: 2300,
     featured: false,
     tags: ['موبایل', 'UI/UX', 'اپلیکیشن', 'طراحی'],
-    fullContent: `<h2>اصول طراحی موبایل</h2><p>طراحی رابط کاربری موبایل نیازمند دقت و توجه ویژه است...</p>`
+    fullContent: `<h2>اصول طراحی موبایل</h2><p>طراحی رابط کاربری موبایل نیازمند دقت و توجه ویژه است...</p>`,
+    image: '',
+    images: []
   },
   {
     id: 6,
@@ -106,6 +116,8 @@ export const mockArticles = [
     viewsNum: 3100,
     featured: false,
     tags: ['Performance', 'Optimization', 'Web Development', 'بهینه‌سازی'],
-    fullContent: `<h2>چرا بهینه‌سازی مهم است؟</h2><p>سرعت بارگذاری وبسایت تأثیر مستقیمی بر تجربه کاربری دارد...</p>`
+    fullContent: `<h2>چرا بهینه‌سازی مهم است؟</h2><p>سرعت بارگذاری وبسایت تأثیر مستقیمی بر تجربه کاربری دارد...</p>`,
+    image: '',
+    images: []
   }
 ]

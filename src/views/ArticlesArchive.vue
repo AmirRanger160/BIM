@@ -59,8 +59,14 @@
             class="article-card"
             @click="openArticle(article)"
           >
-            <div class="article-image" :style="{ background: article.gradient }">
-              <span class="article-icon">{{ article.icon }}</span>
+            <ImageSlider 
+              class="article-image"
+              :image="article.image"
+              :images="article.images"
+              :icon="article.icon"
+              :gradient="article.gradient"
+            />
+            <div class="article-badges">
               <div class="article-category">{{ article.category }}</div>
               <div v-if="article.featured" class="featured-badge">ویژه</div>
             </div>
@@ -142,6 +148,7 @@
 
 <script setup>
 import { ref, computed, inject } from 'vue'
+import ImageSlider from '../components/ImageSlider.vue'
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 import ArticleDetail from '../components/ArticleDetail.vue'
@@ -616,10 +623,18 @@ const closeArticle = () => {
   transform: scale(1.2);
 }
 
-.article-category {
+.article-badges {
   position: absolute;
   top: 1rem;
   right: 1rem;
+  left: 1rem;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.article-category {
   background: rgba(255, 255, 255, 0.9);
   padding: 0.5rem 1rem;
   border-radius: 50px;
@@ -629,9 +644,6 @@ const closeArticle = () => {
 }
 
 .featured-badge {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   color: white;
   padding: 0.5rem 1rem;

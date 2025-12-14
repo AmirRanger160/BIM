@@ -65,8 +65,13 @@
           class="article-card"
           @click="openArticle(article)"
         >
-          <div class="article-image" :style="{ background: article.gradient }">
-            <span class="article-icon">{{ article.icon }}</span>
+          <div class="article-image">
+            <ImageSlider
+              :image="article.image"
+              :images="article.images"
+              :icon="article.icon"
+              :gradient="article.gradient"
+            />
             <div class="article-category">{{ article.category }}</div>
             <div v-if="article.featured" class="featured-badge">ویژه</div>
           </div>
@@ -123,6 +128,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import ArticleDetail from './ArticleDetail.vue'
+import ImageSlider from './ImageSlider.vue'
 
 const props = defineProps({
   showViewAll: {

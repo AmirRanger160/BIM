@@ -17,11 +17,21 @@ const apiClient = axios.create({
 // Request interceptor - برای اضافه کردن token و سایر headers
 apiClient.interceptors.request.use(
   (config) => {
-    // اگر token داشتید، اینجا اضافه کنید
-    const token = localStorage.getItem('auth_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    // اگر token ادمین داشتید، اضافه کنید
+    const adminToken = localStorage.getItem('admin_token')
+    const authToken = localStorage.getItem('auth_token')
+    
+    if (adminToken) {
+      config.headers.Authorization = `Bearer ${adminToken}`
+    } else if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`
     }
+    
+    // تنظیم content-type اگر URLSearchParams است
+    if (config.data instanceof URLSearchParams) {
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    }
+    
     return config
   },
   (error) => {

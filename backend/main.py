@@ -2,9 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+
 from app.config import settings
 from app.database import init_db, get_db
-from app.routes import articles, gallery, other, auth_routes
+from app.routes import articles, gallery, other, auth_routes, upload, admin
 from app import models, auth, schemas
 from sqlalchemy.orm import Session
 
@@ -61,15 +64,23 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    max_age=600,
 )
+
+# Mount static files directory
+uploads_dir = Path(__file__).parent.parent / "backend" / "uploads"
+uploads_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 # Include Routers
 app.include_router(auth_routes.router)
 app.include_router(articles.router)
 app.include_router(gallery.router)
 app.include_router(other.router)
+app.include_router(upload.router)
+app.include_router(admin.router)
 
 
 @app.get("/")

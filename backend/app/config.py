@@ -26,8 +26,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    FRONTEND_URL: str = "http://localhost:3000"
-    ALLOWED_ORIGINS: list = ["http://localhost:3000", "http://localhost:5173"]
+    FRONTEND_URL: str = "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev"
+    ALLOWED_ORIGINS: list = [
+        "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev",
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8080",
+    ]
     
     # Server
     HOST: str = "0.0.0.0"
