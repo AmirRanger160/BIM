@@ -317,10 +317,12 @@ const closeArticle = () => {
 .archive-page {
   min-height: 100vh;
   background: white;
+  color: #1a1a1a;
 }
 
 .dark-mode.archive-page {
   background: #1a1a1a;
+  color: #ffffff;
 }
 
 .archive-hero {
