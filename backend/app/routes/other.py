@@ -18,7 +18,8 @@ def get_testimonials(db: Session = Depends(get_db)):
         .order_by(models.Testimonial.created_at.desc())\
         .all()
     
-    return {"data": testimonials}
+    testimonials_data = [schemas.Testimonial.from_orm(t) for t in testimonials]
+    return {"data": testimonials_data}
 
 
 @router.post("/testimonials", response_model=dict, status_code=201)
@@ -36,7 +37,7 @@ def create_testimonial(
     db.refresh(db_testimonial)
     
     return {
-        "data": db_testimonial,
+        "data": schemas.Testimonial.from_orm(db_testimonial),
         "message": "نظر شما ثبت شد و پس از بررسی منتشر خواهد شد"
     }
 
@@ -73,7 +74,8 @@ def get_certificates(db: Session = Depends(get_db)):
         .order_by(models.Certificate.created_at.desc())\
         .all()
     
-    return {"data": certificates}
+    certificates_data = [schemas.Certificate.from_orm(c) for c in certificates]
+    return {"data": certificates_data}
 
 
 @router.post("/certificates", response_model=dict, status_code=201)
@@ -89,7 +91,7 @@ def create_certificate(
     db.refresh(db_certificate)
     
     return {
-        "data": db_certificate,
+        "data": schemas.Certificate.from_orm(db_certificate),
         "message": "گواهینامه با موفقیت اضافه شد"
     }
 
@@ -103,7 +105,8 @@ def get_statistics(db: Session = Depends(get_db)):
         .order_by(models.Statistic.order)\
         .all()
     
-    return {"data": statistics}
+    statistics_data = [schemas.Statistic.from_orm(s) for s in statistics]
+    return {"data": statistics_data}
 
 
 @router.post("/statistics", response_model=dict, status_code=201)
@@ -119,7 +122,7 @@ def create_statistic(
     db.refresh(db_statistic)
     
     return {
-        "data": db_statistic,
+        "data": schemas.Statistic.from_orm(db_statistic),
         "message": "آمار با موفقیت اضافه شد"
     }
 
@@ -139,9 +142,10 @@ def update_statistic(
     
     statistic.number = number
     db.commit()
+    db.refresh(statistic)
     
     return {
-        "data": statistic,
+        "data": schemas.Statistic.from_orm(statistic),
         "message": "آمار بروزرسانی شد"
     }
 
@@ -177,7 +181,8 @@ def get_messages(
         .order_by(models.Contact.created_at.desc())\
         .all()
     
-    return {"data": messages}
+    messages_data = [schemas.Contact.from_orm(m) for m in messages]
+    return {"data": messages_data}
 
 
 @router.put("/contact/{message_id}/read", response_model=dict)
@@ -251,7 +256,8 @@ def get_subscribers(
         .order_by(models.Newsletter.created_at.desc())\
         .all()
     
+    subscribers_data = [schemas.Newsletter.from_orm(s) for s in subscribers]
     return {
-        "data": subscribers,
-        "total": len(subscribers)
+        "data": subscribers_data,
+        "total": len(subscribers_data)
     }

@@ -48,8 +48,11 @@ def get_articles(
     
     articles = query.offset(offset).limit(limit).all()
     
+    # تبدیل به dict برای serialization
+    articles_data = [schemas.Article.from_orm(article) for article in articles]
+    
     return {
-        "data": articles,
+        "data": articles_data,
         "total": total,
         "page": page,
         "limit": limit,
@@ -68,8 +71,9 @@ def get_article(article_id: int, db: Session = Depends(get_db)):
     # افزایش تعداد بازدید
     article.views += 1
     db.commit()
+    db.refresh(article)
     
-    return {"data": article}
+    return {"data": schemas.Article.from_orm(article)}
 
 
 @router.post("", response_model=dict, status_code=201)
@@ -85,7 +89,7 @@ def create_article(
     db.refresh(db_article)
     
     return {
-        "data": db_article,
+        "data": schemas.Article.from_orm(db_article),
         "message": "مقاله با موفقیت ایجاد شد"
     }
 
@@ -112,7 +116,7 @@ def update_article(
     db.refresh(db_article)
     
     return {
-        "data": db_article,
+        "data": schemas.Article.from_orm(db_article),
         "message": "مقاله با موفقیت بروزرسانی شد"
     }
 

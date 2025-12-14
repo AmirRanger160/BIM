@@ -42,8 +42,10 @@ def get_gallery_items(
     
     items = query.offset(offset).limit(limit).all()
     
+    items_data = [schemas.GalleryItem.from_orm(item) for item in items]
+    
     return {
-        "data": items,
+        "data": items_data,
         "total": total,
         "page": page,
         "limit": limit,
@@ -62,8 +64,9 @@ def get_gallery_item(item_id: int, db: Session = Depends(get_db)):
     # افزایش بازدید
     item.views += 1
     db.commit()
+    db.refresh(item)
     
-    return {"data": item}
+    return {"data": schemas.GalleryItem.from_orm(item)}
 
 
 @router.post("", response_model=dict, status_code=201)
@@ -79,7 +82,7 @@ def create_gallery_item(
     db.refresh(db_item)
     
     return {
-        "data": db_item,
+        "data": schemas.GalleryItem.from_orm(db_item),
         "message": "آیتم با موفقیت ایجاد شد"
     }
 
@@ -105,7 +108,7 @@ def update_gallery_item(
     db.refresh(db_item)
     
     return {
-        "data": db_item,
+        "data": schemas.GalleryItem.from_orm(db_item),
         "message": "آیتم با موفقیت بروزرسانی شد"
     }
 
