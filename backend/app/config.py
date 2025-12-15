@@ -26,9 +26,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    FRONTEND_URL: str = "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev"
+    FRONTEND_URL: str = "https://probable-doodle-45g6r4grp452qgq-3001.app.github.dev"
     ALLOWED_ORIGINS: list = [
-        "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev",
+        "https://probable-doodle-45g6r4grp452qgq-3001.app.github.dev",
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8080",

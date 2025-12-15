@@ -148,12 +148,13 @@
             
             <ImageSlider
               v-if="selectedItem.images && selectedItem.images.length > 0"
-              :item="selectedItem"
+              :image="selectedItem.image"
+              :images="selectedItem.images"
               :icon="selectedItem.icon"
+              :gradient="selectedItem.gradient"
               class="modal-image"
             />
             <div v-else class="modal-image" :style="{ background: selectedItem.gradient }">
-              <span class="modal-icon">{{ selectedItem.icon }}</span>
             </div>
             
             <div class="modal-body">
@@ -299,7 +300,7 @@ const fetchGalleryItems = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await getGalleryItems({ page: 1, limit: 200 })
+    const response = await getGalleryItems({ page: 1, limit: 100 })
     let items = response.data || []
     
     // افزودن تصاویر اسلایدر

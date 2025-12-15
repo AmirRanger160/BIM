@@ -51,9 +51,8 @@
       <div v-if="icon" class="slide-icon">{{ icon }}</div>
     </div>
 
-    <!-- fallback نهایی: gradient و icon -->
+    <!-- fallback نهایی: gradient فقط بدون icon -->
     <div v-else class="gradient-placeholder" :style="{ background: gradient }">
-      <span v-if="icon" class="placeholder-icon">{{ icon }}</span>
     </div>
   </div>
 </template>
@@ -379,14 +378,7 @@ onUnmounted(() => {
   transition: all 0.3s;
 }
 
-.placeholder-icon {
-  font-size: 4rem;
-  transition: transform 0.3s;
-}
 
-.gradient-placeholder:hover .placeholder-icon {
-  transform: scale(1.2) rotate(5deg);
-}
 
 /* حالت تاریک */
 .dark-mode .slider-arrow {

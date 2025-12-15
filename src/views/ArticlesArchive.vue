@@ -245,7 +245,7 @@ const fetchArticles = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await getArticles({ page: 1, limit: 200 })
+    const response = await getArticles({ page: 1, limit: 100 })
     let items = response.data || []
     
     // افزودن تصاویر اسلایدر

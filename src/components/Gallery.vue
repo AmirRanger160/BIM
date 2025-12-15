@@ -94,8 +94,10 @@
             
             <!-- Modal Gallery -->
             <ImageSlider
-              :item="selectedItem"
+              :image="selectedItem.image"
+              :images="selectedItem.images"
               :icon="selectedItem.icon"
+              :gradient="selectedItem.gradient"
               class="modal-gallery"
             />
             

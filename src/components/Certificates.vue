@@ -37,12 +37,13 @@
             
             <ImageSlider
               v-if="selectedCert.images && selectedCert.images.length > 0"
-              :item="selectedCert"
+              :image="selectedCert.image"
+              :images="selectedCert.images"
               :icon="selectedCert.icon"
+              :gradient="selectedCert.gradient"
               class="cert-modal-image"
             />
             <div v-else class="cert-modal-image" :style="{ background: selectedCert.gradient }">
-              <span class="cert-modal-icon">{{ selectedCert.icon }}</span>
             </div>
             
             <div class="cert-modal-body">

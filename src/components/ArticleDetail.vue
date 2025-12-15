@@ -15,7 +15,6 @@
     
     <div v-else class="article-header" :style="{ background: article.gradient }">
       <div class="article-category-badge">{{ article.category }}</div>
-      <div class="article-icon-large">{{ article.icon }}</div>
     </div>
     
     <div class="article-body">
