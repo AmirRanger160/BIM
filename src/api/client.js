@@ -9,14 +9,9 @@ function getBackendUrl() {
 
   // If in GitHub Codespaces, build URL from current hostname
   if (window.location.hostname.includes('github.dev')) {
-    // Replace frontend port (3000/3001) with backend port (8000) in subdomain
-    const hostname = window.location.hostname
-    // Remove any existing port
-    const cleanHostname = hostname.replace(/:\d+$/, '')
-
-    // Replace the port part in the subdomain
-    const backendHostname = cleanHostname.replace(/-3000\.app\.github\.dev/, '-8000.app.github.dev')
-                                        .replace(/-3001\.app\.github\.dev/, '-8000.app.github.dev')
+    // Replace the port number in the hostname
+    const backendHostname = window.location.hostname.replace(/-3000\.app\.github\.dev/, '-8000.app.github.dev')
+                                                   .replace(/-3001\.app\.github\.dev/, '-8000.app.github.dev')
 
     return `https://${backendHostname}`
   }
@@ -32,6 +27,12 @@ const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT || 30000
 // Log backend URL
 console.log('🔌 Backend URL:', API_BASE_URL)
 console.log('🌐 Frontend Hostname:', window.location.hostname)
+console.log('🔍 URL Parts:', {
+  protocol: window.location.protocol,
+  hostname: window.location.hostname,
+  port: window.location.port,
+  pathname: window.location.pathname
+})
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -41,8 +42,9 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  // Force axios to not modify the URL
-  url: undefined
+  validateStatus: function (status) {
+    return status >= 200 && status < 300;
+  }
 })
 
 // Request interceptor - برای اضافه کردن token و سایر headers
