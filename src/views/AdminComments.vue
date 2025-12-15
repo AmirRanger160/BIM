@@ -130,13 +130,14 @@
       </div>
     </div>
 
-    <!-- Modal نمایش نظر کامل -->
+    <!-- Modal نمایش/ویرایش نظر -->
     <div v-if="selectedComment" class="modal" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button @click="closeModal" class="modal-close">×</button>
-        <h3>جزئیات نظر</h3>
+        <h3>{{ isEditingComment ? 'ویرایش نظر' : 'جزئیات نظر' }}</h3>
         
-        <div class="comment-detail">
+        <!-- حالت نمایش -->
+        <div v-if="!isEditingComment" class="comment-detail">
           <div class="detail-row">
             <strong>نام:</strong>
             <span>{{ selectedComment.name }}</span>
@@ -157,25 +158,96 @@
             <strong>تاریخ:</strong>
             <span>{{ new Date(selectedComment.created_at).toLocaleString('fa-IR') }}</span>
           </div>
+          <div class="detail-row">
+            <strong>وضعیت:</strong>
+            <span 
+              class="status-badge" 
+              :class="{ approved: selectedComment.approved, pending: !selectedComment.approved }"
+            >
+              {{ selectedComment.approved ? 'تایید شده' : 'در انتظار تایید' }}
+            </span>
+          </div>
           <div class="detail-row full">
             <strong>متن نظر:</strong>
             <p class="comment-text">{{ selectedComment.content }}</p>
           </div>
         </div>
+
+        <!-- حالت ویرایش -->
+        <div v-else class="edit-form">
+          <div class="form-group">
+            <label>نام:</label>
+            <input v-model="editFormData.name" type="text" placeholder="نام">
+          </div>
+          <div class="form-group">
+            <label>ایمیل:</label>
+            <input v-model="editFormData.email" type="email" placeholder="ایمیل">
+          </div>
+          <div class="form-group">
+            <label>امتیاز:</label>
+            <div class="rating-selector">
+              <button
+                v-for="n in 5"
+                :key="n"
+                @click="editFormData.rating = n"
+                class="rating-btn"
+                :class="{ active: editFormData.rating === n }"
+              >
+                ⭐ {{ n }}
+              </button>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>متن نظر:</label>
+            <textarea v-model="editFormData.content" placeholder="متن نظر" rows="6"></textarea>
+          </div>
+          <div class="form-group">
+            <label>وضعیت تایید:</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input v-model="editFormData.approved" type="checkbox">
+                <span>{{ editFormData.approved ? 'تایید شده' : 'در انتظار تایید' }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
         
         <div class="modal-actions">
-          <button
-            @click="toggleApprove(selectedComment); closeModal()"
-            :class="['btn', selectedComment.approved ? 'btn-warning' : 'btn-success']"
-          >
-            {{ selectedComment.approved ? 'لغو تایید' : 'تایید نظر' }}
-          </button>
-          <button
-            @click="deleteCommentAction(selectedComment.id); closeModal()"
-            class="btn btn-danger"
-          >
-            حذف نظر
-          </button>
+          <template v-if="!isEditingComment">
+            <button
+              @click="startEditComment()"
+              class="btn btn-info"
+            >
+              ✎ ویرایش نظر
+            </button>
+            <button
+              @click="toggleApprove(selectedComment); closeModal()"
+              :class="['btn', selectedComment.approved ? 'btn-warning' : 'btn-success']"
+            >
+              {{ selectedComment.approved ? 'لغو تایید' : 'تایید نظر' }}
+            </button>
+            <button
+              @click="deleteCommentAction(selectedComment.id); closeModal()"
+              class="btn btn-danger"
+            >
+              حذف نظر
+            </button>
+          </template>
+          <template v-else>
+            <button
+              @click="cancelEdit()"
+              class="btn btn-secondary"
+            >
+              انصراف
+            </button>
+            <button
+              @click="saveEditComment()"
+              class="btn btn-success"
+              :disabled="savingComment"
+            >
+              {{ savingComment ? 'در حال ذخیره...' : '✓ ذخیره تغییرات' }}
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -184,7 +256,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { getComments, approveComment, deleteComment, getCommentStats } from '../api/services'
+import { getComments, approveComment, deleteComment, getCommentStats, updateComment } from '../api/services'
 
 const comments = ref([])
 const stats = ref({
@@ -195,6 +267,16 @@ const stats = ref({
 })
 const loading = ref(false)
 const selectedComment = ref(null)
+const isEditingComment = ref(false)
+const savingComment = ref(false)
+
+const editFormData = ref({
+  name: '',
+  email: '',
+  content: '',
+  rating: 1,
+  approved: false
+})
 
 const filter = ref({
   status: 'all',
@@ -280,10 +362,79 @@ const deleteCommentAction = async (commentId) => {
 
 const showFullComment = (comment) => {
   selectedComment.value = comment
+  isEditingComment.value = false
+}
+
+const startEditComment = () => {
+  if (selectedComment.value) {
+    editFormData.value = {
+      name: selectedComment.value.name,
+      email: selectedComment.value.email,
+      content: selectedComment.value.content,
+      rating: selectedComment.value.rating,
+      approved: selectedComment.value.approved
+    }
+    isEditingComment.value = true
+  }
+}
+
+const cancelEdit = () => {
+  isEditingComment.value = false
+  editFormData.value = {
+    name: '',
+    email: '',
+    content: '',
+    rating: 1,
+    approved: false
+  }
+}
+
+const saveEditComment = async () => {
+  if (!selectedComment.value || !editFormData.value.name || !editFormData.value.email || !editFormData.value.content) {
+    alert('لطفا تمام فیلدهای الزامی را پر کنید')
+    return
+  }
+
+  savingComment.value = true
+  try {
+    const updated = await updateComment(selectedComment.value.id, {
+      name: editFormData.value.name,
+      email: editFormData.value.email,
+      content: editFormData.value.content,
+      rating: editFormData.value.rating,
+      approved: editFormData.value.approved
+    })
+    
+    // به‌روزرسانی کامنت در لیست
+    const index = comments.value.findIndex(c => c.id === selectedComment.value.id)
+    if (index !== -1) {
+      const wasApproved = comments.value[index].approved
+      comments.value[index] = updated
+      
+      // به‌روزرسانی آمار اگر وضعیت تایید تغییر کرد
+      if (wasApproved && !updated.approved) {
+        stats.value.approved--
+        stats.value.pending++
+      } else if (!wasApproved && updated.approved) {
+        stats.value.approved++
+        stats.value.pending--
+      }
+    }
+    
+    selectedComment.value = updated
+    isEditingComment.value = false
+    alert('نظر با موفقیت به‌روزرسانی شد')
+  } catch (error) {
+    console.error('Error updating comment:', error)
+    alert('خطا در ویرایش نظر')
+  } finally {
+    savingComment.value = false
+  }
 }
 
 const closeModal = () => {
   selectedComment.value = null
+  isEditingComment.value = false
 }
 
 const truncateText = (text, maxLength) => {
@@ -659,8 +810,120 @@ tr:hover {
   color: white;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-info {
+  background: #06b6d4;
+}
+
+.btn-info:hover {
+  background: #0891b2;
+}
+
+.btn-secondary {
+  background: #6b7280;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+/* Edit Form */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  direction: rtl;
+  text-align: right;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.rating-selector {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.rating-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.rating-btn:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.rating-btn.active {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #d97706;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
 }
 
 /* Responsive */

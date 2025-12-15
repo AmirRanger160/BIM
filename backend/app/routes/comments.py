@@ -113,6 +113,49 @@ def approve_comment(
     return comment
 
 
+@router.put("/{comment_id}", response_model=CommentSchema)
+def update_comment(
+    comment_id: int,
+    comment_update: CommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """ویرایش نظر (فقط ادمین)"""
+    
+    # بررسی دسترسی ادمین
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="دسترسی ممنوع")
+    
+    # پیدا کردن نظر
+    comment = db.query(Comment).filter(Comment.id == comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="نظر یافت نشد")
+    
+    # بروزرسانی فیلدهای ارائه شده
+    if comment_update.name is not None:
+        comment.name = comment_update.name
+    if comment_update.email is not None:
+        comment.email = comment_update.email
+    if comment_update.content is not None:
+        comment.content = comment_update.content
+    if comment_update.rating is not None:
+        if comment_update.rating < 1 or comment_update.rating > 5:
+            raise HTTPException(
+                status_code=400,
+                detail="امتیاز باید بین 1 تا 5 باشد"
+            )
+        comment.rating = comment_update.rating
+    if comment_update.approved is not None:
+        comment.approved = comment_update.approved
+    
+    comment.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(comment)
+    
+    return comment
+
+
 @router.delete("/{comment_id}")
 def delete_comment(
     comment_id: int,

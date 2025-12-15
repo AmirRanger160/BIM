@@ -371,7 +371,11 @@ class CommentCreate(CommentBase):
 
 
 class CommentUpdate(BaseModel):
-    approved: bool
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    email: Optional[EmailStr] = None
+    content: Optional[str] = Field(None, min_length=10)
+    rating: Optional[int] = Field(None, ge=1, le=5)
+    approved: Optional[bool] = None
 
 
 class Comment(CommentBase):
