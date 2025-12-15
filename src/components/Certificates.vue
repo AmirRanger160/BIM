@@ -36,15 +36,12 @@
             <button class="modal-close" @click="closeCertificate">✕</button>
             
             <ImageSlider
-              v-if="selectedCert.images && selectedCert.images.length > 0"
               :image="selectedCert.image"
               :images="selectedCert.images"
               :icon="selectedCert.icon"
               :gradient="selectedCert.gradient"
               class="cert-modal-image"
             />
-            <div v-else class="cert-modal-image" :style="{ background: selectedCert.gradient }">
-            </div>
             
             <div class="cert-modal-body">
               <div class="cert-badge-large" :class="selectedCert.type">
@@ -174,6 +171,7 @@ const closeCertificate = () => {
 
 // افزودن تصاویر اسلایدر به گواهینامه
 const enrichCertificateWithSlider = async (cert) => {
+  // اگر slider_id موجود بود، تصاویر slider را دریافت کن
   if (cert.slider_id) {
     try {
       const sliderResponse = await getSlider(cert.slider_id)
@@ -185,6 +183,13 @@ const enrichCertificateWithSlider = async (cert) => {
       }
     } catch (err) {
       console.error('Error loading slider:', err)
+    }
+  }
+  // اگر image موجود بود اما slider نبود، آن را به عنوان images نیز اضافه کن
+  if (cert.image && !cert.images) {
+    return {
+      ...cert,
+      images: [cert.image]
     }
   }
   return cert
@@ -396,11 +401,13 @@ onMounted(() => {
 .cert-modal-content {
   background: white;
   border-radius: 25px;
-  max-width: 700px;
-  width: 100%;
+  max-width: 1000px;
+  width: 95%;
+  max-height: 95vh;
   position: relative;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  overflow-y: auto;
 }
 
 .dark-mode .cert-modal-content {
@@ -438,14 +445,13 @@ onMounted(() => {
 }
 
 .cert-modal-image {
-  height: 250px;
+  height: 60vh;
+  max-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.cert-modal-icon {
-  font-size: 6rem;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .cert-modal-body {

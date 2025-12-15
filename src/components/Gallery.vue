@@ -173,260 +173,7 @@ const props = defineProps({
   }
 })
 
-const galleryItems = ref([
-  {
-    id: 1,
-    title: 'فروشگاه آنلاین مد و پوشاک',
-    description: 'پلتفرم فروش آنلاین با رابط کاربری مدرن و سیستم پرداخت امن',
-    details: 'یک فروشگاه آنلاین کامل با قابلیت‌های پیشرفته مدیریت محصولات، سبد خرید هوشمند، سیستم پرداخت امن و پنل مدیریت جامع. این پروژه با تمرکز بر تجربه کاربری و عملکرد بالا طراحی شده است.',
-    icon: '🛍️',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    category: 'وب',
-    categoryColor: '#667eea',
-    views: '۲٫۵ هزار',
-    likes: '۱۸۵',
-    date: '۱۴۰۴/۱۰/۱۵',
-    tags: ['فروشگاه', 'Vue.js', 'Node.js', 'پرداخت آنلاین'],
-    technologies: ['Vue 3', 'Node.js', 'MongoDB', 'Stripe', 'Tailwind CSS'],
-    features: [
-      'سیستم پرداخت آنلاین امن',
-      'پنل مدیریت پیشرفته',
-      'فیلتر و جستجوی هوشمند',
-      'سیستم تخفیف و کوپن',
-      'پیگیری سفارش',
-      'سیستم نظرات و امتیازدهی'
-    ],
-    images: [
-      { icon: '🏠', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-      { icon: '🛒', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-      { icon: '💳', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
-    ]
-  },
-  {
-    id: 2,
-    title: 'اپلیکیشن مدیریت پروژه',
-    description: 'نرم‌افزار مدیریت پروژه با امکانات تیمی و گزارش‌گیری پیشرفته',
-    details: 'یک سیستم جامع مدیریت پروژه برای تیم‌های بزرگ با قابلیت‌های Kanban، Gantt Chart، مدیریت زمان، تخصیص منابع و گزارش‌های تحلیلی پیشرفته. این پلتفرم به تیم‌ها کمک می‌کند تا بهره‌وری خود را تا ۴۰٪ افزایش دهند.',
-    icon: '📊',
-    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    category: 'نرم‌افزار',
-    categoryColor: '#f093fb',
-    views: '۳٫۱ هزار',
-    likes: '۲۲۳',
-    date: '۱۴۰۴/۰۹/۲۸',
-    tags: ['مدیریت پروژه', 'React', 'GraphQL', 'Real-time'],
-    technologies: ['React', 'Node.js', 'PostgreSQL', 'Socket.io', 'Redis'],
-    features: [
-      'داشبورد تحلیلی پیشرفته',
-      'مدیریت تسک با Drag & Drop',
-      'چت تیمی درون‌برنامه‌ای',
-      'تقویم و یادآوری هوشمند',
-      'گزارش‌های سفارشی',
-      'یکپارچگی با ابزارهای محبوب'
-    ],
-    images: [
-      { icon: '📋', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-      { icon: '👥', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-      { icon: '📈', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }
-    ]
-  },
-  {
-    id: 3,
-    title: 'سیستم رزرو هتل آنلاین',
-    description: 'پلتفرم رزرو اتاق هتل با نقشه تعاملی و مقایسه قیمت',
-    details: 'یک سیستم رزرو کامل برای هتل‌ها و مسافران با امکانات جستجوی پیشرفته، نقشه‌های تعاملی، مقایسه قیمت، نظرات کاربران و پرداخت امن. این پروژه باعث افزایش ۶۵٪ رزروهای آنلاین شد.',
-    icon: '🏨',
-    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    category: 'وب',
-    categoryColor: '#4facfe',
-    views: '۴٫۸ هزار',
-    likes: '۳۵۷',
-    date: '۱۴۰۴/۰۹/۱۲',
-    tags: ['رزرو آنلاین', 'Next.js', 'Maps API', 'پرداخت'],
-    technologies: ['Next.js', 'TypeScript', 'Prisma', 'Stripe', 'Google Maps'],
-    features: [
-      'جستجوی هوشمند با فیلترهای پیشرفته',
-      'نقشه تعاملی موقعیت هتل‌ها',
-      'سیستم نظرات و امتیازدهی',
-      'مقایسه قیمت‌ها',
-      'رزرو لحظه‌ای',
-      'پنل مدیریت هتل'
-    ],
-    images: [
-      { icon: '🗺️', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-      { icon: '⭐', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-      { icon: '📱', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
-    ]
-  },
-  {
-    id: 4,
-    title: 'اپ موبایل فیتنس و تناسب اندام',
-    description: 'اپلیکیشن موبایل برنامه ورزشی شخصی‌سازی شده با AI',
-    details: 'اپلیکیشن جامع فیتنس با هوش مصنوعی که برنامه‌های ورزشی شخصی‌سازی شده، ردیابی تغذیه، چالش‌های تیمی و مربی مجازی ارائه می‌دهد. بیش از ۵۰ هزار کاربر فعال در ۶ ماه اول.',
-    icon: '💪',
-    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    category: 'موبایل',
-    categoryColor: '#43e97b',
-    views: '۶٫۲ هزار',
-    likes: '۴۵۲',
-    date: '۱۴۰۴/۰۸/۲۵',
-    tags: ['فیتنس', 'React Native', 'AI', 'سلامت'],
-    technologies: ['React Native', 'Python', 'TensorFlow', 'Firebase', 'HealthKit'],
-    features: [
-      'برنامه ورزشی شخصی‌سازی شده با AI',
-      'ردیابی کالری و تغذیه',
-      'ویدیوهای آموزشی تمرینات',
-      'چالش‌های تیمی',
-      'یکپارچگی با دستگاه‌های پوشیدنی',
-      'گزارش پیشرفت'
-    ],
-    images: [
-      { icon: '🏃', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-      { icon: '🥗', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-      { icon: '📊', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }
-    ]
-  },
-  {
-    id: 5,
-    title: 'پلتفرم یادگیری آنلاین',
-    description: 'سیستم LMS کامل با کلاس زنده، آزمون و گواهینامه',
-    details: 'یک سیستم مدیریت یادگیری (LMS) پیشرفته با قابلیت برگزاری کلاس‌های زنده، آپلود ویدیو، آزمون‌های آنلاین، سیستم گواهینامه و انجمن گفتگو. بیش از ۱۰۰ مدرس و ۱۰ هزار دانشجو.',
-    icon: '🎓',
-    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    category: 'وب',
-    categoryColor: '#fa709a',
-    views: '۵٫۴ هزار',
-    likes: '۳۹۸',
-    date: '۱۴۰۴/۰۸/۰۵',
-    tags: ['آموزش', 'LMS', 'Webinar', 'Vue.js'],
-    technologies: ['Vue 3', 'Laravel', 'MySQL', 'WebRTC', 'AWS'],
-    features: [
-      'کلاس‌های زنده با ویدیو کنفرانس',
-      'آپلود و مدیریت محتوای ویدیویی',
-      'سیستم آزمون و نمره‌دهی خودکار',
-      'گواهینامه دیجیتال',
-      'انجمن و گفتگوی دانشجویان',
-      'پنل مالی و گزارشات'
-    ],
-    images: [
-      { icon: '📚', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-      { icon: '🎥', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-      { icon: '📜', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
-    ]
-  },
-  {
-    id: 6,
-    title: 'داشبورد تحلیل داده',
-    description: 'پنل تحلیلی داده با نمودارهای تعاملی و گزارش‌های لحظه‌ای',
-    details: 'یک داشبورد تحلیلی قدرتمند برای تجزیه و تحلیل داده‌های کسب‌وکار با نمودارهای تعاملی، فیلترهای پیشرفته، گزارش‌های سفارشی و پیش‌بینی روندها با یادگیری ماشین.',
-    icon: '📈',
-    gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    category: 'نرم‌افزار',
-    categoryColor: '#30cfd0',
-    views: '۳٫۷ هزار',
-    likes: '۲۸۹',
-    date: '۱۴۰۴/۰۷/۲۰',
-    tags: ['Analytics', 'Data Viz', 'Dashboard', 'React'],
-    technologies: ['React', 'D3.js', 'Python', 'FastAPI', 'PostgreSQL'],
-    features: [
-      'نمودارهای تعاملی با D3.js',
-      'فیلترهای پیشرفته و پویا',
-      'گزارش‌های سفارشی PDF/Excel',
-      'پیش‌بینی روندها با ML',
-      'Real-time data updates',
-      'API برای یکپارچگی'
-    ],
-    images: [
-      { icon: '📊', gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
-      { icon: '📉', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-      { icon: '🎯', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }
-    ]
-  },
-  {
-    id: 7,
-    title: 'سیستم مدیریت رستوران',
-    description: 'نرم‌افزار POS و مدیریت رستوران با منوی دیجیتال',
-    details: 'سیستم کامل مدیریت رستوران شامل POS، مدیریت میز، سفارش آنلاین، منوی دیجیتال، مدیریت انبار و حسابداری. این سیستم سرعت سرویس‌دهی را ۵۰٪ افزایش داد.',
-    icon: '🍽️',
-    gradient: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)',
-    category: 'نرم‌افزار',
-    categoryColor: '#ff6b6b',
-    views: '۲٫۹ هزار',
-    likes: '۱۹۵',
-    date: '۱۴۰۴/۰۷/۰۸',
-    tags: ['رستوران', 'POS', 'سفارش آنلاین', 'Electron'],
-    technologies: ['Electron', 'Vue.js', 'Node.js', 'SQLite', 'Printer API'],
-    features: [
-      'سیستم POS پیشرفته',
-      'مدیریت میز و رزرو',
-      'منوی دیجیتال با QR Code',
-      'سفارش آنلاین',
-      'مدیریت انبار و موجودی',
-      'گزارش‌های مالی'
-    ],
-    images: [
-      { icon: '🍕', gradient: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)' },
-      { icon: '💳', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-      { icon: '📱', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
-    ]
-  },
-  {
-    id: 8,
-    title: 'شبکه اجتماعی عکاسان',
-    description: 'پلتفرم اشتراک‌گذاری عکس با قابلیت فروش و مجوز',
-    details: 'یک شبکه اجتماعی تخصصی برای عکاسان با امکان آپلود پرتفولیو، فروش عکس، سیستم مجوزدهی، جامعه عکاسان و مسابقات ماهانه. بیش از ۲۰ هزار عکاس عضو.',
-    icon: '📷',
-    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    category: 'وب',
-    categoryColor: '#a8edea',
-    views: '۷٫۱ هزار',
-    likes: '۵۶۸',
-    date: '۱۴۰۴/۰۶/۱۵',
-    tags: ['شبکه اجتماعی', 'عکاسی', 'فروش', 'Next.js'],
-    technologies: ['Next.js', 'Cloudinary', 'Stripe', 'PostgreSQL', 'Redis'],
-    features: [
-      'گالری پرتفولیوی حرفه‌ای',
-      'فروش عکس با سیستم مجوز',
-      'فید اجتماعی و دنبال‌کنندگان',
-      'مسابقات و جوایز',
-      'ویرایشگر آنلاین عکس',
-      'تحلیل آمار و فروش'
-    ],
-    images: [
-      { icon: '🖼️', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
-      { icon: '💰', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-      { icon: '🏆', gradient: 'linear-gradient(135deg, #feca57 0%, #ff6b6b 100%)' }
-    ]
-  },
-  {
-    id: 9,
-    title: 'اپلیکیشن تاکسی آنلاین',
-    description: 'پلتفرم درخواست تاکسی با نقشه لحظه‌ای و پرداخت آنلاین',
-    details: 'یک اپلیکیشن کامل درخواست تاکسی شامل نقشه‌های زنده، ردیابی مسیر، محاسبه هوشمند قیمت، پرداخت آنلاین، امتیازدهی و چت با راننده. بیش از ۱۵ هزار سفر روزانه.',
-    icon: '🚕',
-    gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)',
-    category: 'موبایل',
-    categoryColor: '#ffd89b',
-    views: '۸٫۵ هزار',
-    likes: '۶۲۳',
-    date: '۱۴۰۴/۰۵/۲۸',
-    tags: ['تاکسی', 'نقشه', 'GPS', 'Flutter'],
-    technologies: ['Flutter', 'Node.js', 'Socket.io', 'Google Maps', 'Firebase'],
-    features: [
-      'نقشه زنده و ردیابی مسیر',
-      'محاسبه هوشمند قیمت',
-      'پرداخت آنلاین چندگانه',
-      'چت با راننده',
-      'سیستم امتیازدهی',
-      'تخمین زمان رسیدن'
-    ],
-    images: [
-      { icon: '🗺️', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
-      { icon: '🚗', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-      { icon: '💳', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }
-    ]
-  }
-])
+const galleryItems = ref([])
 
 const selectedItem = ref(null)
 const searchQuery = ref('')
@@ -437,6 +184,7 @@ const error = ref(null)
 // Fetch gallery items from API
 // افزودن تصاویر اسلایدر به آیتم
 const enrichItemWithSlider = async (item) => {
+  // اگر slider_id موجود بود، تصاویر slider را دریافت کن
   if (item.slider_id) {
     try {
       const sliderResponse = await getSlider(item.slider_id)
@@ -450,6 +198,13 @@ const enrichItemWithSlider = async (item) => {
       console.error('Error loading slider:', err)
     }
   }
+  // اگر image موجود بود اما slider نبود، آن را به عنوان images نیز اضافه کن
+  if (item.image && !item.images) {
+    return {
+      ...item,
+      images: [item.image]
+    }
+  }
   return item
 }
 
@@ -458,7 +213,7 @@ const fetchGalleryItems = async () => {
     loading.value = true
     error.value = null
     const response = await getGalleryItems({ page: 1, limit: 100 })
-    let items = response.data || galleryItems.value
+    let items = response.data || []
     
     // افزودن تصاویر اسلایدر برای هر آیتم
     items = await Promise.all(items.map(item => enrichItemWithSlider(item)))
@@ -745,27 +500,13 @@ const previousItem = () => {
 }
 
 .card-image {
-  height: 280px;
+  height: 320px;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.card-icon-main {
-  font-size: 6rem;
-  z-index: 1;
-  position: relative;
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3));
-  transition: all 0.4s ease;
-  opacity: 1;
-}
-
-.gallery-card:hover .card-icon-main {
-  transform: scale(1.15) rotate(5deg);
-  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.4));
-  opacity: 0.2;
+  border-radius: 20px 20px 0 0;
 }
 
 .card-overlay {
@@ -919,9 +660,9 @@ const previousItem = () => {
 .modal-content {
   background: white;
   border-radius: 30px;
-  max-width: 900px;
-  width: 100%;
-  max-height: 90vh;
+  max-width: 1200px;
+  width: 95%;
+  max-height: 95vh;
   overflow-y: auto;
   position: relative;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
@@ -935,28 +676,13 @@ const previousItem = () => {
 
 .modal-gallery {
   position: relative;
-}
-
-.modal-main-image {
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 30px 30px 0 0;
-  position: relative;
-}
-
-.modal-icon-large {
-  font-size: 8rem;
-}
-
-.modal-thumbnails {
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.75rem;
+  width: 100%;
+  height: 60vh;
+  max-height: 700px;
+  min-height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .thumbnail {
@@ -978,7 +704,8 @@ const previousItem = () => {
 }
 
 .modal-info {
-  padding: 2.5rem;
+  padding: 3rem;
+  flex: 1;
 }
 
 .modal-close {

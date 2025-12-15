@@ -8,14 +8,12 @@
     
     <!-- Image Slider -->
     <ImageSlider
-      v-if="article.images && article.images.length > 0"
-      :item="article"
+      :image="article.image"
+      :images="article.images"
       :icon="article.icon"
+      :gradient="article.gradient"
+      class="article-header-image"
     />
-    
-    <div v-else class="article-header" :style="{ background: article.gradient }">
-      <div class="article-category-badge">{{ article.category }}</div>
-    </div>
     
     <div class="article-body">
       <div class="article-meta">
@@ -108,13 +106,15 @@ onUnmounted(() => {
 
 .article-detail {
   background: white;
-  width: 100%;
-  max-width: 900px;
+  width: 95%;
+  max-width: 1200px;
+  max-height: 95vh;
   border-radius: 25px;
   position: relative;
   animation: slideUp 0.4s ease;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  overflow-y: auto;
   margin: 0 auto;
 }
 
@@ -158,32 +158,12 @@ onUnmounted(() => {
   color: white;
 }
 
-.article-header {
+.article-header-image {
   width: 100%;
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  height: 60vh;
+  max-height: 700px;
+  border-radius: 20px 20px 0 0;
   overflow: hidden;
-}
-
-.article-header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  transform: rotate(45deg);
-  animation: shimmer 3s infinite;
 }
 
 @keyframes shimmer {

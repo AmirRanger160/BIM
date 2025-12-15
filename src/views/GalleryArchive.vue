@@ -147,15 +147,12 @@
             <button class="modal-close" @click="closeModal">✕</button>
             
             <ImageSlider
-              v-if="selectedItem.images && selectedItem.images.length > 0"
               :image="selectedItem.image"
               :images="selectedItem.images"
               :icon="selectedItem.icon"
               :gradient="selectedItem.gradient"
               class="modal-image"
             />
-            <div v-else class="modal-image" :style="{ background: selectedItem.gradient }">
-            </div>
             
             <div class="modal-body">
               <div class="modal-header">
@@ -279,6 +276,7 @@ const previousItem = () => {
 
 // افزودن تصاویر اسلایدر به گالری
 const enrichItemWithSlider = async (item) => {
+  // اگر slider_id موجود بود، تصاویر slider را دریافت کن
   if (item.slider_id) {
     try {
       const sliderResponse = await getSlider(item.slider_id)
@@ -290,6 +288,13 @@ const enrichItemWithSlider = async (item) => {
       }
     } catch (err) {
       console.error('Error loading slider:', err)
+    }
+  }
+  // اگر image موجود بود اما slider نبود، آن را به عنوان images نیز اضافه کن
+  if (item.image && !item.images) {
+    return {
+      ...item,
+      images: [item.image]
     }
   }
   return item
@@ -738,11 +743,13 @@ onMounted(() => {
 .modal-content {
   background: white;
   border-radius: 25px;
-  max-width: 900px;
-  width: 100%;
+  max-width: 1200px;
+  width: 95%;
+  max-height: 95vh;
   position: relative;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  overflow-y: auto;
 }
 
 .dark-mode .modal-content {
@@ -780,14 +787,13 @@ onMounted(() => {
 }
 
 .modal-image {
-  height: 300px;
+  height: 60vh;
+  max-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.modal-icon {
-  font-size: 6rem;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .modal-body {

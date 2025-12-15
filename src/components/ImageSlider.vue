@@ -1,6 +1,6 @@
 <template>
   <div class="image-slider" :class="{ 'has-multiple': hasMultipleImages }">
-    <!-- تصویر اصلی / اسلایدر -->
+    <!-- اسلایدر تصاویر -->
     <div v-if="displayImages && displayImages.length > 0" class="slider-container">
       <TransitionGroup name="slide-fade" tag="div" class="slides">
         <div 
@@ -9,10 +9,7 @@
           v-show="index === currentSlide"
           class="slide"
           :style="getSlideStyle(img)"
-        >
-          <div class="slide-overlay" :style="{ background: gradient }"></div>
-          <div v-if="getSlideIcon(img)" class="slide-icon">{{ getSlideIcon(img) }}</div>
-        </div>
+        ></div>
       </TransitionGroup>
 
       <!-- نقاط ناوبری -->
@@ -45,14 +42,9 @@
       </button>
     </div>
 
-    <!-- fallback به تصویر شاخص -->
-    <div v-else-if="image" class="image-placeholder" :style="{ backgroundImage: `url(${getImageUrl(image)})` }">
-      <div class="slide-overlay" :style="{ background: gradient }"></div>
-      <div v-if="icon" class="slide-icon">{{ icon }}</div>
-    </div>
-
-    <!-- fallback نهایی: gradient فقط بدون icon -->
+    <!-- fallback نهایی: emoji ثابت بدون تصویر -->
     <div v-else class="gradient-placeholder" :style="{ background: gradient }">
+      <div v-if="icon" class="slide-icon">{{ icon }}</div>
     </div>
   </div>
 </template>
@@ -205,6 +197,7 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 240px;
   border-radius: inherit;
   overflow: hidden;
 }
@@ -213,6 +206,7 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: inherit;
 }
 
 .slides {

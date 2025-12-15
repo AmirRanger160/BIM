@@ -162,6 +162,7 @@ const totalArticles = ref(0)
 
 // افزودن تصاویر اسلایدر به مقاله
 const enrichArticleWithSlider = async (article) => {
+  // اگر slider_id موجود بود، تصاویر slider را دریافت کن
   if (article.slider_id) {
     try {
       const sliderResponse = await getSlider(article.slider_id)
@@ -173,6 +174,13 @@ const enrichArticleWithSlider = async (article) => {
       }
     } catch (err) {
       console.error('Error loading slider:', err)
+    }
+  }
+  // اگر image موجود بود اما slider نبود، آن را به عنوان images نیز اضافه کن
+  if (article.image && !article.images) {
+    return {
+      ...article,
+      images: [article.image]
     }
   }
   return article
@@ -549,13 +557,14 @@ const handleSortChange = (newSort) => {
 }
 
 .article-image {
-  height: 200px;
+  height: 240px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   transition: all 0.5s ease;
+  border-radius: 20px 20px 0 0;
 }
 
 .article-card:hover .article-image {
@@ -587,23 +596,6 @@ const handleSortChange = (newSort) => {
   .article-image {
     height: 180px;
   }
-  
-  .article-icon {
-    font-size: 3rem;
-  }
-}
-
-.article-icon {
-  font-size: 4rem;
-  position: relative;
-  z-index: 1;
-  transition: all 0.4s ease;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
-}
-
-.article-card:hover .article-icon {
-  transform: scale(1.15) rotate(5deg);
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3));
 }
 
 .article-category {
