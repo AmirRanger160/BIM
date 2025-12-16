@@ -26,10 +26,6 @@
         </p>
         
         <div class="hero-buttons">
-          <button class="btn btn-primary">
-            شروع کنید
-            <span class="btn-arrow">←</span>
-          </button>
           <button 
             v-if="featuredVideo"
             @click="openVideoModal"
