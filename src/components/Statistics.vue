@@ -21,7 +21,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getStatistics } from '../api/services'
 
 const stats = ref([
   {
@@ -81,36 +80,8 @@ const animateNumbers = () => {
   })
 }
 
-// Fetch statistics from API
-const fetchStatistics = async () => {
-  try {
-    loading.value = true
-    const response = await getStatistics()
-    const apiStats = response.data || []
-    
-    if (apiStats.length > 0) {
-      // Map API data to stats format
-      stats.value = apiStats.slice(0, 4).map((stat, index) => ({
-        id: stat.id || index + 1,
-        icon: stat.icon || stats.value[index]?.icon || '📊',
-        value: stat.value || stat.count || 0,
-        displayValue: 0,
-        suffix: stat.suffix || '+',
-        label: stat.label || stat.title || 'آمار',
-        gradient: stat.gradient || stats.value[index]?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      }))
-    }
-  } catch (err) {
-    console.error('Error fetching statistics:', err)
-    // Keep default stats as fallback
-  } finally {
-    loading.value = false
-    animateNumbers()
-  }
-}
-
 onMounted(() => {
-  fetchStatistics()
+  animateNumbers()
 })
 </script>
 

@@ -35,21 +35,6 @@
             تماشای ویدیو
           </button>
         </div>
-        
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-value">۱۰۰+</div>
-            <div class="stat-label">پروژه موفق</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">۵۰+</div>
-            <div class="stat-label">مشتری راضی</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">۲۴/۷</div>
-            <div class="stat-label">پشتیبانی</div>
-          </div>
-        </div>
       </div>
     </div>
   </section>

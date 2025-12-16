@@ -2,9 +2,9 @@
   <div>
     <Navbar @toggle-theme="toggleTheme" :is-dark="isDark" />
     <Hero />
-    <Services />
     <Gallery :show-view-all="true" />
     <Statistics />
+    <Services />
     <Articles :show-view-all="true" />
     <Testimonials />
     <Certificates />
