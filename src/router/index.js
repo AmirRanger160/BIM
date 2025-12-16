@@ -16,6 +16,7 @@ import AdminContacts from '../views/AdminContacts.vue'
 import AdminSliders from '../views/AdminSliders.vue'
 import AdminCertificates from '../views/AdminCertificates.vue'
 import AdminComments from '../views/AdminComments.vue'
+import AdminVideos from '../views/AdminVideos.vue'
 import AdminReports from '../views/AdminReports.vue'
 import AdminUsers from '../views/AdminUsers.vue'
 import AdminLayout from '../components/AdminLayout.vue'
@@ -148,6 +149,11 @@ const routes = [
         path: 'comments',
         name: 'AdminComments',
         component: AdminComments
+      },
+      {
+        path: 'videos',
+        name: 'AdminVideos',
+        component: AdminVideos
       },
       {
         path: 'users',

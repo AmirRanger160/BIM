@@ -197,3 +197,20 @@ class Comment(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class Video(Base):
+    """مدل ویدیوها برای نمایش در صفحه اصلی"""
+    __tablename__ = "videos"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    video_url = Column(String(500), nullable=False)  # لینک ویدیو (YouTube, Vimeo, etc)
+    thumbnail = Column(String(500), nullable=True)  # لینک تصویر بند انگشتی
+    duration = Column(String(50), nullable=True)  # مدت زمان ویدیو
+    views = Column(Integer, default=0)
+    active = Column(Boolean, default=True, index=True)
+    order = Column(Integer, default=0)  # ترتیب نمایش
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

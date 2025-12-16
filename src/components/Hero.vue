@@ -30,7 +30,11 @@
             شروع کنید
             <span class="btn-arrow">←</span>
           </button>
-          <button class="btn btn-secondary">
+          <button 
+            v-if="featuredVideo"
+            @click="openVideoModal"
+            class="btn btn-secondary"
+          >
             <span class="play-icon">▶</span>
             تماشای ویدیو
           </button>
@@ -53,7 +57,41 @@
       </div>
     </div>
   </section>
+
+  <!-- Video Modal -->
+  <VideoModal 
+    :is-open="showVideoModal" 
+    :video="featuredVideo"
+    @close="showVideoModal = false"
+  />
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import VideoModal from './VideoModal.vue'
+
+const showVideoModal = ref(false)
+const featuredVideo = ref(null)
+
+onMounted(async () => {
+  // بارگذاری ویدیوی اول (اولویت دار)
+  try {
+    const response = await fetch('/api/videos?active_only=true&limit=1')
+    if (response.ok) {
+      const videos = await response.json()
+      if (videos.length > 0) {
+        featuredVideo.value = videos[0]
+      }
+    }
+  } catch (error) {
+    console.error('خطا در بارگذاری ویدیو:', error)
+  }
+})
+
+const openVideoModal = () => {
+  showVideoModal.value = true
+}
+</script>
 
 <style scoped>
 .hero {

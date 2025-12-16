@@ -406,3 +406,38 @@ class PaginatedResponse(BaseModel):
     page: int
     limit: int
     pages: int
+
+# ============= Video Schemas =============
+
+class VideoBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    video_url: str = Field(..., min_length=1)
+    thumbnail: Optional[str] = None
+    duration: Optional[str] = None
+    active: bool = True
+    order: int = 0
+
+
+class VideoCreate(VideoBase):
+    pass
+
+
+class VideoUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    video_url: Optional[str] = None
+    thumbnail: Optional[str] = None
+    duration: Optional[str] = None
+    active: Optional[bool] = None
+    order: Optional[int] = None
+
+
+class Video(VideoBase):
+    id: int
+    views: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from app.config import settings
 from app.database import init_db, get_db
-from app.routes import articles, gallery, other, auth_routes, upload, admin, comments
+from app.routes import articles, gallery, other, auth_routes, upload, admin, comments, videos
 from app import models, auth, schemas
 from sqlalchemy.orm import Session
 
@@ -123,6 +123,7 @@ app.include_router(other.router)
 app.include_router(upload.router)
 app.include_router(admin.router)
 app.include_router(comments.router)
+app.include_router(videos.router)
 
 @app.get("/")
 def root():
