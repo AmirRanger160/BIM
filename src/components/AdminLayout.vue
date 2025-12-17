@@ -42,6 +42,9 @@
         <router-link to="/admin/comments" class="nav-item" :class="{ active: isActive('comments') }" @click="closeSidebar">
           💬 نظرات
         </router-link>
+        <router-link to="/admin/videos" class="nav-item" :class="{ active: isActive('videos') }" @click="closeSidebar">
+          🎥 ویدیوها
+        </router-link>
         <router-link to="/admin/services" class="nav-item" :class="{ active: isActive('services') }" @click="closeSidebar">
           🎯 خدمات
         </router-link>
@@ -88,7 +91,8 @@ const pageTitle = computed(() => {
     'AdminUsers': '👤 کاربران',
     'AdminSliders': '🎬 اسلایدرها',
     'AdminCertificates': '📜 گواهینامه‌ها و استانداردها',
-    'AdminComments': '💬 نظرات و امتیازات'
+    'AdminComments': '💬 نظرات و امتیازات',
+    'AdminVideos': '🎥 ویدیوها'
   }
   return titles[route.name] || 'پنل مدیریت'
 })

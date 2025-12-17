@@ -292,8 +292,11 @@ const handleImageUpload = async (event) => {
 
   try {
     uploading.value = true
-    const uploadedUrl = await adminService.uploadImage(file)
-    formData.value.image = uploadedUrl
+    const formData_ = new FormData()
+    formData_.append('file', file)
+    const response = await adminService.uploadFile(formData_)
+    // Handle different response formats
+    formData.value.image = response.url || response.data?.url || response
   } catch (error) {
     console.error('خطا در آپلود تصویر:', error)
     try { const { error: tError } = await import('../composables/useToast.js'); tError('خطا در آپلود تصویر'); } catch {}

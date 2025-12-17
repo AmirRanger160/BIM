@@ -1,43 +1,42 @@
 #!/bin/bash
+# BIM Application Production Startup Script
 
-# رنگ‌ها برای output
+set -e
+
+# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
-RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================${NC}"
-echo -e "${BLUE}  BIM Backend API Setup & Run  ${NC}"
+echo -e "${BLUE}BIM Application Startup${NC}"
+echo -e "${BLUE}================================${NC}"
+
+# Get script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+echo -e "${GREEN}✓ Project root: ${PROJECT_ROOT}${NC}"
+
+# Check if dist folder exists
+if [ ! -d "$PROJECT_ROOT/dist" ]; then
+    echo -e "${YELLOW}⚠ Frontend not built. Building now...${NC}"
+    cd "$PROJECT_ROOT"
+    npm run build
+    echo -e "${GREEN}✓ Frontend built${NC}"
+fi
+
+# Set environment variables
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONUNBUFFERED=1
+
+# Change to backend directory and start
+cd "$SCRIPT_DIR"
+
+echo -e "${GREEN}✓ Starting Backend API...${NC}"
+echo -e "${BLUE}Access the application at: http://localhost:8000${NC}"
+echo -e "${BLUE}API Docs at: http://localhost:8000/docs${NC}"
 echo -e "${BLUE}================================${NC}\n"
 
-# بررسی وجود virtual environment
-if [ ! -d "venv" ]; then
-    echo -e "${BLUE}📦 Creating virtual environment...${NC}"
-    python3 -m venv venv
-    echo -e "${GREEN}✅ Virtual environment created${NC}\n"
-fi
-
-# فعال‌سازی virtual environment
-echo -e "${BLUE}🔄 Activating virtual environment...${NC}"
-source venv/bin/activate
-
-# نصب dependencies
-echo -e "${BLUE}📥 Installing dependencies...${NC}"
-pip install -r requirements.txt --quiet
-echo -e "${GREEN}✅ Dependencies installed${NC}\n"
-
-# بررسی و ایجاد .env
-if [ ! -f ".env" ]; then
-    echo -e "${BLUE}⚙️  Creating .env file...${NC}"
-    cp .env.example .env
-    echo -e "${GREEN}✅ .env file created (please update it)${NC}\n"
-fi
-
-# اجرای سرور
-echo -e "${GREEN}🚀 Starting server...${NC}\n"
-echo -e "${BLUE}Server will run on: http://localhost:8000${NC}"
-echo -e "${BLUE}API Docs: http://localhost:8000/docs${NC}"
-echo -e "${BLUE}ReDoc: http://localhost:8000/redoc${NC}\n"
-echo -e "${BLUE}Press Ctrl+C to stop${NC}\n"
-
-python main.py
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload

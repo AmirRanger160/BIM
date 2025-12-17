@@ -73,35 +73,37 @@
           <div 
             v-for="item in paginatedItems" 
             :key="item.id" 
-            class="gallery-card"
+            class="gallery-card premium-card"
             @click="openModal(item)"
           >
-            <ImageSlider 
-              class="card-image"
-              :image="item.image"
-              :images="item.images"
-              :icon="item.icon"
-              :gradient="item.gradient"
-            />
-            <div class="card-overlay">
-              <div class="overlay-content">
-                <span class="view-btn">مشاهده پروژه</span>
+            <div class="card-image-wrapper">
+              <ImageSlider 
+                class="card-image"
+                :image="item.image"
+                :images="item.images"
+                :icon="item.icon"
+                :gradient="item.gradient"
+              />
+              <div class="card-overlay">
+                <div class="overlay-content">
+                  <span class="view-btn">مشاهده پروژه</span>
+                </div>
               </div>
-            </div>
-            <div class="card-badge" :style="{ background: item.categoryColor }">
-              {{ item.category }}
+              <div class="card-badge" :style="{ background: item.categoryColor }">
+                {{ item.category }}
+              </div>
             </div>
             
             <div class="card-content">
               <h3 class="card-title">{{ item.title }}</h3>
               <p class="card-description">{{ item.description }}</p>
               <div class="card-meta">
-                <span class="card-date">{{ item.date || item.created_at || 'نامشخص' }}</span>
-                <div class="card-tech">
-                  <span v-for="tech in (item.technologies || []).slice(0, 3)" :key="tech" class="tech-tag">
-                    {{ tech }}
-                  </span>
-                </div>
+                <span class="card-date">📅 {{ item.date || item.created_at || 'نامشخص' }}</span>
+              </div>
+              <div class="card-tech">
+                <span v-for="tech in (item.technologies || []).slice(0, 3)" :key="tech" class="tech-tag">
+                  {{ tech }}
+                </span>
               </div>
             </div>
           </div>
@@ -531,28 +533,46 @@ onMounted(() => {
   background: white;
   border-radius: 20px;
   overflow: hidden;
-  transition: all 0.3s;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.15);
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .dark-mode .gallery-card {
   background: rgba(45, 45, 45, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .gallery-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.card-image-wrapper {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .card-image {
-  height: 220px;
+  width: 100%;
+  height: 100%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: transform 0.5s ease;
+}
+
+.gallery-card:hover .card-image {
+  transform: scale(1.05);
 }
 
 .card-overlay {
@@ -590,21 +610,28 @@ onMounted(() => {
   border-radius: 50px;
   font-weight: 600;
   display: inline-block;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card-badge {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 50px;
   color: white;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 6;
 }
 
 .card-content {
-  padding: 2rem;
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
@@ -612,6 +639,11 @@ onMounted(() => {
   font-weight: 700;
   margin-bottom: 0.75rem;
   color: #1a1a1a;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .dark-mode .card-title {
@@ -619,26 +651,35 @@ onMounted(() => {
 }
 
 .card-description {
-  color: #6c757d;
+  color: #666;
+  font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 1rem;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .dark-mode .card-description {
-  color: #a0a0a0;
+  color: #aaa;
 }
 
 .card-meta {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .card-date {
-  color: #6c757d;
-  font-size: 0.9rem;
+  color: #999;
+  font-size: 0.85rem;
 }
 
 .dark-mode .card-date {
@@ -656,8 +697,9 @@ onMounted(() => {
   color: #667eea;
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .pagination {

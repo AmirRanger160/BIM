@@ -66,7 +66,6 @@
                   <span class="price-label">قیمت:</span>
                   <span class="price-value">{{ selectedService.price }}</span>
                 </div>
-                <button class="contact-btn">درخواست خدمت</button>
               </div>
             </div>
           </div>
@@ -79,6 +78,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getSlider } from '../api/services'
+import apiClient from '../api/client'
 import ImageSlider from './ImageSlider.vue'
 
 const services = ref([])
@@ -86,33 +86,39 @@ const selectedService = ref(null)
 const loading = ref(true)
 
 const enrichServiceWithSlider = async (service) => {
+  let images = []
+  
+  // Try to get slider images if slider_id is available
   if (service.slider_id) {
     try {
       const response = await getSlider(service.slider_id)
       const sliderData = response?.data || response
-      return {
-        ...service,
-        images: sliderData?.images || []
+      if (sliderData?.images && Array.isArray(sliderData.images) && sliderData.images.length > 0) {
+        images = sliderData.images
       }
     } catch (error) {
-      console.error('خطا در دریافت اسلایدر:', error)
-      return {
-        ...service,
-        images: service.image ? [service.image] : []
-      }
+      console.warn(`Failed to fetch slider ${service.slider_id}:`, error)
     }
   }
+  
+  // If no images from slider, use the image field
+  if (images.length === 0 && service.image) {
+    images = [service.image]
+  }
+  
+  console.log(`Service "${service.title}" - Images:`, images)
+  
   return {
     ...service,
-    images: service.image ? [service.image] : []
+    images
   }
 }
 
 const fetchServices = async () => {
   try {
     loading.value = true
-    const response = await fetch('https://probable-doodle-45g6r4grp452qgq-8000.app.github.dev/api/services')
-    const data = await response.json()
+    const response = await apiClient.get('/api/services')
+    const data = response.data
     const servicesList = data.data || []
     
     // Enrich services with slider images

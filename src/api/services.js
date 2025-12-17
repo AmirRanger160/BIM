@@ -804,6 +804,25 @@ export const approveComment = async (commentId) => {
 }
 
 /**
+ * ویرایش نظر (فقط ادمین)
+ * @param {Number} commentId - شناسه نظر
+ * @param {Object} updateData - اطلاعات جدید (name, email, content, rating, approved)
+ * @returns {Promise<Object>} نظر به‌روزرسانی شده
+ */
+export const updateComment = async (commentId, updateData) => {
+  try {
+    console.log(`Sending PUT request to /api/comments/${commentId}`, updateData)
+    const response = await apiClient.put(`/api/comments/${commentId}`, updateData)
+    console.log('Response from updateComment:', response)
+    return response.data
+  } catch (error) {
+    console.error('Error updating comment:', error)
+    console.error('Error response:', error.response)
+    throw error
+  }
+}
+
+/**
  * حذف نظر (فقط ادمین)
  * @param {Number} commentId - شناسه نظر
  * @returns {Promise<Object>} پاسخ حذف
@@ -873,6 +892,7 @@ export default {
   getComment,
   createComment,
   approveComment,
+  updateComment,
   deleteComment,
   getCommentStats
 }

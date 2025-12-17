@@ -1,6 +1,6 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
+from typing import Optional, List
 
 
 class Settings(BaseSettings):
@@ -25,14 +25,35 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # CORS
-    FRONTEND_URL: str = "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev"
-    ALLOWED_ORIGINS: list = [
-        "https://probable-doodle-45g6r4grp452qgq-3000.app.github.dev",
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8080",
-    ]
+    # CORS - Dynamic configuration
+    FRONTEND_URL: Optional[str] = None
+    ALLOWED_ORIGINS: Optional[List[str]] = None
+    
+    def get_allowed_origins(self) -> List[str]:
+        """Get allowed origins dynamically based on environment"""
+        if self.ALLOWED_ORIGINS:
+            return self.ALLOWED_ORIGINS
+        
+        allowed = [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8080",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:8080",
+        ]
+        
+        # Add GitHub Codespaces URLs if in that environment
+        if os.getenv("CODESPACES") == "true":
+            allowed.extend([
+                "https://*.app.github.dev",
+            ])
+        
+        # Add environment-specific URL
+        if self.FRONTEND_URL:
+            allowed.append(self.FRONTEND_URL)
+        
+        return allowed
     
     # Server
     HOST: str = "0.0.0.0"

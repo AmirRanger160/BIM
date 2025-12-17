@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 from app.config import settings
 from app.database import init_db, get_db
-from app.routes import articles, gallery, other, auth_routes, upload, admin, comments
+from app.routes import articles, gallery, other, auth_routes, upload, admin, comments, videos
 from app import models, auth, schemas
 from sqlalchemy.orm import Session
 
@@ -64,20 +65,55 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    max_age=600,
-)
+# CORS Configuration - Allow all origins in development, restrict in production
+allowed_origins = settings.get_allowed_origins()
+
+# Allow wildcard for GitHub Codespaces during development
+if os.getenv("CODESPACES") == "true":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r"https://.*\.app\.github\.dev",
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        max_age=600,
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        max_age=600,
+    )
 
 # Mount static files directory
 uploads_dir = Path(__file__).parent / "uploads"
 uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
+
+# Mount Vue.js built frontend
+# Try two locations: /app/dist (Docker) and ../dist (local development)
+frontend_dist = None
+possible_paths = [
+    Path(__file__).parent / "dist",  # In Docker: /app/dist
+    Path(__file__).parent.parent / "dist"  # Local dev: /workspaces/BIM/dist
+]
+
+for path in possible_paths:
+    if path.exists():
+        frontend_dist = path
+        print(f"✅ Frontend dist found at: {path}")
+        break
+
+if frontend_dist:
+    # Mount assets (JS, CSS, etc.)
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+    print(f"✅ Frontend assets mounted from {frontend_dist / 'assets'}")
+else:
+    print(f"⚠️  Frontend dist folder not found")
+    print("Run 'npm run build' in the project root to build the frontend")
 
 # Include Routers
 app.include_router(auth_routes.router)
@@ -87,17 +123,87 @@ app.include_router(other.router)
 app.include_router(upload.router)
 app.include_router(admin.router)
 app.include_router(comments.router)
-
+app.include_router(videos.router)
 
 @app.get("/")
 def root():
-    """Root endpoint"""
+    """Root endpoint - serve frontend or API info"""
+    # Try two locations: /app/dist (Docker) and ../dist (local development)
+    possible_paths = [
+        Path(__file__).parent / "dist",  # In Docker: /app/dist
+        Path(__file__).parent.parent / "dist"  # Local dev: /workspaces/BIM/dist
+    ]
+    
+    for path in possible_paths:
+        index_file = path / "index.html"
+        if index_file.exists():
+            from fastapi.responses import FileResponse
+            return FileResponse(str(index_file), media_type="text/html")
+    
+    # Fallback to API info
     return {
         "message": "Welcome to BIM Backend API",
         "version": settings.VERSION,
         "docs": "/docs",
-        "redoc": "/redoc"
+        "redoc": "/redoc",
+        "frontend": "Not built - run 'npm run build'"
     }
+
+
+@app.get("/favicon.ico")
+def favicon():
+    """Serve favicon"""
+    from fastapi.responses import FileResponse
+    possible_paths = [
+        Path(__file__).parent / "dist",  # In Docker: /app/dist
+        Path(__file__).parent.parent / "dist"  # Local dev: /workspaces/BIM/dist
+    ]
+    
+    for path in possible_paths:
+        favicon_file = path / "favicon.ico"
+        if favicon_file.exists():
+            return FileResponse(str(favicon_file))
+    
+    # Return a 404 for favicon if not found
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404)
+
+
+@app.get("/robots.txt")
+def robots():
+    """Serve robots.txt for SEO"""
+    from fastapi.responses import FileResponse
+    possible_paths = [
+        Path(__file__).parent / "dist",  # In Docker: /app/dist
+        Path(__file__).parent.parent / "dist"  # Local dev: /workspaces/BIM/dist
+    ]
+    
+    for path in possible_paths:
+        robots_file = path / "robots.txt"
+        if robots_file.exists():
+            return FileResponse(str(robots_file), media_type="text/plain")
+    
+    # Return a 404 if robots.txt not found
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404)
+    
+    # Return a simple robots.txt if file not found
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse("User-agent: *\nDisallow: /api/\nDisallow: /admin/")
+
+
+@app.get("/sitemap.xml")
+def sitemap():
+    """Serve sitemap.xml for SEO"""
+    from fastapi.responses import FileResponse
+    frontend_dist = Path(__file__).parent.parent / "dist"
+    sitemap_file = frontend_dist / "sitemap.xml"
+    
+    if sitemap_file.exists():
+        return FileResponse(str(sitemap_file), media_type="application/xml")
+    
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404)
 
 
 @app.get("/api/config")
@@ -272,6 +378,37 @@ def create_sample_data(db: Session):
     
     db.commit()
     print("✅ Sample data created successfully")
+
+
+# Catch-all route for SPA - serve index.html for any unmatched routes
+# This must be the LAST route to avoid interfering with API routes
+@app.get("/{full_path:path}")
+def serve_spa(full_path: str):
+    """
+    Catch-all route for Vue.js SPA routing
+    Serves index.html for client-side routing
+    Only called if no other route matches (API routes are matched first)
+    """
+    # Safeguard: Ensure we're not accidentally serving SPA for reserved paths
+    reserved_prefixes = ("api/", "docs", "redoc", "openapi", "uploads/", ".well-known/", "static/")
+    if any(full_path.startswith(prefix) for prefix in reserved_prefixes):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not Found")
+    
+    # Serve index.html for SPA routing (client-side routing)
+    possible_paths = [
+        Path(__file__).parent / "dist",  # In Docker: /app/dist
+        Path(__file__).parent.parent / "dist"  # Local dev: /workspaces/BIM/dist
+    ]
+    
+    for path in possible_paths:
+        index_file = path / "index.html"
+        if index_file.exists():
+            from fastapi.responses import FileResponse
+            return FileResponse(str(index_file), media_type="text/html")
+    
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404, detail="Frontend not built - run 'npm run build'")
 
 
 if __name__ == "__main__":

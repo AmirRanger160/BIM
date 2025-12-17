@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: bim-app
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/bim.db:/app/bim.db
+    environment:
+      DATABASE_URL: sqlite:///./bim.db
+      BACKEND_URL: http://localhost:8000
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+

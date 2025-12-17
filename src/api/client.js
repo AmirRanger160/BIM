@@ -9,11 +9,14 @@ function getBackendUrl() {
 
   // If in GitHub Codespaces, build URL from current hostname
   if (window.location.hostname.includes('github.dev')) {
-    // Replace the port number in the hostname
-    const backendHostname = window.location.hostname.replace(/-3000\.app\.github\.dev/, '-8000.app.github.dev')
-                                                   .replace(/-3001\.app\.github\.dev/, '-8000.app.github.dev')
-
-    return `https://${backendHostname}`
+    // Extract the base part of the hostname (everything before the port marker)
+    // e.g., "opulent-dollop-rjrpvx4675j359rq-3000.app.github.dev"
+    // becomes "opulent-dollop-rjrpvx4675j359rq"
+    const match = window.location.hostname.match(/^(.+?)-\d+\.app\.github\.dev$/)
+    if (match) {
+      const baseName = match[1]
+      return `https://${baseName}-8000.app.github.dev`
+    }
   }
 
   // Fallback to localhost
@@ -34,10 +37,15 @@ console.log('🔍 URL Parts:', {
   pathname: window.location.pathname
 })
 
+// Determine credentials mode based on protocol
+const isSecure = window.location.protocol === 'https:'
+const credentialsMode = isSecure && API_BASE_URL.startsWith('https') ? 'include' : 'same-origin'
+
 // Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
+  withCredentials: credentialsMode === 'include',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'

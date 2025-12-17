@@ -1,26 +1,26 @@
 <template>
   <div class="project-page" :class="{ 'dark-mode': isDark }">
     <Navbar @toggle-theme="toggleTheme" :is-dark="isDark" />
-    
+
     <!-- Loading State -->
     <div v-if="loading" class="loading-container">
       <div class="spinner"></div>
       <p>در حال بارگیری پروژه...</p>
     </div>
-    
+
     <!-- Error State -->
     <div v-if="error && !loading" class="error-container">
       <h2>خطا در بارگیری پروژه</h2>
       <p>{{ error }}</p>
       <router-link to="/media?tab=gallery" class="back-link">بازگشت به گالری</router-link>
     </div>
-    
+
     <!-- Project Content -->
     <article v-if="project && !loading" 
              class="project-container"
              itemscope 
              itemtype="https://schema.org/CreativeWork">
-      
+
       <!-- Breadcrumb -->
       <nav class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
         <div class="container">
@@ -44,7 +44,7 @@
           </span>
         </div>
       </nav>
-      
+
       <!-- Project Header -->
       <header class="project-header">
         <div class="container">
@@ -53,34 +53,9 @@
           </div>
           <h1 class="project-title" itemprop="name">{{ project.title }}</h1>
           <p class="project-description" itemprop="description">{{ project.description }}</p>
-          
-          <div class="project-meta">
-            <div class="meta-item">
-              <span class="meta-icon">📅</span>
-              <span class="meta-label">تاریخ:</span>
-              <time :datetime="project.created_at || project.date" itemprop="dateCreated">
-                {{ formatDate(project.created_at || project.date) }}
-              </time>
-            </div>
-            <div class="meta-item" v-if="project.location">
-              <span class="meta-icon">📍</span>
-              <span class="meta-label">موقعیت:</span>
-              <span itemprop="locationCreated">{{ project.location }}</span>
-            </div>
-            <div class="meta-item" v-if="project.client">
-              <span class="meta-icon">👤</span>
-              <span class="meta-label">کارفرما:</span>
-              <span>{{ project.client }}</span>
-            </div>
-            <div class="meta-item" v-if="project.area">
-              <span class="meta-icon">📐</span>
-              <span class="meta-label">مساحت:</span>
-              <span>{{ project.area }}</span>
-            </div>
-          </div>
         </div>
       </header>
-      
+
       <!-- Project Gallery -->
       <section class="project-gallery">
         <div class="container">
@@ -136,7 +111,7 @@
             <div class="details-content">
               <h2>درباره پروژه</h2>
               <div class="project-text" itemprop="text">
-                <p v-if="project.full_description">{{ project.full_description }}</p>
+                <div v-if="project.full_description" v-html="project.full_description"></div>
                 <p v-else>{{ project.description }}</p>
               </div>
               
@@ -334,25 +309,6 @@ const nextProject = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
-const currentImageIndex = ref(0)
-const lightboxOpen = ref(false)
-const lightboxIndex = ref(0)
-
-const projectImages = computed(() => {
-  if (!project.value) return []
-  if (project.value.images && project.value.images.length) {
-    return project.value.images
-  }
-  if (project.value.image) {
-    return [project.value.image]
-  }
-  return []
-})
-
-const currentImage = computed(() => {
-  return projectImages.value[currentImageIndex.value] || ''
-})
-
 const formatDate = (dateString) => {
   if (!dateString) return 'نامشخص'
   try {
@@ -362,62 +318,6 @@ const formatDate = (dateString) => {
   }
 }
 
-const getStatusText = (status) => {
-  const statuses = {
-    completed: 'تکمیل شده',
-    'in-progress': 'در حال انجام',
-    planned: 'برنامه‌ریزی شده'
-  }
-  return statuses[status] || 'تکمیل شده'
-}
-
-// Image navigation
-const nextImage = () => {
-  currentImageIndex.value = (currentImageIndex.value + 1) % projectImages.value.length
-}
-
-const previousImage = () => {
-  currentImageIndex.value = (currentImageIndex.value - 1 + projectImages.value.length) % projectImages.value.length
-}
-
-// Lightbox
-const openLightbox = (index) => {
-  lightboxIndex.value = index
-  lightboxOpen.value = true
-  document.body.style.overflow = 'hidden'
-}
-
-const closeLightbox = () => {
-  lightboxOpen.value = false
-  document.body.style.overflow = ''
-}
-
-const nextImageLightbox = () => {
-  lightboxIndex.value = (lightboxIndex.value + 1) % projectImages.value.length
-}
-
-const previousImageLightbox = () => {
-  lightboxIndex.value = (lightboxIndex.value - 1 + projectImages.value.length) % projectImages.value.length
-}
-
-// Share functionality
-const share = (platform) => {
-  const url = window.location.href
-  const title = project.value?.title || ''
-  
-  const urls = {
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-    telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`
-  }
-  
-  if (urls[platform]) {
-    window.open(urls[platform], '_blank', 'width=600,height=400')
-  }
-}
-
-// Enrich project with slider images
 const enrichProjectWithSlider = async (projectData) => {
   if (projectData.slider_id) {
     try {
@@ -441,83 +341,36 @@ const enrichProjectWithSlider = async (projectData) => {
   return projectData
 }
 
-// Update meta tags for SEO
-const updateMetaTags = () => {
-  if (!project.value) return
-  
-  const title = `${project.value.title} | گالری پروژه‌های BIM`
-  const description = project.value.description || ''
-  const image = project.value.image || '/og-image.jpg'
-  
-  document.title = title
-  
-  const metaTags = [
-    { name: 'description', content: description },
-    { property: 'og:title', content: title },
-    { property: 'og:description', content: description },
-    { property: 'og:image', content: image },
-    { property: 'og:url', content: window.location.href },
-    { property: 'og:type', content: 'website' },
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: title },
-    { name: 'twitter:description', content: description },
-    { name: 'twitter:image', content: image }
-  ]
-  
-  metaTags.forEach(tag => {
-    const key = tag.name || tag.property
-    const attr = tag.name ? 'name' : 'property'
-    let element = document.querySelector(`meta[${attr}="${key}"]`)
-    
-    if (!element) {
-      element = document.createElement('meta')
-      element.setAttribute(attr, key)
-      document.head.appendChild(element)
-    }
-    element.setAttribute('content', tag.content)
-  })
-  
-  let canonical = document.querySelector('link[rel="canonical"]')
-  if (!canonical) {
-    canonical = document.createElement('link')
-    canonical.setAttribute('rel', 'canonical')
-    document.head.appendChild(canonical)
-  }
-  canonical.setAttribute('href', window.location.href)
-}
-
-// Fetch project and related data
 const fetchProject = async () => {
   try {
     loading.value = true
     error.value = null
-    
+
     const projectId = route.params.id
-    
+
     const response = await getGalleryItem(projectId)
     let projectData = response.data
-    
+
     projectData = await enrichProjectWithSlider(projectData)
     project.value = projectData
-    
-    updateMetaTags()
-    
+
     const allProjectsResponse = await getGalleryItems({ page: 1, limit: 100 })
     const allProjects = allProjectsResponse.data || []
-    
-    relatedProjects.value = allProjects
-      .filter(p => p.id !== projectData.id && p.category === projectData.category)
-      .slice(0, 3)
-      .map(p => enrichProjectWithSlider(p))
-    
+
+    relatedProjects.value = await Promise.all(
+      allProjects
+        .filter(p => p.id !== projectData.id && p.category === projectData.category)
+        .slice(0, 3)
+        .map(p => enrichProjectWithSlider(p))
+    )
+
     const currentIndex = allProjects.findIndex(p => p.id === projectData.id)
     if (currentIndex > 0) {
-      nextProject.value = allProjects[currentIndex - 1]
+      nextProject.value = await enrichProjectWithSlider(allProjects[currentIndex - 1])
     }
     if (currentIndex < allProjects.length - 1) {
-      previousProject.value = allProjects[currentIndex + 1]
+      previousProject.value = await enrichProjectWithSlider(allProjects[currentIndex + 1])
     }
-    
   } catch (err) {
     console.error('Error fetching project:', err)
     error.value = 'خطا در بارگیری پروژه'
@@ -536,6 +389,89 @@ watch(() => route.params.id, () => {
 onMounted(() => {
   fetchProject()
 })
+
+const projectImages = computed(() => {
+  if (!project.value) return []
+  if (project.value.images && project.value.images.length) {
+    return project.value.images
+  }
+  if (project.value.image) {
+    return [project.value.image]
+  }
+  return []
+})
+
+const currentImageIndex = ref(0)
+
+const currentImage = computed(() => {
+  if (!projectImages.value.length) return ''
+  return projectImages.value[currentImageIndex.value] || ''
+})
+
+const openLightbox = (index) => {
+  currentImageIndex.value = index
+  lightboxOpen.value = true
+}
+
+const closeLightbox = () => {
+  lightboxOpen.value = false
+}
+
+const previousImage = () => {
+  if (currentImageIndex.value > 0) {
+    currentImageIndex.value--
+  }
+}
+
+const nextImage = () => {
+  if (currentImageIndex.value < projectImages.value.length - 1) {
+    currentImageIndex.value++
+  }
+}
+
+const lightboxOpen = ref(false)
+const lightboxIndex = ref(0)
+
+const previousImageLightbox = () => {
+  if (lightboxIndex.value > 0) {
+    lightboxIndex.value--
+  }
+}
+
+const nextImageLightbox = () => {
+  if (lightboxIndex.value < projectImages.value.length - 1) {
+    lightboxIndex.value++
+  }
+}
+
+const share = (platform) => {
+  const url = window.location.href
+  const text = project.value.title
+  const encodedUrl = encodeURIComponent(url)
+  const encodedText = encodeURIComponent(text)
+
+  let shareUrl = ''
+  if (platform === 'twitter') {
+    shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`
+  } else if (platform === 'linkedin') {
+    shareUrl = `https://www.linkedin.com/shareArticle?url=${encodedUrl}&title=${encodedText}`
+  } else if (platform === 'telegram') {
+    shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`
+  } else if (platform === 'whatsapp') {
+    shareUrl = `https://api.whatsapp.com/send?text=${encodedText} ${encodedUrl}`
+  }
+
+  window.open(shareUrl, '_blank')
+}
+
+const getStatusText = (status) => {
+  const statusMap = {
+    completed: 'تکمیل شده',
+    ongoing: 'در حال انجام',
+    pending: 'در انتظار',
+  }
+  return statusMap[status] || 'نامشخص'
+}
 </script>
 
 <style scoped>
@@ -695,6 +631,133 @@ onMounted(() => {
   font-weight: 600;
 }
 
+/* Project Body */
+.project-body {
+  padding: 2rem 0;
+  background: #f9f9f9;
+}
+
+.dark-mode .project-body {
+  background: #2c2c2c;
+}
+
+.project-text {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.dark-mode .project-text {
+  color: #ddd;
+}
+
+.project-text :deep(h2) {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  color: #1a1a1a;
+}
+
+.dark-mode .project-text :deep(h2) {
+  color: white;
+}
+
+.project-text :deep(h3) {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.8rem;
+}
+
+.project-text :deep(p) {
+  margin-bottom: 1.5rem;
+}
+
+.project-text :deep(ul),
+.project-text :deep(ol) {
+  margin: 1.5rem 0;
+  padding-right: 2rem;
+}
+
+.project-text :deep(li) {
+  margin-bottom: 0.8rem;
+}
+
+.project-text :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.project-text :deep(blockquote) {
+  border-right: 4px solid #667eea;
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-style: italic;
+}
+
+.dark-mode .project-text :deep(blockquote) {
+  background: #2d2d2d;
+}
+
+.project-text :deep(span) {
+  color: inherit;
+}
+
+.project-text :deep(br) {
+  display: block;
+  content: "";
+}
+
+.technologies,
+.features {
+  margin-top: 3rem;
+}
+
+.tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.tech-tag {
+  padding: 0.6rem 1.2rem;
+  background: #f0f0f0;
+  color: #667eea;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.dark-mode .tech-tag {
+  background: #3d3d3d;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+}
+
+.features-list li {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dark-mode .features-list li {
+  border-color: #444;
+}
+
+.feature-icon {
+  color: #667eea;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
 /* Project Gallery */
 .project-gallery {
   padding: 3rem 0;
@@ -785,85 +848,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Project Details */
-.project-details {
-  padding: 4rem 0;
-}
-
-.details-grid {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 3rem;
-}
-
-.details-content h2,
-.details-content h3 {
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-}
-
-.dark-mode .details-content h2,
-.dark-mode .details-content h3 {
-  color: white;
-}
-
-.project-text {
-  font-size: 1.1rem;
-  line-height: 1.9;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-.dark-mode .project-text {
-  color: #ddd;
-}
-
-.technologies,
-.features {
-  margin-top: 3rem;
-}
-
-.tech-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.tech-tag {
-  padding: 0.6rem 1.2rem;
-  background: #f0f0f0;
-  color: #667eea;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.dark-mode .tech-tag {
-  background: #3d3d3d;
-}
-
-.features-list {
-  list-style: none;
-  padding: 0;
-}
-
-.features-list li {
-  padding: 0.8rem 0;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.dark-mode .features-list li {
-  border-color: #444;
-}
-
-.feature-icon {
-  color: #667eea;
-  font-weight: bold;
-  font-size: 1.2rem;
 }
 
 /* Sidebar */

@@ -51,6 +51,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import apiClient from '../api/client'
 
 const props = defineProps({
   image: {
@@ -108,9 +109,15 @@ const hasMultipleImages = computed(() => {
 const getImageUrl = (url) => {
   if (!url) return ''
   if (typeof url !== 'string') return ''
-  if (url.startsWith('http')) return url
-  const baseUrl = props.apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-  return `${baseUrl}${url}`
+  // اگر URL قبلاً مطلق است، آن را برگردان
+  if (url.startsWith('http')) {
+    console.log('Using absolute URL:', url)
+    return url
+  }
+  // برای URL های نسبی، base URL را اضافه کن
+  const fullUrl = `${apiClient.defaults.baseURL}${url}`
+  console.log('Constructed URL:', fullUrl)
+  return fullUrl
 }
 
 // استخراج تصویر URL از object یا string

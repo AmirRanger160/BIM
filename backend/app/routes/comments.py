@@ -11,6 +11,35 @@ from app.auth import get_current_user
 router = APIRouter(prefix="/api/comments", tags=["Comments"])
 
 
+@router.get("/stats/summary")
+def get_comment_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """دریافت آمار نظرات (فقط ادمین)"""
+    
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="دسترسی ممنوع")
+    
+    total_comments = db.query(Comment).count()
+    approved_comments = db.query(Comment).filter(Comment.approved == True).count()
+    pending_comments = db.query(Comment).filter(Comment.approved == False).count()
+    
+    # میانگین امتیاز
+    avg_rating = db.query(Comment).filter(Comment.approved == True).with_entities(
+        db.func.avg(Comment.rating)
+    ).scalar() or 0
+    
+    return {
+        "total": total_comments,
+        "approved": approved_comments,
+        "pending": pending_comments,
+        "average_rating": round(float(avg_rating), 2)
+    }
+
+
+# Register both /api/comments and /api/comments/ routes
+@router.get("", response_model=List[CommentSchema])
 @router.get("/", response_model=List[CommentSchema])
 def get_comments(
     content_type: Optional[str] = Query(None, pattern="^(article|project)$"),
@@ -50,6 +79,7 @@ def get_comment(comment_id: int, db: Session = Depends(get_db)):
     return comment
 
 
+@router.post("", response_model=CommentSchema, status_code=201)
 @router.post("/", response_model=CommentSchema, status_code=201)
 def create_comment(comment: CommentCreate, db: Session = Depends(get_db)):
     """ایجاد نظر جدید (نیاز به تایید ادمین)"""
@@ -84,6 +114,49 @@ def create_comment(comment: CommentCreate, db: Session = Depends(get_db)):
     db.refresh(db_comment)
     
     return db_comment
+
+
+@router.put("/{comment_id}", response_model=CommentSchema)
+def update_comment(
+    comment_id: int,
+    comment_update: CommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """ویرایش نظر (فقط ادمین)"""
+    
+    # بررسی دسترسی ادمین
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="دسترسی ممنوع")
+    
+    # پیدا کردن نظر
+    comment = db.query(Comment).filter(Comment.id == comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="نظر یافت نشد")
+    
+    # بروزرسانی فیلدهای ارائه شده
+    if comment_update.name is not None:
+        comment.name = comment_update.name
+    if comment_update.email is not None:
+        comment.email = comment_update.email
+    if comment_update.content is not None:
+        comment.content = comment_update.content
+    if comment_update.rating is not None:
+        if comment_update.rating < 1 or comment_update.rating > 5:
+            raise HTTPException(
+                status_code=400,
+                detail="امتیاز باید بین 1 تا 5 باشد"
+            )
+        comment.rating = comment_update.rating
+    if comment_update.approved is not None:
+        comment.approved = comment_update.approved
+    
+    comment.updated_at = datetime.utcnow()
+    
+    db.commit()
+    db.refresh(comment)
+    
+    return comment
 
 
 @router.put("/{comment_id}/approve", response_model=CommentSchema)
@@ -134,30 +207,3 @@ def delete_comment(
     db.commit()
     
     return {"success": True, "message": "نظر با موفقیت حذف شد"}
-
-
-@router.get("/stats/summary")
-def get_comment_stats(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """دریافت آمار نظرات (فقط ادمین)"""
-    
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="دسترسی ممنوع")
-    
-    total_comments = db.query(Comment).count()
-    approved_comments = db.query(Comment).filter(Comment.approved == True).count()
-    pending_comments = db.query(Comment).filter(Comment.approved == False).count()
-    
-    # میانگین امتیاز
-    avg_rating = db.query(Comment).filter(Comment.approved == True).with_entities(
-        db.func.avg(Comment.rating)
-    ).scalar() or 0
-    
-    return {
-        "total": total_comments,
-        "approved": approved_comments,
-        "pending": pending_comments,
-        "average_rating": round(float(avg_rating), 2)
-    }

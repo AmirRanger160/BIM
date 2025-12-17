@@ -26,34 +26,53 @@
         </p>
         
         <div class="hero-buttons">
-          <button class="btn btn-primary">
-            شروع کنید
-            <span class="btn-arrow">←</span>
-          </button>
-          <button class="btn btn-secondary">
+          <button 
+            v-if="featuredVideo"
+            @click="openVideoModal"
+            class="btn btn-secondary"
+          >
             <span class="play-icon">▶</span>
             تماشای ویدیو
           </button>
         </div>
-        
-        <div class="hero-stats">
-          <div class="stat">
-            <div class="stat-value">۱۰۰+</div>
-            <div class="stat-label">پروژه موفق</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">۵۰+</div>
-            <div class="stat-label">مشتری راضی</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">۲۴/۷</div>
-            <div class="stat-label">پشتیبانی</div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
+
+  <!-- Video Modal -->
+  <VideoModal 
+    :is-open="showVideoModal" 
+    :video="featuredVideo"
+    @close="showVideoModal = false"
+  />
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import VideoModal from './VideoModal.vue'
+
+const showVideoModal = ref(false)
+const featuredVideo = ref(null)
+
+onMounted(async () => {
+  // بارگذاری ویدیوی اول (اولویت دار)
+  try {
+    const response = await fetch('/api/videos?active_only=true&limit=1')
+    if (response.ok) {
+      const videos = await response.json()
+      if (videos.length > 0) {
+        featuredVideo.value = videos[0]
+      }
+    }
+  } catch (error) {
+    console.error('خطا در بارگذاری ویدیو:', error)
+  }
+})
+
+const openVideoModal = () => {
+  showVideoModal.value = true
+}
+</script>
 
 <style scoped>
 .hero {

@@ -58,6 +58,7 @@ class Article(ArticleBase):
 class GalleryItemBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     description: str
+    full_description: Optional[str] = None  # توضیح کامل با HTML
     icon: str = "🎨"
     gradient: Optional[str] = None
     image: Optional[str] = None  # تصویر شاخص
@@ -76,6 +77,7 @@ class GalleryItemCreate(GalleryItemBase):
 class GalleryItemUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
+    full_description: Optional[str] = None  # توضیح کامل با HTML
     icon: Optional[str] = None
     gradient: Optional[str] = None
     image: Optional[str] = None
@@ -371,7 +373,11 @@ class CommentCreate(CommentBase):
 
 
 class CommentUpdate(BaseModel):
-    approved: bool
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    email: Optional[EmailStr] = None
+    content: Optional[str] = Field(None, min_length=10)
+    rating: Optional[int] = Field(None, ge=1, le=5)
+    approved: Optional[bool] = None
 
 
 class Comment(CommentBase):
@@ -400,3 +406,38 @@ class PaginatedResponse(BaseModel):
     page: int
     limit: int
     pages: int
+
+# ============= Video Schemas =============
+
+class VideoBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    video_url: str = Field(..., min_length=1)
+    thumbnail: Optional[str] = None
+    duration: Optional[str] = None
+    active: bool = True
+    order: int = 0
+
+
+class VideoCreate(VideoBase):
+    pass
+
+
+class VideoUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    video_url: Optional[str] = None
+    thumbnail: Optional[str] = None
+    duration: Optional[str] = None
+    active: Optional[bool] = None
+    order: Optional[int] = None
+
+
+class Video(VideoBase):
+    id: int
+    views: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True

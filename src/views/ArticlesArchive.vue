@@ -67,25 +67,31 @@
           <article 
             v-for="article in paginatedArticles" 
             :key="article.id" 
-            class="article-card"
+            class="article-card premium-card"
             @click="openArticle(article)"
           >
-            <ImageSlider 
-              class="article-image"
-              :image="article.image"
-              :images="article.images"
-              :icon="article.icon"
-              :gradient="article.gradient"
-            />
-            <div class="article-badges">
-              <div class="article-category">{{ article.category }}</div>
-              <div v-if="article.featured" class="featured-badge">ویژه</div>
+            <div class="card-header">
+              <ImageSlider 
+                class="article-image"
+                :image="article.image"
+                :images="article.images"
+                :icon="article.icon"
+                :gradient="article.gradient"
+              />
+              <div class="article-badges">
+                <div class="article-category badge-tag">{{ article.category }}</div>
+                <div v-if="article.featured" class="featured-badge">⭐ ویژه</div>
+              </div>
             </div>
             
             <div class="article-content">
-              <div class="article-meta">
-                <span class="article-date">{{ article.created_at ? new Date(article.created_at).toLocaleDateString('fa-IR') : 'نامشخص' }}</span>
-                <span class="article-read-time">{{ article.read_time || '۵ دقیقه' }}</span>
+              <div class="content-top">
+                <div class="article-meta">
+                  <span class="article-date">📅 {{ article.created_at ? new Date(article.created_at).toLocaleDateString('fa-IR') : 'نامشخص' }}</span>
+                  <span class="separator">•</span>
+                  <span class="article-read-time">⏱️ {{ article.read_time || '۵ دقیقه' }}</span>
+                </div>
+                <div v-if="article.author" class="article-author">✍️ {{ article.author }}</div>
               </div>
               
               <h3 class="article-title">{{ article.title }}</h3>
@@ -93,11 +99,11 @@
               
               <div class="article-tags-preview">
                 <span v-for="tag in (article.tags || []).slice(0, 3)" :key="tag" class="tag-mini">
-                  {{ tag }}
+                  #{{ tag }}
                 </span>
               </div>
               
-              <div class="article-footer">
+              <div class="article-footer card-footer">
                 <div class="article-author">
                   <div class="author-avatar">{{ article.author_avatar || 'ن' }}</div>
                   <span class="author-name">{{ article.author || 'نامشخص' }}</span>
@@ -544,52 +550,67 @@ onMounted(() => {
   background: white;
   border-radius: 20px;
   overflow: hidden;
-  transition: all 0.3s;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.15);
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
 }
 
 .dark-mode .article-card {
   background: rgba(45, 45, 45, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .article-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.card-header {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .article-image {
-  height: 240px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border-radius: 20px 20px 0 0;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+.article-card:hover .article-image {
+  transform: scale(1.05);
 }
 
 .article-badges {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  left: 1rem;
   display: flex;
-  justify-content: space-between;
-  pointer-events: none;
+  gap: 0.7rem;
   z-index: 10;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .article-category {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.6rem 1.2rem;
   border-radius: 50px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: white;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .featured-badge {
