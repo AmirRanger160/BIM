@@ -1,1 +1,1 @@
-# این فایل فولدر app را به عنوان package معرفی می‌کند
+# This file makes app directory a Python package

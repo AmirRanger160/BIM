@@ -1,438 +1,307 @@
-# 🚀 BIM Backend API - FastAPI
+# GeoBiro FastAPI Backend
 
-بک‌اند قدرتمند و کامل برای پروژه BIM Landing Page با استفاده از FastAPI.
+A complete FastAPI backend for the GeoBiro website with PostgreSQL database, Redis caching, JWT authentication, and comprehensive API endpoints.
 
-## ✨ ویژگی‌ها
+## 🚀 Quick Start
 
-- ✅ **RESTful API** کامل با FastAPI
-- ✅ **Authentication & Authorization** با JWT
-- ✅ **SQLAlchemy ORM** برای مدیریت دیتابیس
-- ✅ **Pydantic Validation** برای اعتبارسنجی داده‌ها
-- ✅ **CORS Support** برای اتصال فرانت‌اند
-- ✅ **Auto Documentation** با Swagger UI و ReDoc
-- ✅ **Pagination** برای تمام لیست‌ها
-- ✅ **Search & Filter** برای مقالات و گالری
-- ✅ **Sample Data** برای تست سریع
+### Prerequisites
+- Python 3.9+
+- PostgreSQL 12+
+- Redis 6+
 
-## 📁 ساختار پروژه
+### Setup in 5 Minutes
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Copy environment file:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database and email settings
+   ```
+
+3. **Run with Docker (easiest):**
+   ```bash
+   docker-compose up
+   ```
+
+4. **Or run locally:**
+   ```bash
+   # Make sure PostgreSQL and Redis are running
+   uvicorn main:app --reload
+   ```
+
+5. **Access the API:**
+   - API: http://localhost:8000
+   - Docs: http://localhost:8000/api/docs
+
+## 📋 Features
+
+✅ **Complete API** for all GeoBiro content (services, team, certificates, licenses)
+✅ **PostgreSQL Database** with optimized schema and indexes
+✅ **Redis Caching** with intelligent TTL management
+✅ **JWT Authentication** with role-based access control
+✅ **Contact Form** with email notifications
+✅ **Image Upload** support for team photos, certificates, licenses
+✅ **Admin Dashboard** API ready
+✅ **CORS Configured** for frontend integration
+✅ **Rate Limiting** on public endpoints
+✅ **Error Handling** with detailed logging
+✅ **Docker Support** for easy deployment
+✅ **API Documentation** with Swagger UI
+
+## 📁 Project Structure
 
 ```
 backend/
 ├── app/
-│   ├── __init__.py
-│   ├── config.py           # تنظیمات برنامه
-│   ├── database.py         # تنظیمات دیتابیس
-│   ├── models.py           # مدل‌های SQLAlchemy
-│   ├── schemas.py          # Pydantic schemas
-│   ├── auth.py             # Authentication logic
-│   └── routes/
-│       ├── __init__.py
-│       ├── auth_routes.py  # روت‌های احراز هویت
-│       ├── articles.py     # روت‌های مقالات
-│       ├── gallery.py      # روت‌های گالری
-│       └── other.py        # سایر روت‌ها
-├── main.py                 # فایل اصلی برنامه
-├── requirements.txt        # Dependencies
-├── .env.example            # نمونه environment variables
-└── README.md               # این فایل
+│   ├── core/              # Configuration, security, settings
+│   ├── models/            # SQLAlchemy database models
+│   ├── schemas/           # Pydantic request/response schemas
+│   ├── routers/           # API route handlers
+│   │   ├── auth.py       # Authentication endpoints
+│   │   ├── services.py   # Services CRUD
+│   │   ├── team.py       # Team members CRUD
+│   │   ├── certificates.py # Certificates CRUD
+│   │   ├── licenses.py   # Licenses CRUD
+│   │   └── contact.py    # Contact form & company info
+│   ├── services/          # Business logic
+│   │   └── email_service.py
+│   ├── cache.py           # Redis caching layer
+│   └── database.py        # Database connection
+├── uploads/               # User uploaded files
+├── main.py               # FastAPI application entry point
+├── requirements.txt      # Python dependencies
+├── .env.example          # Environment template
+├── Dockerfile            # Docker configuration
+├── docker-compose.yml    # Docker Compose setup
+├── SETUP_GUIDE.md        # Detailed setup instructions
+├── FRONTEND_INTEGRATION.md # Frontend integration guide
+└── README.md             # This file
 ```
 
-## 🔧 نصب و راه‌اندازی
+## 🔌 API Endpoints
 
-### پیش‌نیازها
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
 
-- Python 3.8 یا بالاتر
-- pip (Python package manager)
+### Services
+- `GET /api/services` - Get all services
+- `GET /api/services/{id}` - Get service details
+- `POST /api/services` - Create (admin)
+- `PUT /api/services/{id}` - Update (admin)
+- `DELETE /api/services/{id}` - Delete (admin)
 
-### مرحله 1: ایجاد Virtual Environment
+### Team Members
+- `GET /api/team` - Get all members
+- `GET /api/team/{id}` - Get member details
+- `POST /api/team` - Create (admin)
+- `POST /api/team/{id}/upload-image` - Upload photo (admin)
+- `PUT /api/team/{id}` - Update (admin)
+- `DELETE /api/team/{id}` - Delete (admin)
 
-```bash
-cd backend
-python -m venv venv
+### Certificates
+- `GET /api/certificates` - Get all certificates
+- `POST /api/certificates` - Create (admin)
+- `POST /api/certificates/{id}/upload-image` - Upload image (admin)
+- `PUT /api/certificates/{id}` - Update (admin)
+- `DELETE /api/certificates/{id}` - Delete (admin)
 
-# فعال‌سازی در لینوکس/Mac:
-source venv/bin/activate
+### Licenses
+- `GET /api/licenses` - Get all licenses
+- `POST /api/licenses` - Create (admin)
+- `POST /api/licenses/{id}/upload-image` - Upload image (admin)
+- `PUT /api/licenses/{id}` - Update (admin)
+- `DELETE /api/licenses/{id}` - Delete (admin)
 
-# فعال‌سازی در ویندوز:
-venv\Scripts\activate
-```
-
-### مرحله 2: نصب Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### مرحله 3: تنظیم Environment Variables
-
-```bash
-cp .env.example .env
-```
-
-سپس فایل `.env` را ویرایش کنید:
-
-```env
-# Database
-DATABASE_URL=sqlite:///./bim.db
-
-# Security
-SECRET_KEY=your-secret-key-change-this-in-production-min-32-characters
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# CORS
-FRONTEND_URL=http://localhost:3000
-
-# Admin User
-ADMIN_EMAIL=admin@bim.com
-ADMIN_PASSWORD=admin123
-```
-
-### مرحله 4: اجرای برنامه
-
-```bash
-# Development mode با auto-reload
-uvicorn main:app --reload --port 8000
-
-# یا
-python main.py
-```
-
-برنامه روی http://localhost:8000 اجرا می‌شود.
-
-## 📚 مستندات API
-
-بعد از اجرای برنامه، می‌توانید مستندات API را در این آدرس‌ها ببینید:
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+### Contact & Company
+- `POST /api/contact` - Submit contact form
+- `GET /api/admin/contact-submissions` - Get submissions (admin)
+- `GET /api/company-info` - Get company info
+- `PUT /api/admin/company-info` - Update (admin)
+- `GET /api/statistics` - Get statistics
+- `PUT /api/admin/statistics` - Update (admin)
 
 ## 🔐 Authentication
 
-### ثبت‌نام کاربر جدید
+### Register Admin User
+1. Go to http://localhost:8000/api/docs
+2. POST `/auth/register` with:
+   ```json
+   {
+     "username": "admin",
+     "email": "admin@geobiro.ba",
+     "password": "your_secure_password"
+   }
+   ```
+3. Save the `access_token`
+4. Use token in Authorization header: `Bearer YOUR_TOKEN`
 
-```http
-POST /api/auth/register
-Content-Type: application/json
+## 💾 Database
 
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "full_name": "نام کاربر"
-}
-```
+Tables created automatically:
+- `users` - Admin users
+- `services` - BIM and Surveying services
+- `team_members` - Team member profiles
+- `certificates` - Company certificates
+- `licenses` - Government licenses
+- `contact_submissions` - Contact form submissions
+- `company_info` - Company information
+- `statistics` - Key metrics
 
-### ورود
+## ⚡ Caching with Redis
 
-```http
-POST /api/auth/login
-Content-Type: application/x-www-form-urlencoded
+Automatically cached endpoints:
+- Services (1 hour)
+- Team members (1 hour)
+- Certificates (1 hour)
+- Licenses (1 hour)
+- Company info (2 hours)
+- Statistics (2 hours)
 
-username=admin@bim.com&password=admin123
-```
+Cache is automatically invalidated when data is updated.
 
-پاسخ:
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer"
-}
-```
+## 📧 Email Configuration
 
-### استفاده از Token
+### Using Gmail:
+1. Enable "App Passwords" in Google Account
+2. Set in `.env`:
+   ```
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password
+   ```
 
-برای endpoint هایی که نیاز به احراز هویت دارند:
+Contact form emails are sent to `ADMIN_EMAIL`.
 
-```http
-GET /api/auth/me
-Authorization: Bearer YOUR_ACCESS_TOKEN
-```
+## 🐳 Docker Deployment
 
-## 📡 API Endpoints
-
-### Articles (مقالات)
-
-```http
-GET    /api/articles              # لیست مقالات (با pagination, filter, search)
-GET    /api/articles/{id}         # دریافت یک مقاله
-POST   /api/articles              # ایجاد مقاله (ادمین)
-PUT    /api/articles/{id}         # بروزرسانی مقاله (ادمین)
-DELETE /api/articles/{id}         # حذف مقاله (ادمین)
-GET    /api/articles/categories/list  # لیست دسته‌بندی‌ها
-```
-
-**مثال - دریافت مقالات:**
-```http
-GET /api/articles?category=برنامه‌نویسی&search=vue&page=1&limit=10&sort=latest
-```
-
-### Gallery (گالری)
-
-```http
-GET    /api/gallery               # لیست پروژه‌ها
-GET    /api/gallery/{id}          # دریافت یک پروژه
-POST   /api/gallery               # ایجاد پروژه (ادمین)
-PUT    /api/gallery/{id}          # بروزرسانی پروژه (ادمین)
-DELETE /api/gallery/{id}          # حذف پروژه (ادمین)
-GET    /api/gallery/categories/list  # لیست دسته‌بندی‌ها
-```
-
-### Testimonials (نظرات)
-
-```http
-GET    /api/testimonials          # دریافت نظرات تایید شده
-POST   /api/testimonials          # ثبت نظر جدید
-PUT    /api/testimonials/{id}/approve  # تایید نظر (ادمین)
-```
-
-### Certificates (گواهینامه‌ها)
-
-```http
-GET    /api/certificates          # دریافت گواهینامه‌ها
-POST   /api/certificates          # ایجاد گواهینامه (ادمین)
-```
-
-### Statistics (آمار)
-
-```http
-GET    /api/statistics            # دریافت آمار
-POST   /api/statistics            # ایجاد آمار (ادمین)
-PUT    /api/statistics/{id}       # بروزرسانی آمار (ادمین)
-```
-
-### Contact (تماس)
-
-```http
-POST   /api/contact               # ارسال فرم تماس
-GET    /api/contact/messages      # دریافت پیام‌ها (ادمین)
-PUT    /api/contact/{id}/read     # علامت‌گذاری خوانده شده (ادمین)
-```
-
-### Newsletter (خبرنامه)
-
-```http
-POST   /api/newsletter/subscribe  # ثبت‌نام در خبرنامه
-GET    /api/newsletter/subscribers  # لیست مشترکین (ادمین)
-```
-
-## 📊 مدل‌های دیتابیس
-
-### Article (مقاله)
-- title, excerpt, full_content
-- category, icon, gradient
-- author, author_avatar, author_role
-- views, read_time, featured
-- tags (JSON array)
-- created_at, updated_at
-
-### GalleryItem (پروژه)
-- title, description
-- icon, gradient
-- category, category_color
-- date, duration
-- views, comments
-- technologies (JSON array)
-
-### Testimonial (نظر)
-- name, role, avatar
-- text, rating
-- date, project
-- approved (نیاز به تایید ادمین)
-
-### Certificate (گواهینامه)
-- title, issuer
-- date, icon, color
-
-### Statistic (آمار)
-- number, label, icon, order
-
-### Contact (پیام تماس)
-- name, email, subject, message
-- read (خوانده شده یا نه)
-
-### Newsletter (خبرنامه)
-- email, active
-
-### User (کاربر)
-- email, hashed_password
-- full_name
-- is_active, is_admin
-
-## 🔒 نقش‌ها و دسترسی‌ها
-
-### Public (عمومی)
-- دریافت لیست و جزئیات مقالات
-- دریافت لیست و جزئیات گالری
-- دریافت نظرات تایید شده
-- دریافت گواهینامه‌ها و آمار
-- ارسال فرم تماس
-- ثبت نظر جدید (نیاز به تایید)
-- ثبت‌نام در خبرنامه
-
-### Admin (ادمین)
-- تمام دسترسی‌های public
-- ایجاد، ویرایش و حذف مقالات
-- ایجاد، ویرایش و حذف پروژه‌های گالری
-- تایید نظرات کاربران
-- مدیریت گواهینامه‌ها و آمار
-- مشاهده پیام‌های تماس
-- مشاهده لیست مشترکین خبرنامه
-
-## 🧪 تست API
-
-### با curl:
-
+### Using Docker Compose (includes PostgreSQL & Redis):
 ```bash
-# دریافت مقالات
-curl http://localhost:8000/api/articles
-
-# ورود
-curl -X POST "http://localhost:8000/api/auth/login" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=admin@bim.com&password=admin123"
-
-# ایجاد مقاله (با token)
-curl -X POST "http://localhost:8000/api/articles" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "مقاله جدید",
-    "excerpt": "خلاصه مقاله",
-    "category": "برنامه‌نویسی",
-    "author": "نویسنده"
-  }'
+docker-compose up
 ```
 
-### با Python:
-
-```python
-import requests
-
-# دریافت مقالات
-response = requests.get("http://localhost:8000/api/articles")
-print(response.json())
-
-# ورود
-login_data = {
-    "username": "admin@bim.com",
-    "password": "admin123"
-}
-response = requests.post(
-    "http://localhost:8000/api/auth/login",
-    data=login_data
-)
-token = response.json()["access_token"]
-
-# ایجاد مقاله
-headers = {"Authorization": f"Bearer {token}"}
-article_data = {
-    "title": "مقاله جدید",
-    "excerpt": "خلاصه",
-    "category": "برنامه‌نویسی",
-    "author": "نویسنده"
-}
-response = requests.post(
-    "http://localhost:8000/api/articles",
-    json=article_data,
-    headers=headers
-)
-```
-
-## 🗄️ تغییر دیتابیس
-
-### استفاده از PostgreSQL:
-
-1. نصب PostgreSQL و ایجاد دیتابیس:
-```sql
-CREATE DATABASE bim_db;
-```
-
-2. تغییر DATABASE_URL در `.env`:
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/bim_db
-```
-
-3. نصب psycopg2:
+### Build custom Docker image:
 ```bash
-pip install psycopg2-binary
+docker build -t geobiro-api .
+docker run -p 8000:8000 -e DATABASE_URL=postgresql://... geobiro-api
 ```
 
-### استفاده از MySQL:
+## 🔗 Frontend Integration
 
-```env
-DATABASE_URL=mysql+pymysql://user:password@localhost:3306/bim_db
+See [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md) for detailed integration instructions with your Vue.js frontend.
+
+### Quick Example:
+```javascript
+// Get services
+const services = await fetch('http://localhost:8000/api/services')
+  .then(r => r.json())
+
+// Submit contact form
+await fetch('http://localhost:8000/api/contact', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'John',
+    phone: '+1234567890',
+    email: 'john@example.com',
+    message: 'Your message'
+  })
+})
 ```
 
+## 📚 Documentation
+
+- **API Docs:** http://localhost:8000/api/docs (Swagger UI)
+- **Setup Guide:** See [SETUP_GUIDE.md](SETUP_GUIDE.md)
+- **Frontend Integration:** See [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md)
+
+## 🛠 Development
+
+### Install dev dependencies:
 ```bash
-pip install pymysql
+pip install -r requirements.txt pytest pytest-asyncio httpx
 ```
 
-## 🚀 Deploy در Production
-
-### 1. تغییرات ضروری:
-
-**در `.env`:**
-```env
-DEBUG=False
-SECRET_KEY=generate-a-strong-random-secret-key-here
-DATABASE_URL=postgresql://user:pass@host:5432/db
-FRONTEND_URL=https://b1m.ir
+### Run with auto-reload:
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 2. با Docker:
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+### Run tests:
+```bash
+pytest tests/
 ```
 
-### 3. با Gunicorn:
+## 📦 Production Deployment
 
+### Using Gunicorn:
 ```bash
 pip install gunicorn
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
 ```
 
-## 📝 نکات مهم
+### Environment for production:
+```
+ENVIRONMENT=production
+DEBUG=false
+SECRET_KEY=generate-random-32-chars
+DATABASE_URL=postgresql://user:pass@prod-db.com/db
+REDIS_URL=redis://prod-redis.com:6379/0
+```
 
-1. **امنیت:**
-   - حتما `SECRET_KEY` را در production تغییر دهید
-   - از HTTPS استفاده کنید
-   - رمز عبور ادمین را تغییر دهید
+## ❓ Troubleshooting
 
-2. **Performance:**
-   - برای production از PostgreSQL استفاده کنید
-   - Connection pooling را فعال کنید
-   - Caching را پیاده‌سازی کنید
+### Database connection failed
+```bash
+# Check PostgreSQL
+sudo systemctl status postgresql
+psql -U geobiro -d geobiro_db
+```
 
-3. **Monitoring:**
-   - از ابزارهایی مثل Sentry برای error tracking استفاده کنید
-   - Log ها را نگه دارید
+### Redis connection failed
+```bash
+# Check Redis
+redis-cli ping
+# Output: PONG
+```
 
-## 🤝 مشارکت
+### CORS errors
+- Verify `FRONTEND_URL` in `.env`
+- Backend must be accessible from frontend URL
 
-برای مشارکت در پروژه:
-1. Fork کنید
-2. برنچ جدید بسازید
-3. تغییرات را commit کنید
-4. Pull Request بزنید
+### Email not sending
+- Check SMTP credentials
+- Verify firewall allows SMTP port
+- Check server logs for errors
 
-## 📄 لایسنس
+## 📄 License
 
-MIT License
+MIT
 
-## 💬 پشتیبانی
+## 📞 Support
 
-برای سوالات و مشکلات، issue باز کنید.
+For issues or questions, refer to:
+1. [SETUP_GUIDE.md](SETUP_GUIDE.md) - Detailed setup instructions
+2. [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md) - Frontend integration guide
+3. API Docs: http://localhost:8000/api/docs
+
+## 🎯 Next Steps
+
+1. ✅ Backend is ready
+2. Configure `.env` with your settings
+3. Start backend with `docker-compose up` or `uvicorn main:app --reload`
+4. Integrate with Vue.js frontend (see FRONTEND_INTEGRATION.md)
+5. Create admin user and manage content
+6. Deploy to production
 
 ---
 
-ساخته شده با ❤️ با FastAPI
+**Created:** December 25, 2025
+**Version:** 1.0.0
+**Status:** Production Ready

@@ -1,0 +1,228 @@
+/* Global Animation Definitions */
+/* GPU-accelerated animations using transform and opacity only */
+
+/* Fade-in animation for page load */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade-in with slight scale-up */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide-up animation from bottom */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide-up with more distance */
+@keyframes slideUpLarge {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale pulse effect for buttons/CTA */
+@keyframes scalePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Subtle bounce effect */
+@keyframes subtleBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* RTL-compatible slide-in from right (for hamburger menu) */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* RTL-compatible slide-out to right */
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* Hamburger menu transform animations */
+@keyframes hamburgerRotateTop {
+  from {
+    transform: rotate(0deg) translateY(0px);
+  }
+  to {
+    transform: rotate(45deg) translateY(12px);
+  }
+}
+
+@keyframes hamburgerRotateBottom {
+  from {
+    transform: rotate(0deg) translateY(0px);
+  }
+  to {
+    transform: rotate(-45deg) translateY(-12px);
+  }
+}
+
+@keyframes hamburgerHide {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Overlay fade effect */
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Apply animations to elements */
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.fade-in-scale {
+  animation: fadeInScale 0.6s ease-out forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.slide-up-large {
+  animation: slideUpLarge 0.8s ease-out forwards;
+}
+
+.scale-pulse {
+  animation: scalePulse 2s ease-in-out infinite;
+}
+
+.subtle-bounce {
+  animation: subtleBounce 2s ease-in-out infinite;
+}
+
+/* Intersection Observer triggered animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.animate-on-scroll.in-view {
+  animation: slideUp 1.2s ease-out forwards;
+}
+
+.animate-on-scroll-large.in-view {
+  animation: slideUpLarge 1.4s ease-out forwards;
+}
+
+/* Stagger animation for multiple elements */
+.stagger-item {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-item:nth-child(n+6) { animation-delay: 0.6s; }
+
+/* Mobile menu animations */
+.mobile-menu {
+  animation: slideInFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mobile-menu.closing {
+  animation: slideOutToRight 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+.overlay {
+  animation: overlayFadeIn 0.3s ease-out forwards;
+}
+
+/* Hamburger icon animations */
+.hamburger.active .hamburger-line:first-child {
+  animation: hamburgerRotateTop 0.4s ease-out forwards;
+}
+
+.hamburger.active .hamburger-line:nth-child(2) {
+  animation: hamburgerHide 0.2s ease-out forwards;
+}
+
+.hamburger.active .hamburger-line:last-child {
+  animation: hamburgerRotateBottom 0.4s ease-out forwards;
+}
+
+.hamburger .hamburger-line {
+  animation: none;
+  transform: none;
+  opacity: 1;
+}
+
+/* Ensure animations use GPU acceleration */
+* {
+  will-change: auto;
+}
+
+.fade-in,
+.fade-in-scale,
+.slide-up,
+.slide-up-large,
+.animate-on-scroll.in-view,
+.mobile-menu,
+.overlay {
+  will-change: transform, opacity;
+}
