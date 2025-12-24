@@ -76,6 +76,8 @@ CACHE_KEYS = {
     "licenses": "cache:licenses",
     "company_info": "cache:company_info",
     "statistics": "cache:statistics",
+    "projects": "cache:projects",
+    "articles": "cache:articles",
 }
 
 
@@ -87,4 +89,6 @@ CACHE_TTL = {
     "licenses": 3600,
     "company_info": 7200,  # 2 hours
     "statistics": 7200,
+    "projects": 3600,
+    "articles": 1800,  # 30 minutes for articles (more frequent updates)
 }

@@ -3,7 +3,7 @@
     <h2 class="section-title animate-on-scroll">گواهی‌نامه‌ها</h2>
     <div class="cert-grid">
       <div class="cert-item animate-on-scroll">
-        <img src="../../public/ISO14001.jpg.webp" alt="Certificate 1">
+        <img src="/ISO14001.webp" alt="Certificate 1">
         <p>ISO 9001:2015, ISO 14001:2015 و ISO 45001:2018</p>
       </div>
       <div class="cert-item animate-on-scroll">

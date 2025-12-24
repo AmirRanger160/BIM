@@ -5,11 +5,41 @@
       
       <!-- Desktop Navigation -->
       <nav class="nav-desktop">
-        <a href="#home">صفحه اول</a>
-        <a href="#bim">خدمات BIM</a>
-        <a href="#surveying">خدمات نقشه‌برداری</a>
-        <a href="#about">درباره</a>
-        <a href="#contact">تماس</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavigation('/')"
+          :class="{ active: isActive('home') }"
+        >صفحه اول</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavClick({id: 'bim'})"
+          :class="{ active: isActive('home') }"
+        >خدمات BIM</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavClick({id: 'surveying'})"
+          :class="{ active: isActive('home') }"
+        >خدمات نقشه‌برداری</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavigation('/projects-archive')"
+          :class="{ active: isActive('projects') }"
+        >پروژه‌ها</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavigation('/articles')"
+          :class="{ active: isActive('articles') }"
+        >مقالات</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavClick({id: 'about'})"
+          :class="{ active: isActive('home') }"
+        >درباره</a>
+        <a 
+          href="#" 
+          @click.prevent="handleNavClick({id: 'contact'})"
+          :class="{ active: isActive('home') }"
+        >تماس</a>
       </nav>
 
       <!-- Mobile Hamburger Button -->
@@ -36,11 +66,41 @@
 
     <!-- Mobile Navigation Menu -->
     <nav v-if="mobileMenuOpen" class="nav-mobile mobile-menu">
-      <a href="#home" @click="handleNavClick">صفحه اول</a>
-      <a href="#bim" @click="handleNavClick">خدمات BIM</a>
-      <a href="#surveying" @click="handleNavClick">خدمات نقشه‌برداری</a>
-      <a href="#about" @click="handleNavClick">درباره</a>
-      <a href="#contact" @click="handleNavClick">تماس</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavigation('/')"
+        :class="{ active: isActive('home') }"
+      >صفحه اول</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavClick({id: 'bim'})"
+        :class="{ active: isActive('home') }"
+      >خدمات BIM</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavClick({id: 'surveying'})"
+        :class="{ active: isActive('home') }"
+      >خدمات نقشه‌برداری</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavigation('/projects-archive')"
+        :class="{ active: isActive('projects') }"
+      >پروژه‌ها</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavigation('/articles')"
+        :class="{ active: isActive('articles') }"
+      >مقالات</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavClick({id: 'about'})"
+        :class="{ active: isActive('home') }"
+      >درباره</a>
+      <a 
+        href="#" 
+        @click.prevent="handleNavClick({id: 'contact'})"
+        :class="{ active: isActive('home') }"
+      >تماس</a>
     </nav>
   </header>
 </template>
@@ -48,6 +108,7 @@
 <script>
 export default {
   name: 'Header',
+  inject: ['navigateTo'],
   data() {
     return {
       mobileMenuOpen: false
@@ -60,9 +121,15 @@ export default {
     closeMobileMenu() {
       this.mobileMenuOpen = false;
     },
-    handleNavClick(e) {
-      e.preventDefault();
-      const target = document.querySelector(e.target.getAttribute('href'));
+    handleNavigation(path) {
+      this.mobileMenuOpen = false;
+      this.navigateTo(path);
+    },
+    isActive(page) {
+      return this.$root.currentPage === page;
+    },
+    handleNavClick(args) {
+      const target = document.querySelector(`#${args.id}`);
       if (target) {
         this.mobileMenuOpen = false;
         target.scrollIntoView({
@@ -72,19 +139,6 @@ export default {
     }
   },
   mounted() {
-    // Smooth scroll for desktop navigation links
-    document.querySelectorAll('.nav-desktop a').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth'
-          });
-        }
-      });
-    });
-
     // Close mobile menu on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.mobileMenuOpen) {
@@ -154,6 +208,15 @@ header {
   width: 100%;
 }
 
+.nav-desktop a.active {
+  color: #1abc9c;
+  font-weight: 600;
+}
+
+.nav-desktop a.active::after {
+  width: 100%;
+}
+
 /* Hamburger Menu Button */
 .hamburger {
   display: none;
@@ -191,6 +254,24 @@ header {
   gap: 0;
   z-index: 999;
   border-top: 1px solid #e0e0e0;
+}
+
+.nav-mobile a {
+  padding: 15px 20px;
+  display: block;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.nav-mobile a:hover {
+  background: #f5f5f5;
+  color: #1abc9c;
+}
+
+.nav-mobile a.active {
+  background: #1abc9c;
+  color: white;
+  font-weight: 600;
 }
 
 .mobile-overlay {

@@ -1,17 +1,50 @@
 <template>
   <div id="app">
-    <Header />
-    <Hero />
-    <Stats />
-    <BimServices />
-    <SurveyingServices />
-    <About />
-    <CTA />
-    <Certificates />
-    <Licenses />
-    <Team />
-    <Contact />
-    <Footer />
+    <!-- Home Page -->
+    <div v-if="currentPage === 'home'" class="page-content">
+      <Header />
+      <Hero />
+      <Stats />
+      <BimServices />
+      <Projects />
+      <About />
+      <SurveyingServices />
+      <FeaturedArticles />
+      <CTA />
+      <Certificates />
+      <Team />
+      <Contact />
+      <Footer />
+    </div>
+
+    <!-- Articles Archive Page -->
+    <div v-else-if="currentPage === 'articles'" class="page-content">
+      <Header />
+      <ArticlesArchive />
+      <Footer />
+    </div>
+
+    <!-- Article Detail Page -->
+    <div v-else-if="currentPage === 'article-detail'" class="page-content">
+      <Header />
+      <ArticleDetail />
+      <Footer />
+    </div>
+
+    <!-- Projects Archive Page -->
+    <div v-else-if="currentPage === 'projects'" class="page-content">
+      <Header />
+      <ProjectsArchive />
+      <Footer />
+    </div>
+
+    <!-- Project Detail Page -->
+    <div v-else-if="currentPage === 'project-detail'" class="page-content">
+      <Header />
+      <ProjectDetail />
+      <Footer />
+    </div>
+
     <ScrollToTop />
   </div>
 </template>
@@ -21,6 +54,7 @@ import Header from './components/Header.vue'
 import Hero from './components/Hero.vue'
 import Stats from './components/Stats.vue'
 import BimServices from './components/BimServices.vue'
+import Projects from './components/Projects.vue'
 import SurveyingServices from './components/SurveyingServices.vue'
 import About from './components/About.vue'
 import CTA from './components/CTA.vue'
@@ -30,6 +64,11 @@ import Team from './components/Team.vue'
 import Contact from './components/Contact.vue'
 import Footer from './components/Footer.vue'
 import ScrollToTop from './components/ScrollToTop.vue'
+import ArticlesArchive from './components/ArticlesArchive.vue'
+import ArticleDetail from './components/ArticleDetail.vue'
+import ProjectsArchive from './components/ProjectsArchive.vue'
+import ProjectDetail from './components/ProjectDetail.vue'
+import FeaturedArticles from './components/FeaturedArticles.vue'
 
 export default {
   name: 'App',
@@ -38,41 +77,101 @@ export default {
     Hero,
     Stats,
     BimServices,
+    Projects,
     SurveyingServices,
     About,
     CTA,
     Certificates,
     Licenses,
-    History,
     Team,
     Contact,
     Footer,
-    ScrollToTop
+    ScrollToTop,
+    ArticlesArchive,
+    ArticleDetail,
+    ProjectsArchive,
+    ProjectDetail,
+    FeaturedArticles
+  },
+  data() {
+    return {
+      currentPage: 'home'
+    }
+  },
+  provide() {
+    return {
+      navigateTo: this.navigateTo
+    }
   },
   mounted() {
+    this.handleRouting();
     this.initIntersectionObserver();
+    
+    // Listen for popstate (browser back/forward)
+    window.addEventListener('popstate', () => {
+      this.handleRouting();
+      this.$nextTick(() => {
+        this.initIntersectionObserver();
+      });
+    });
   },
   methods: {
+    handleRouting() {
+      const pathname = window.location.pathname;
+      
+      if (pathname.startsWith('/article/')) {
+        this.currentPage = 'article-detail';
+      } else if (pathname === '/articles' || pathname === '/articles/') {
+        this.currentPage = 'articles';
+      } else if (pathname.startsWith('/project/')) {
+        this.currentPage = 'project-detail';
+      } else if (pathname === '/projects-archive' || pathname === '/projects-archive/') {
+        this.currentPage = 'projects';
+      } else {
+        this.currentPage = 'home';
+      }
+    },
+    navigateTo(path) {
+      window.history.pushState(null, '', path);
+      this.handleRouting();
+      this.$nextTick(() => {
+        this.initIntersectionObserver();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    },
     initIntersectionObserver() {
       // Initialize Intersection Observer for scroll-triggered animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      };
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            observer.unobserve(entry.target);
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        // Observe all elements with animate-on-scroll class
+        const animatedElements = document.querySelectorAll('.animate-on-scroll, .animate-on-scroll-large');
+        animatedElements.forEach(el => {
+          observer.observe(el);
+        });
+
+        // Trigger intersection check immediately for elements already in viewport
+        animatedElements.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            el.classList.add('in-view');
+            observer.unobserve(el);
           }
         });
-      }, observerOptions);
-
-      // Observe all elements with animate-on-scroll class
-      document.querySelectorAll('.animate-on-scroll, .animate-on-scroll-large').forEach(el => {
-        observer.observe(el);
-      });
+      }, 100);
     }
   }
 }
@@ -99,6 +198,12 @@ body {
   font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   text-align: right;
+  width: 100%;
+}
+
+.page-content {
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* Global Styles */

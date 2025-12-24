@@ -268,3 +268,90 @@ class StatisticsResponse(StatisticsBase):
     
     class Config:
         from_attributes = True
+
+
+# ============ Project Schemas ============
+
+class ProjectBase(BaseModel):
+    title_en: str = Field(..., min_length=1, max_length=255)
+    title_fa: Optional[str] = None
+    description_en: str
+    description_fa: Optional[str] = None
+    image_url: Optional[str] = None
+    archive_url: Optional[str] = None
+    iframe_url: Optional[str] = None
+    category: Optional[str] = None
+    order: int = 0
+    is_featured: bool = False
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class ProjectUpdate(BaseModel):
+    title_en: Optional[str] = None
+    title_fa: Optional[str] = None
+    description_en: Optional[str] = None
+    description_fa: Optional[str] = None
+    image_url: Optional[str] = None
+    archive_url: Optional[str] = None
+    iframe_url: Optional[str] = None
+    category: Optional[str] = None
+    order: Optional[int] = None
+    is_featured: Optional[bool] = None
+
+
+class ProjectResponse(ProjectBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+# ============ Article Schemas ============
+
+class ArticleBase(BaseModel):
+    title_en: str = Field(..., min_length=1, max_length=255)
+    title_fa: Optional[str] = None
+    slug: str = Field(..., min_length=1, max_length=255)
+    summary_en: str
+    summary_fa: Optional[str] = None
+    content_en: str
+    content_fa: Optional[str] = None
+    image_url: Optional[str] = None
+    tags: Optional[str] = None
+    category: Optional[str] = None
+    author: Optional[str] = None
+    is_published: bool = True
+
+
+class ArticleCreate(ArticleBase):
+    pass
+
+
+class ArticleUpdate(BaseModel):
+    title_en: Optional[str] = None
+    title_fa: Optional[str] = None
+    slug: Optional[str] = None
+    summary_en: Optional[str] = None
+    summary_fa: Optional[str] = None
+    content_en: Optional[str] = None
+    content_fa: Optional[str] = None
+    image_url: Optional[str] = None
+    tags: Optional[str] = None
+    category: Optional[str] = None
+    author: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+class ArticleResponse(ArticleBase):
+    id: int
+    publish_date: datetime
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True

@@ -12,7 +12,7 @@ from app.core.config import get_settings
 from app.database import engine
 from app.models.models import Base
 from app.cache import init_redis
-from app.routers import auth, services, team, certificates, licenses, contact
+from app.routers import auth, services, team, certificates, licenses, contact, projects, articles
 
 # Configure logging
 logging.basicConfig(
@@ -42,6 +42,15 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("🛑 Shutting down GeoBiro FastAPI Backend")
+
+
+# Exception handlers (define before using in app initialization)
+def _rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    """Handle rate limit exceeded."""
+    return JSONResponse(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        content={"detail": "Too many requests. Please try again later."}
+    )
 
 
 # Create FastAPI app
@@ -75,7 +84,7 @@ app.add_middleware(
 )
 
 
-# Exception handlers
+# General exception handler
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle general exceptions."""
@@ -86,17 +95,9 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
 
-def _rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
-    """Handle rate limit exceeded."""
-    return JSONResponse(
-        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        content={"detail": "Too many requests. Please try again later."}
-    )
-
-
 # Mount static files for uploads
 import os
-uploads_dir = "/home/unique/projects/geobiro/backend/uploads"
+uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
 os.makedirs(uploads_dir, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
@@ -104,6 +105,8 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 # Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(services.router, prefix="/api")
+app.include_router(projects.router, prefix="/api")
+app.include_router(articles.router, prefix="/api")
 app.include_router(team.router, prefix="/api")
 app.include_router(certificates.router, prefix="/api")
 app.include_router(licenses.router, prefix="/api")

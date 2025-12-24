@@ -1,0 +1,592 @@
+<template>
+  <section class="project-detail" id="project-detail">
+    <div class="container">
+      <!-- Back Button -->
+      <a href="#" @click.prevent="navigateTo('/projects-archive')" class="btn-back">← بازگشت به آرشیو</a>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="loading">
+        <p>درحال بارگذاری پروژه...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-if="error" class="error">
+        <p>{{ error }}</p>
+        <a href="#" @click.prevent="navigateTo('/projects-archive')" class="btn-back">بازگشت به آرشیو</a>
+      </div>
+
+      <!-- Project Content -->
+      <article v-else-if="project" class="project-content">
+        <!-- Project Title -->
+        <h1 class="project-title">{{ project.title_fa || project.title_en }}</h1>
+        
+        <!-- Category Badge -->
+        <div class="project-meta" v-if="project.category">
+          <span class="category">{{ project.category }}</span>
+        </div>
+
+        <!-- Featured Image -->
+        <div class="project-featured-image">
+          <img :src="project.image_url || 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%23ddd%27 width=%271000%27 height=%27600%27/%3E%3C/svg%3E'" :alt="project.title_fa || project.title_en">
+        </div>
+
+        <!-- Iframe Section (if URL exists) -->
+        <div v-if="project.iframe_url" class="iframe-section">
+          <h2>پروژه تعاملی</h2>
+          <div class="iframe-container">
+            <iframe 
+              :src="project.iframe_url" 
+              title="Project Viewer"
+              allow="fullscreen"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Project Description Section -->
+        <div class="project-description">
+          <h2>درباره‌ی پروژه</h2>
+          <div class="description-content">
+            <p>{{ project.description_fa || project.description_en }}</p>
+          </div>
+
+          <!-- Download Archive -->
+          <div v-if="project.archive_url" class="download-section">
+            <a :href="project.archive_url" download class="btn-download">
+              دانلود آرشیو پروژه
+            </a>
+          </div>
+        </div>
+
+        <!-- Project Details Grid -->
+        <div class="project-details-grid">
+          <div class="detail-item">
+            <h3>نوع پروژه</h3>
+            <p>{{ project.category }}</p>
+          </div>
+          <div class="detail-item">
+            <h3>تاریخ ایجاد</h3>
+            <p>{{ formatDate(project.created_at) }}</p>
+          </div>
+          <div class="detail-item">
+            <h3>آخرین بروزرسانی</h3>
+            <p>{{ formatDate(project.updated_at) }}</p>
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="project-cta">
+          <h3>آیا برای پروژه شما هم نیاز به خدمات مشابه دارید؟</h3>
+          <a href="#" @click.prevent="goToContact" class="btn-contact">تماس با ما</a>
+        </div>
+
+        <!-- Related Projects -->
+        <div class="related-projects" v-if="relatedProjects.length > 0">
+          <h3>پروژه‌های مرتبط:</h3>
+          <div class="related-grid">
+            <a v-for="related in relatedProjects" :key="related.id" href="#" @click.prevent="navigateTo(`/project/${related.id}`)" class="related-card">
+              <div class="related-image">
+                <img :src="related.image_url || 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 200%27%3E%3Crect fill=%27%23ddd%27 width=%27300%27 height=%27200%27/%3E%3C/svg%3E'" :alt="related.title_fa || related.title_en">
+              </div>
+              <h4>{{ related.title_fa || related.title_en }}</h4>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 404 Not Found -->
+      <div v-else-if="!loading && !error" class="not-found">
+        <p>پروژه مورد نظر یافت نشد.</p>
+        <a href="#" @click.prevent="navigateTo('/projects-archive')" class="btn-back">بازگشت به آرشیو</a>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+export default {
+  name: 'ProjectDetail',
+  inject: ['navigateTo'],
+  data() {
+    return {
+      project: null,
+      projects: [],
+      relatedProjects: [],
+      loading: false,
+      error: null,
+      projectId: null
+    }
+  },
+  watch: {
+    $route: {
+      handler() {
+        this.loadProject();
+      },
+      immediate: true
+    }
+  },
+  mounted() {
+    this.loadProject();
+  },
+  methods: {
+    loadProject() {
+      // Extract project ID from URL pathname
+      const pathname = window.location.pathname;
+      const match = pathname.match(/\/project\/(\d+)/);
+      this.projectId = match ? parseInt(match[1]) : null;
+
+      if (this.projectId) {
+        this.fetchProject();
+      }
+    },
+    async fetchProject() {
+      this.loading = true;
+      this.error = null;
+      try {
+        // Sample data - replace with API call
+        const allProjects = [
+          {
+            id: 1,
+            title_en: 'BIM Modeling Project',
+            title_fa: 'پروژه مدل‌سازی BIM',
+            description_en: 'A comprehensive 3D BIM model was created for this commercial building complex. The project included detailed modeling of all structural and MEP systems, enabling better coordination and clash detection during the design phase. The final model was delivered in IFC format for compatibility across various software platforms.',
+            description_fa: 'یک مدل BIM سه‌بعدی جامع برای این مجتمع تجاری ایجاد شد. پروژه شامل مدل‌سازی دقیق تمام سیستم‌های ساختاری و MEP بود که امکان هماهنگی بهتر و تشخیص تضادها را در مرحله طراحی فراهم کرد. مدل نهایی در قالب IFC تحویل داده شد.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%231abc9c%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EBIM Project 1%3C/text%3E%3C/svg%3E',
+            iframe_url: null,
+            archive_url: null,
+            category: 'BIM',
+            created_at: '2024-06-15T10:00:00',
+            updated_at: '2024-12-15T10:00:00'
+          },
+          {
+            id: 2,
+            title_en: '3D Point Cloud Processing',
+            title_fa: 'پردازش ابر نقطه سه‌بعدی',
+            description_en: 'An extensive point cloud survey was conducted for this historical structure using advanced laser scanning technology. The resulting point cloud containing over 500 million points was processed and registered to create accurate 2D drawings and 3D models for restoration planning.',
+            description_fa: 'یک نقشه‌برداری ابر نقطه گسترده برای این ساختار تاریخی با استفاده از فناوری اسکن لیزری پیشرفته انجام شد. ابر نقطه حاصل با بیش از ۵۰۰ میلیون نقطه برای ایجاد نقشه‌های دقیق دو‌بعدی و مدل‌های سه‌بعدی پردازش شد.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%232d5f3f%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EPoint Cloud%3C/text%3E%3C/svg%3E',
+            iframe_url: 'about:blank', // Sample URL - would be actual 3D viewer
+            archive_url: null,
+            category: 'Surveying',
+            created_at: '2024-05-20T10:00:00',
+            updated_at: '2024-11-20T10:00:00'
+          },
+          {
+            id: 3,
+            title_en: 'Urban Survey Analysis',
+            title_fa: 'تحلیل نقشه‌برداری شهری',
+            description_en: 'Detailed surveying and documentation of an urban development zone covering an area of 50 hectares. The project included topographic surveys, boundary delineation, and utility mapping.',
+            description_fa: 'نقشه‌برداری و مستندسازی دقیق منطقه توسعه شهری در مساحت ۵۰ هکتار. پروژه شامل نقشه‌برداری توپوگرافی، تعیین مرزها و نقشه‌برداری سیستم‌های زیرساخت بود.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%23333%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EUrban Survey%3C/text%3E%3C/svg%3E',
+            iframe_url: null,
+            archive_url: null,
+            category: 'Surveying',
+            created_at: '2024-04-10T10:00:00',
+            updated_at: '2024-10-10T10:00:00'
+          },
+          {
+            id: 4,
+            title_en: 'Renovation Assessment',
+            title_fa: 'ارزیابی نوسازی',
+            description_en: 'Complete BIM assessment and documentation for a major building renovation project. The as-built BIM model was created from laser scans and used to plan the renovation work.',
+            description_fa: 'ارزیابی جامع BIM و مستندسازی برای پروژه نوسازی ساختمان بزرگ. مدل BIM به‌حال‌فعلی از اسکن لیزری ایجاد شد و برای برنامه‌ریزی کار نوسازی استفاده شد.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%234a7c59%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3ERenovation%3C/text%3E%3C/svg%3E',
+            iframe_url: null,
+            archive_url: null,
+            category: 'BIM',
+            created_at: '2024-03-15T10:00:00',
+            updated_at: '2024-09-15T10:00:00'
+          },
+          {
+            id: 5,
+            title_en: 'Infrastructure Mapping',
+            title_fa: 'نقشه‌برداری زیرساخت',
+            description_en: 'Large-scale infrastructure survey covering several kilometers of highway and underground utilities. Laser scanning was used to map the existing conditions.',
+            description_fa: 'نقشه‌برداری زیرساخت در مقیاس بزرگ که شامل چندین کیلومتر بزرگراه و سیستم‌های زیرزمینی بود. اسکن لیزری برای نقشه‌برداری شرایط موجود استفاده شد.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%235a8c6e%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EInfrastructure%3C/text%3E%3C/svg%3E',
+            iframe_url: null,
+            archive_url: null,
+            category: 'Surveying',
+            created_at: '2024-02-20T10:00:00',
+            updated_at: '2024-08-20T10:00:00'
+          },
+          {
+            id: 6,
+            title_en: 'Industrial Complex BIM',
+            title_fa: 'BIM مجتمع صنعتی',
+            description_en: 'BIM modeling of a large industrial manufacturing facility with complex MEP systems. The model included coordination between structural, architectural, and mechanical systems.',
+            description_fa: 'مدل‌سازی BIM تاسیسات تولید صنعتی بزرگ با سیستم‌های MEP پیچیده. مدل شامل هماهنگی میان سیستم‌های ساختاری، معماری و مکانیکی بود.',
+            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%236a5a3e%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EIndustrial%3C/text%3E%3C/svg%3E',
+            iframe_url: null,
+            archive_url: null,
+            category: 'BIM',
+            created_at: '2024-01-10T10:00:00',
+            updated_at: '2024-07-10T10:00:00'
+          }
+        ];
+
+        // Find project
+        this.project = allProjects.find(p => p.id === this.projectId);
+
+        if (!this.project) {
+          this.error = 'پروژه مورد نظر یافت نشد.';
+          return;
+        }
+
+        // Get related projects (same category, different project)
+        this.relatedProjects = allProjects
+          .filter(p => p.category === this.project.category && p.id !== this.project.id)
+          .slice(0, 3);
+
+      } catch (err) {
+        this.error = 'خطا در بارگذاری پروژه';
+        console.error('Error fetching project:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('fa-IR', options);
+    },
+    goToContact() {
+      // Navigate to home page and scroll to contact section
+      this.navigateTo('/');
+      this.$nextTick(() => {
+        setTimeout(() => {
+          const contactElement = document.querySelector('#contact');
+          if (contactElement) {
+            contactElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      });
+    }
+  }
+}
+</script>
+
+<style scoped>
+.project-detail {
+  padding: 60px 50px;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.btn-back {
+  display: inline-block;
+  margin-bottom: 30px;
+  color: #1abc9c;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease-out;
+}
+
+.btn-back:hover {
+  transform: translateX(4px);
+}
+
+/* Loading & Error States */
+.loading, .error, .not-found {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 16px;
+}
+
+.loading {
+  color: #666;
+}
+
+.error, .not-found {
+  background: #f5f5f5;
+  border-radius: 2px;
+}
+
+.error {
+  color: #d32f2f;
+  background: #ffebee;
+}
+
+/* Project Title */
+.project-title {
+  font-size: 42px;
+  font-weight: bold;
+  line-height: 1.3;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+  text-align: right;
+}
+
+/* Category Badge */
+.project-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+}
+
+.category {
+  background: #1abc9c;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Featured Image */
+.project-featured-image {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 50px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f5f5f5;
+}
+
+.project-featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Iframe Section */
+.iframe-section {
+  margin-bottom: 50px;
+  text-align: right;
+}
+
+.iframe-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.iframe-container {
+  width: 100%;
+  height: 600px;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+.iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Description Section */
+.project-description {
+  margin-bottom: 50px;
+  text-align: right;
+}
+
+.project-description h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.description-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.description-content p {
+  margin-bottom: 15px;
+}
+
+/* Download Section */
+.download-section {
+  margin-top: 25px;
+}
+
+.btn-download {
+  display: inline-block;
+  padding: 12px 28px;
+  background: #1abc9c;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-download:hover {
+  background: #16a085;
+  transform: scale(1.02);
+}
+
+/* Details Grid */
+.project-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+  padding: 30px;
+  background: #f9f9f9;
+  border: 1px solid #e8e8e8;
+  text-align: right;
+}
+
+.detail-item h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-item p {
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* CTA Section */
+.project-cta {
+  text-align: center;
+  padding: 50px 30px;
+  background: #f9f9f9;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 50px;
+  border-radius: 2px;
+}
+
+.project-cta h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.btn-contact {
+  display: inline-block;
+  padding: 12px 40px;
+  background: #1abc9c;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-contact:hover {
+  background: #16a085;
+  transform: scale(1.02);
+}
+
+/* Related Projects */
+.related-projects {
+  margin-top: 50px;
+  text-align: right;
+}
+
+.related-projects h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #1a1a1a;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.related-card {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.3s ease-out;
+}
+
+.related-card:hover {
+  border-color: #1abc9c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.related-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.related-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease-out;
+}
+
+.related-card:hover .related-image img {
+  transform: scale(1.1);
+}
+
+.related-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 15px;
+  color: #1a1a1a;
+  text-align: right;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .project-detail {
+    padding: 30px 20px;
+  }
+
+  .project-title {
+    font-size: 28px;
+  }
+
+  .project-featured-image {
+    height: 300px;
+  }
+
+  .iframe-container {
+    height: 400px;
+  }
+
+  .project-description h2,
+  .iframe-section h2 {
+    font-size: 20px;
+  }
+
+  .project-details-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .project-cta {
+    padding: 30px 20px;
+  }
+
+  .project-cta h3 {
+    font-size: 18px;
+  }
+
+  .related-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+</style>

@@ -127,3 +127,44 @@ class Statistics(Base):
     employees = Column(Integer, default=90)
     satisfied_clients = Column(Integer, default=100)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Project(Base):
+    """Project portfolio model."""
+    __tablename__ = "projects"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title_en = Column(String(255), nullable=False, index=True)
+    title_fa = Column(String(255), nullable=True)
+    description_en = Column(Text, nullable=False)
+    description_fa = Column(Text, nullable=True)
+    image_url = Column(String(500), nullable=True)
+    archive_url = Column(String(500), nullable=True)
+    iframe_url = Column(String(500), nullable=True)
+    category = Column(String(50), nullable=True, index=True)  # e.g., "BIM", "Surveying"
+    order = Column(Integer, default=0)  # For ordering in display
+    is_featured = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Article(Base):
+    """Article/Blog post model."""
+    __tablename__ = "articles"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title_en = Column(String(255), nullable=False, index=True)
+    title_fa = Column(String(255), nullable=True)
+    slug = Column(String(255), unique=True, nullable=False, index=True)
+    summary_en = Column(Text, nullable=False)
+    summary_fa = Column(Text, nullable=True)
+    content_en = Column(Text, nullable=False)
+    content_fa = Column(Text, nullable=True)
+    image_url = Column(String(500), nullable=True)
+    tags = Column(String(500), nullable=True)  # Comma-separated tags
+    category = Column(String(100), nullable=True, index=True)
+    author = Column(String(255), nullable=True)
+    is_published = Column(Boolean, default=True, index=True)
+    publish_date = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
