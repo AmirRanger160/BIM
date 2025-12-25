@@ -281,8 +281,8 @@ body {
   right: 50%;
   transform: translateX(50%);
   width: 60px;
-  height: 1px;
-  background: transparent;
+  height: 2px;
+  background: #1abc9c;
 }
 
 .btn {
@@ -334,7 +334,7 @@ body {
   .section-title::after {
     width: 50px;
     height: 2px;
-    background: transparent;
+    background: #1abc9c;
   }
 }
 
@@ -348,7 +348,7 @@ body {
   .section-title::after {
     width: 50px;
     height: 2px;
-    background: transparent;
+    background: #1abc9c;
   }
 }
 </style>
