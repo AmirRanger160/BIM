@@ -2,16 +2,54 @@
   <section class="team">
     <h2 class="section-title animate-on-scroll">تیم ما</h2>
     <div class="team-grid">
-      <div class="team-member animate-on-scroll" v-for="n in 12" :key="n">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Crect fill='%23ddd' width='150' height='150'/%3E%3C/svg%3E" :alt="`تیم شماره ${n}`">
+      <div class="team-member animate-on-scroll" v-for="member in teamMembers" :key="member.id">
+        <img 
+          :src="member.image_url || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 150 150%27%3E%3Crect fill=%27%23ddd%27 width=%27150%27 height=%27150%27/%3E%3C/svg%3E'" 
+          :alt="member.name_fa || member.name_en"
+          :title="`${member.name_fa || member.name_en} - ${member.position_fa || member.position_en}`"
+        >
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import { teamService } from '../services/api';
+
 export default {
-  name: 'Team'
+  name: 'Team',
+  data() {
+    return {
+      teamMembers: [],
+      loading: false,
+      error: null
+    }
+  },
+  mounted() {
+    this.fetchTeamMembers();
+    this.$nextTick(() => {
+      setTimeout(() => {
+        const elements = this.$el.querySelectorAll('.animate-on-scroll');
+        elements.forEach(el => el.classList.add('in-view'));
+      }, 50);
+    });
+  },
+  methods: {
+    async fetchTeamMembers() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await teamService.getAll();
+        this.teamMembers = response.data;
+      } catch (err) {
+        this.error = 'خطا در بارگذاری تیم';
+        console.error('Error fetching team members:', err);
+        this.teamMembers = [];
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
 }
 </script>
 

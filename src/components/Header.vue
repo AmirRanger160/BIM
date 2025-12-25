@@ -1,107 +1,56 @@
 <template>
-  <header>
-    <div class="header-container">
-      <div class="logo">geo<span style="color: #7cb342;">biro</span></div>
-      
+  <header class="header">
+    <div class="header-content">
+      <!-- Logo -->
+      <div class="logo-container" @click="navigateHome">
+        <span class="logo">geo<span class="logo-highlight">biro</span></span>
+      </div>
+
       <!-- Desktop Navigation -->
       <nav class="nav-desktop">
-        <a 
-          href="#" 
-          @click.prevent="handleNavigation('/')"
-          :class="{ active: isActive('home') }"
-        >صفحه اول</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavClick({id: 'bim'})"
-          :class="{ active: isActive('home') }"
-        >خدمات BIM</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavClick({id: 'surveying'})"
-          :class="{ active: isActive('home') }"
-        >خدمات نقشه‌برداری</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavigation('/projects-archive')"
-          :class="{ active: isActive('projects') }"
-        >پروژه‌ها</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavigation('/articles')"
-          :class="{ active: isActive('articles') }"
-        >مقالات</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavClick({id: 'about'})"
-          :class="{ active: isActive('home') }"
-        >درباره</a>
-        <a 
-          href="#" 
-          @click.prevent="handleNavClick({id: 'contact'})"
-          :class="{ active: isActive('home') }"
-        >تماس</a>
+        <ul class="nav-list">
+          <li><a href="#" @click.prevent="handleNavigation('/')">صفحه اول</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('bim')">خدمات BIM</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('surveying')">خدمات نقشه‌برداری</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('/projects-archive')">پروژه‌ها</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('/articles')">مقالات</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('about')">درباره</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('contact')">تماس</a></li>
+        </ul>
       </nav>
 
       <!-- Mobile Hamburger Button -->
       <button 
         class="hamburger" 
-        :class="{ active: mobileMenuOpen }"
-        @click="toggleMobileMenu"
-        aria-label="Toggle navigation menu"
+        @click="toggleMobileMenu()"
+        aria-label="Open navigation menu"
+        :class="{active: mobileMenuOpen}"
       >
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
     </div>
 
     <!-- Mobile Navigation Overlay -->
-    <transition name="overlay-fade">
-      <div 
-        v-if="mobileMenuOpen" 
-        class="mobile-overlay"
-        @click="closeMobileMenu"
-      ></div>
+    <transition name="overlay">
+      <div v-if="mobileMenuOpen" class="mobile-overlay" @click="closeMobileMenu()"></div>
     </transition>
 
     <!-- Mobile Navigation Menu -->
-    <nav v-if="mobileMenuOpen" class="nav-mobile mobile-menu">
-      <a 
-        href="#" 
-        @click.prevent="handleNavigation('/')"
-        :class="{ active: isActive('home') }"
-      >صفحه اول</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavClick({id: 'bim'})"
-        :class="{ active: isActive('home') }"
-      >خدمات BIM</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavClick({id: 'surveying'})"
-        :class="{ active: isActive('home') }"
-      >خدمات نقشه‌برداری</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavigation('/projects-archive')"
-        :class="{ active: isActive('projects') }"
-      >پروژه‌ها</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavigation('/articles')"
-        :class="{ active: isActive('articles') }"
-      >مقالات</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavClick({id: 'about'})"
-        :class="{ active: isActive('home') }"
-      >درباره</a>
-      <a 
-        href="#" 
-        @click.prevent="handleNavClick({id: 'contact'})"
-        :class="{ active: isActive('home') }"
-      >تماس</a>
-    </nav>
+    <transition name="slide">
+      <nav v-if="mobileMenuOpen" class="nav-mobile">
+        <ul class="nav-list-mobile">
+          <li><a href="#" @click.prevent="handleNavClick('/')">صفحه اول</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('bim')">خدمات BIM</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('surveying')">خدمات نقشه‌برداری</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('/projects-archive')">پروژه‌ها</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('/articles')">مقالات</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('about')">درباره</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('contact')">تماس</a></li>
+        </ul>
+      </nav>
+    </transition>
   </header>
 </template>
 
@@ -115,6 +64,10 @@ export default {
     };
   },
   methods: {
+    navigateHome() {
+      this.navigateTo('/');
+      this.closeMobileMenu();
+    },
     toggleMobileMenu() {
       this.mobileMenuOpen = !this.mobileMenuOpen;
     },
@@ -122,251 +75,298 @@ export default {
       this.mobileMenuOpen = false;
     },
     handleNavigation(path) {
-      this.mobileMenuOpen = false;
-      this.navigateTo(path);
-    },
-    isActive(page) {
-      return this.$root.currentPage === page;
-    },
-    handleNavClick(args) {
-      const target = document.querySelector(`#${args.id}`);
-      if (target) {
-        this.mobileMenuOpen = false;
-        target.scrollIntoView({
-          behavior: 'smooth'
-        });
+      // If navigating to a section on the home page
+      if (path === '/' || ['bim', 'surveying', 'about', 'contact'].includes(path)) {
+        // If already on home, scroll to section
+        if (this.$root.currentPage === 'home') {
+          const element = document.getElementById(path);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        } else {
+          // Navigate to home first
+          this.navigateTo('/');
+        }
+      } else {
+        // Navigate to page (projects or articles archive)
+        this.navigateTo(path);
       }
+    },
+    handleNavClick(path) {
+      this.closeMobileMenu();
+      this.handleNavigation(path);
     }
   },
   mounted() {
-    // Close mobile menu on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.mobileMenuOpen) {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
         this.closeMobileMenu();
       }
+    };
+    window.addEventListener('keydown', handleEscape);
+    this.$once('hook:beforeDestroy', () => {
+      window.removeEventListener('keydown', handleEscape);
     });
   }
-}
+};
 </script>
 
 <style scoped>
-header {
-  background: #fff;
-  padding: 0;
+.header {
   position: sticky;
   top: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.header-container {
+.header-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row-reverse;
   align-items: center;
-  padding: 20px 50px;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo-container {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+.logo-container:hover {
+  opacity: 0.7;
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: #1abc9c;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: skewX(-3deg);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: -1px;
 }
 
+.logo-highlight {
+  color: #7cb342;
+}
+
+/* Desktop Navigation */
 .nav-desktop {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 30px;
-}
-
-.nav-desktop a,
-.nav-mobile a {
-  text-decoration: none;
-  color: #333;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  transform: skewX(-2deg);
-}
-
-.nav-desktop a::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  width: 0;
-  height: 2px;
-  background: #1abc9c;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-desktop a:hover {
-  color: #1abc9c;
-}
-
-.nav-desktop a:hover::after {
-  width: 100%;
-}
-
-.nav-desktop a.active {
-  color: #1abc9c;
-  font-weight: 600;
-}
-
-.nav-desktop a.active::after {
-  width: 100%;
-}
-
-/* Hamburger Menu Button */
-.hamburger {
   display: none;
+}
+
+@media (min-width: 1025px) {
+  .nav-desktop {
+    display: block;
+    flex: 1;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: row-reverse;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+    justify-content: center;
+    margin-right: 1rem;
+  }
+
+  .nav-list a {
+    text-decoration: none;
+    color: #333333;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+    padding-bottom: 4px;
+  }
+
+  .nav-list a:hover {
+    color: #1abc9c;
+  }
+
+  .nav-list a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #1abc9c;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-list a:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Mobile Hamburger */
+.hamburger {
+  display: flex;
   flex-direction: column;
-  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
-  margin: 0;
-  z-index: 1001;
+  padding: 0.5rem;
+  gap: 6px;
+  align-items: flex-end;
+  flex-shrink: 0;
 }
 
-.hamburger-line {
-  display: block;
+.hamburger span {
   width: 24px;
-  height: 2.5px;
-  background: #333;
-  border-radius: 2px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
+  height: 2px;
+  background-color: #333333;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: right;
+}
+
+.hamburger.active span:first-child {
+  transform: rotate(-45deg) translateY(12px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:last-child {
+  transform: rotate(45deg) translateY(-12px);
+}
+
+@media (min-width: 1025px) {
+  .hamburger {
+    display: none;
+  }
 }
 
 /* Mobile Navigation */
-.nav-mobile {
-  position: fixed;
-  right: 0;
-  top: 69px;
-  height: calc(100vh - 69px);
-  width: 100%;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 0;
-  z-index: 999;
-  border-top: 1px solid #e0e0e0;
-}
-
-.nav-mobile a {
-  padding: 15px 20px;
-  display: block;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background 0.2s;
-}
-
-.nav-mobile a:hover {
-  background: #f5f5f5;
-  color: #1abc9c;
-}
-
-.nav-mobile a.active {
-  background: #1abc9c;
-  color: white;
-  font-weight: 600;
-}
-
 .mobile-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
-  z-index: 998;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
 }
 
-/* Responsive Design */
+.nav-mobile {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  z-index: 1001;
+}
+
+.nav-list-mobile {
+  display: flex;
+  flex-direction: column-reverse;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  gap: 0;
+}
+
+.nav-list-mobile li {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.nav-list-mobile li:last-child {
+  border-bottom: none;
+}
+
+.nav-list-mobile a {
+  display: block;
+  padding: 0.75rem 2rem;
+  text-decoration: none;
+  color: #333333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-list-mobile a:active,
+.nav-list-mobile a:hover {
+  background-color: #f5f5f5;
+  color: #1abc9c;
+}
+
+/* Transitions */
+.overlay-enter-active,
+.overlay-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.overlay-enter-from,
+.overlay-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateY(-100%);
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
-  .header-container {
-    padding: 15px 30px;
-  }
-
-  .logo {
-    font-size: 20px;
-  }
-
-  .nav-desktop {
-    gap: 20px;
-  }
-
-  .nav-desktop a {
-    font-size: 12px;
+  .header-content {
+    padding: 1rem 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .header-container {
-    padding: 15px 20px;
+  .header-content {
+    padding: 0.75rem 1rem;
   }
 
   .logo {
-    font-size: 18px;
-  }
-
-  /* Show hamburger menu on mobile */
-  .hamburger {
-    display: flex;
-  }
-
-  /* Hide desktop navigation on mobile */
-  .nav-desktop {
-    display: none;
+    font-size: 1.25rem;
   }
 
   .nav-mobile {
-    top: 63px;
-    height: calc(100vh - 63px);
+    top: 50px;
   }
 
-  .nav-mobile a {
-    padding: 16px 20px;
-    font-size: 16px;
+  .nav-list-mobile a {
+    padding: 0.75rem 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .header-container {
-    padding: 12px 15px;
+  .header-content {
+    padding: 0.5rem 1rem;
   }
 
   .logo {
-    font-size: 16px;
+    font-size: 1.1rem;
   }
 
-  .hamburger-line {
-    width: 22px;
-    height: 2px;
+  .hamburger {
+    padding: 0.25rem;
   }
 
-  .nav-mobile {
-    top: 59px;
-    height: calc(100vh - 59px);
+  .hamburger span {
+    width: 20px;
+    height: 1.5px;
   }
 
-  .nav-mobile a {
-    padding: 14px 16px;
-    font-size: 15px;
-    min-height: 44px;
+  .nav-list-mobile a {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
-}
-
-/* Fade animation for overlay */
-.overlay-fade-enter-active,
-.overlay-fade-leave-active {
-  transition: opacity 0.3s ease-out;
-}
-
-.overlay-fade-enter-from,
-.overlay-fade-leave-to {
-  opacity: 0;
 }
 </style>

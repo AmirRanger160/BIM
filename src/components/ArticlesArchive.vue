@@ -87,6 +87,8 @@
 </template>
 
 <script>
+import { articleService } from '../services/api';
+
 export default {
   name: 'ArticlesArchive',
   inject: ['navigateTo'],
@@ -118,100 +120,8 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        // Sample data - replace with API call
-        this.articles = [
-          {
-            id: 1,
-            slug: 'bim-benefits-2024',
-            title_en: 'Benefits of BIM Technology in Modern Construction',
-            title_fa: 'فوایدی فناوری BIM در ساخت و ساز مدرن',
-            summary_en: 'Explore how BIM technology is revolutionizing the construction industry.',
-            summary_fa: 'کاوش کنید که چگونه فناوری BIM صنعت ساخت و ساز را متحول می‌کند.',
-            content_en: 'BIM (Building Information Modeling) has become an essential tool...',
-            content_fa: 'BIM (مدل‌سازی اطلاعات ساختمان) به ابزاری ضروری تبدیل شده است...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%231abc9c%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'BIM',
-            tags: 'BIM, Construction, Technology',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-15T10:00:00'
-          },
-          {
-            id: 2,
-            slug: 'laser-scanning-guide',
-            title_en: 'Complete Guide to Laser Scanning and Point Clouds',
-            title_fa: 'راهنمای کامل اسکن لیزری و ابر نقاط',
-            summary_en: 'Learn about the latest laser scanning techniques and their applications.',
-            summary_fa: 'درباره آخرین تکنیک‌های اسکن لیزری و کاربردهای آن بیاموزید.',
-            content_en: 'Laser scanning technology has revolutionized surveying...',
-            content_fa: 'فناوری اسکن لیزری نقشه‌برداری را متحول کرده است...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%232d5f3f%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'Surveying',
-            tags: 'Laser Scanning, Point Cloud, Technology',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-10T10:00:00'
-          },
-          {
-            id: 3,
-            slug: 'digital-twin-technology',
-            title_en: 'Digital Twin Technology in Real Estate',
-            title_fa: 'فناوری دیجیتال دوقلو در املاک و مستغلات',
-            summary_en: 'How digital twins are transforming property management.',
-            summary_fa: 'چگونه دوقلوهای دیجیتالی مدیریت اموال را تغییر می‌دهند.',
-            content_en: 'Digital twin technology creates virtual replicas...',
-            content_fa: 'فناوری دوقلو دیجیتالی نسخه‌های مجازی ایجاد می‌کند...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%23333%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'Technology',
-            tags: 'Digital Twin, Real Estate, Innovation',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-05T10:00:00'
-          },
-          {
-            id: 4,
-            slug: 'surveying-standards-2024',
-            title_en: 'New Surveying Standards in 2024',
-            title_fa: 'استانداردهای نقشه‌برداری جدید در سال ۲۰۲۴',
-            summary_en: 'Updates on international surveying standards and regulations.',
-            summary_fa: 'به‌روزرسانی‌های استانداردها و مقررات نقشه‌برداری بین‌المللی.',
-            content_en: 'The surveying industry has adopted new standards...',
-            content_fa: 'صنعت نقشه‌برداری استانداردهای جدیدی پذیرفته است...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%234a7c59%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'News',
-            tags: 'Standards, Surveying, Regulations',
-            author: 'GeoBiro Team',
-            publish_date: '2024-12-28T10:00:00'
-          },
-          {
-            id: 5,
-            slug: 'bim-software-comparison',
-            title_en: 'BIM Software Comparison: Revit vs ArchiCAD',
-            title_fa: 'مقایسه نرم‌افزار BIM: Revit در برابر ArchiCAD',
-            summary_en: 'In-depth comparison of popular BIM software solutions.',
-            summary_fa: 'مقایسه عمیق راه‌حل‌های نرم‌افزار BIM محبوب.',
-            content_en: 'Choosing the right BIM software is crucial...',
-            content_fa: 'انتخاب نرم‌افزار BIM مناسب حیاتی است...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%235a8c6e%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'BIM',
-            tags: 'BIM, Revit, ArchiCAD, Comparison',
-            author: 'GeoBiro Team',
-            publish_date: '2024-12-20T10:00:00'
-          },
-          {
-            id: 6,
-            slug: 'portfolio-new-projects',
-            title_en: 'New Projects Added to Our Portfolio',
-            title_fa: 'پروژه‌های جدید به پورتفولیو ما اضافه شدند',
-            summary_en: 'Check out our latest completed projects and case studies.',
-            summary_fa: 'آخرین پروژه‌های تکمیل‌شده و مطالعات موردی ما را بررسی کنید.',
-            content_en: 'We are proud to announce several new projects...',
-            content_fa: 'ما افتخار می‌کنیم که چندین پروژه جدید را اعلام کنیم...',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 250%27%3E%3Crect fill=%27%236a5a3e%27 width=%27400%27 height=%27250%27/%3E%3C/svg%3E',
-            category: 'News',
-            tags: 'Projects, Portfolio, Case Studies',
-            author: 'GeoBiro Team',
-            publish_date: '2024-12-15T10:00:00'
-          }
-        ];
-        
+        const response = await articleService.getAll({ skip: 0, limit: 100, is_published: true });
+        this.articles = response.data;
         this.filterAndPaginate();
       } catch (err) {
         this.error = 'خطا در بارگذاری مقالات';
@@ -298,43 +208,43 @@ export default {
 
 /* Filters */
 .filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 20px;
   margin-bottom: 50px;
-  padding: 25px;
-  background: #f9f9f9;
-  border: 1px solid #e8e8e8;
+  padding: 20px 0;
   text-align: right;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .filter-group label {
   font-weight: 600;
   color: #333;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .filter-group select,
 .filter-group input {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 2px;
-  font-size: 14px;
+  padding: 8px 10px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
   direction: rtl;
   text-align: right;
+  background: transparent;
+  min-width: 150px;
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
   outline: none;
-  border-color: #1abc9c;
-  box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.1);
+  border-bottom-color: #1abc9c;
 }
 
 /* Articles List */
@@ -350,13 +260,11 @@ export default {
   gap: 30px;
   padding: 0;
   background: #ffffff;
-  border: 1px solid #e8e8e8;
   transition: all 0.3s ease-out;
 }
 
 .article-card:hover {
-  border-color: #1abc9c;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .article-image {

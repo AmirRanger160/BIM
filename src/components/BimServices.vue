@@ -2,37 +2,16 @@
   <section class="bim-services" id="bim">
     <h2 class="section-title animate-on-scroll">خدمات BIM</h2>
     <div class="services-grid">
-      <div class="service-card animate-on-scroll">
-        <h3>مدل‌سازی سه‌بعدی</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%23ddd' width='300' height='250'/%3E%3C/svg%3E" alt="مدل‌سازی سه‌بعدی">
-        <p>تخصص ما در ایجاد مدل‌های BIM آماده با توجه به داده‌های ابر نقطه (اسکن لیزری) در نرم‌افزارهای مختلف است. تیم اختصاصی ما برای کمک به شما در پیاده‌سازی منافع فرایند Scan to BIM در شرکت خود آماده است.</p>
-        <p style="margin-top: 15px;">نرم‌افزارهای مجاز مورد استفاده:</p>
-        <div class="software-logos">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="Revit">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="ArchiCAD">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="Allplan">
-        </div>
-      </div>
-
-      <div class="service-card animate-on-scroll">
-        <h3>بررسی ساختمان اندازه‌گیری شده</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%23333' width='300' height='250'/%3E%3C/svg%3E" alt="بررسی ساختمان">
-        <p>داشتن نقشه‌های دوبعدی کافی و به‌روز ضروری برای تمام پروژه‌های بزرگ است. از آنجایی که ابرهای نقطه تمام اطلاعات مربوط به ظاهر یک شی موجود را ارائه می‌دهند، می‌توان تمام ویژگی‌ها را براساس سطح جزئیات نشان داد.</p>
-        <p style="margin-top: 15px;">نرم‌افزارهای مجاز مورد استفاده:</p>
-        <div class="software-logos">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="AutoCAD">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="Software 2">
-        </div>
-      </div>
-
-      <div class="service-card animate-on-scroll">
-        <h3>ثبت ابر نقطه</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%232d5f3f' width='300' height='250'/%3E%3C/svg%3E" alt="ثبت ابر نقطه">
-        <p>تیم ما از نرم‌افزارهای پیشرو در پردازش و تحلیل ابر نقطه استفاده می‌کند. اگر داده‌های اسکن لیزری خام (یا روش‌های دیگر جمع‌آوری ابر نقطه) به هر فرمتی دارید، تیم ما آماده است ابر نقطه‌ای ثبت‌شده و فهرس‌شده تحویل دهد.</p>
-        <p style="margin-top: 15px;">نرم‌افزارهای مجاز مورد استفاده:</p>
-        <div class="software-logos">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="Software 1">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect fill='%23e0e0e0' width='100' height='50'/%3E%3C/svg%3E" alt="Software 2">
+      <div class="service-card animate-on-scroll" v-for="service in bimServices" :key="service.id">
+        <h3>{{ service.title_fa || service.title_en }}</h3>
+        <img 
+          :src="service.image_url || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%23ddd%27 width=%27300%27 height=%27250%27/%3E%3C/svg%3E'" 
+          :alt="service.title_fa || service.title_en"
+        >
+        <p>{{ service.description_fa || service.description_en }}</p>
+        <p v-if="service.software_tools" style="margin-top: 15px;">نرم‌افزارهای مجاز مورد استفاده:</p>
+        <div v-if="service.software_tools" class="software-logos">
+          <span v-for="(tool, idx) in service.software_tools.split(',').map(t => t.trim())" :key="idx" class="software-tag">{{ tool }}</span>
         </div>
       </div>
     </div>
@@ -40,8 +19,42 @@
 </template>
 
 <script>
+import { serviceService } from '../services/api';
+
 export default {
-  name: 'BimServices'
+  name: 'BimServices',
+  data() {
+    return {
+      bimServices: [],
+      loading: false,
+      error: null
+    }
+  },
+  mounted() {
+    this.fetchServices();
+    this.$nextTick(() => {
+      setTimeout(() => {
+        const elements = this.$el.querySelectorAll('.animate-on-scroll');
+        elements.forEach(el => el.classList.add('in-view'));
+      }, 50);
+    });
+  },
+  methods: {
+    async fetchServices() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await serviceService.getAll({ category: 'BIM' });
+        this.bimServices = response.data;
+      } catch (err) {
+        this.error = 'خطا در بارگذاری خدمات';
+        console.error('Error fetching BIM services:', err);
+        this.bimServices = [];
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
 }
 </script>
 
@@ -101,6 +114,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
 .software-logos img {
@@ -111,6 +125,15 @@ export default {
 
 .software-logos img:hover {
   transform: scale(1.1);
+}
+
+.software-tag {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
 }
 
 @media (max-width: 1024px) {

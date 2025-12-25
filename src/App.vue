@@ -6,11 +6,11 @@
       <Hero />
       <Stats />
       <BimServices />
-      <Projects />
-      <About />
       <SurveyingServices />
-      <FeaturedArticles />
+      <About />
+      <Projects />
       <CTA />
+      <FeaturedArticles />
       <Certificates />
       <Team />
       <Contact />
@@ -46,6 +46,7 @@
     </div>
 
     <ScrollToTop />
+    <VideoPopup ref="videoPopup" />
   </div>
 </template>
 
@@ -69,6 +70,7 @@ import ArticleDetail from './components/ArticleDetail.vue'
 import ProjectsArchive from './components/ProjectsArchive.vue'
 import ProjectDetail from './components/ProjectDetail.vue'
 import FeaturedArticles from './components/FeaturedArticles.vue'
+import VideoPopup from './components/VideoPopup.vue'
 
 export default {
   name: 'App',
@@ -91,7 +93,8 @@ export default {
     ArticleDetail,
     ProjectsArchive,
     ProjectDetail,
-    FeaturedArticles
+    FeaturedArticles,
+    VideoPopup
   },
   data() {
     return {
@@ -99,8 +102,10 @@ export default {
     }
   },
   provide() {
+    const self = this;
     return {
-      navigateTo: this.navigateTo
+      navigateTo: function(path) { return self.navigateTo(path); },
+      playVideo: function(videoUrl) { return self.playVideo(videoUrl); }
     }
   },
   mounted() {
@@ -138,6 +143,9 @@ export default {
         this.initIntersectionObserver();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+    },
+    playVideo(videoUrl) {
+      this.$refs.videoPopup.openPopup(videoUrl);
     },
     initIntersectionObserver() {
       // Initialize Intersection Observer for scroll-triggered animations
@@ -224,7 +232,7 @@ body {
   transform: translateX(50%);
   width: 60px;
   height: 1px;
-  background: #1abc9c;
+  background: transparent;
 }
 
 .btn {
@@ -276,6 +284,7 @@ body {
   .section-title::after {
     width: 50px;
     height: 2px;
+    background: transparent;
   }
 }
 
@@ -289,6 +298,7 @@ body {
   .section-title::after {
     width: 50px;
     height: 2px;
+    background: transparent;
   }
 }
 </style>

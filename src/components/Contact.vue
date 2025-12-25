@@ -4,33 +4,156 @@
     <div class="contact-container">
       <div class="contact-form animate-on-scroll">
         <div class="form-group">
-          <input type="text" placeholder="نام شما">
+          <input 
+            v-model="form.name" 
+            type="text" 
+            placeholder="نام شما"
+            @keydown="clearError"
+          >
         </div>
         <div class="form-group">
-          <input type="tel" placeholder="شماره تلفن شما">
+          <input 
+            v-model="form.phone" 
+            type="tel" 
+            placeholder="شماره تلفن شما"
+            @keydown="clearError"
+          >
         </div>
         <div class="form-group">
-          <input type="email" placeholder="ایمیل شما">
+          <input 
+            v-model="form.email" 
+            type="email" 
+            placeholder="ایمیل شما"
+            @keydown="clearError"
+          >
         </div>
         <div class="form-group">
-          <textarea placeholder="پیام شما"></textarea>
+          <textarea 
+            v-model="form.message" 
+            placeholder="پیام شما"
+            @keydown="clearError"
+          ></textarea>
         </div>
-        <div class="success-message">
+        <div v-if="errorMessage" class="error-message">
+          <span>{{ errorMessage }}</span>
+        </div>
+        <div v-if="showSuccess" class="success-message">
           <div class="success-check">✓</div>
           <span>ارسال شد!</span>
         </div>
-        <button class="btn-send">ارسال</button>
+        <button 
+          class="btn-send"
+          @click="submitForm"
+          :disabled="isLoading"
+        >
+          {{ isLoading ? 'در حال ارسال...' : 'ارسال' }}
+        </button>
       </div>
-      <div class="contact-map animate-on-scroll">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect fill='%2366bb6a' width='400' height='400'/%3E%3C/svg%3E" alt="نقشه">
+      <div class="contact-info animate-on-scroll">
+        <div class="company-info">
+          <h3>اطلاعات تماس</h3>
+          <div v-if="companyInfo" class="info-items">
+            <div class="info-item">
+              <span class="label">شرکت:</span>
+              <span class="value">{{ companyInfo.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">آدرس:</span>
+              <span class="value">{{ companyInfo.location }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">تلفن:</span>
+              <span class="value">
+                <a :href="`tel:${companyInfo.phone}`">{{ companyInfo.phone }}</a>
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">ایمیل:</span>
+              <span class="value">
+                <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
+              </span>
+            </div>
+            <div v-if="companyInfo.founded_year" class="info-item">
+              <span class="label">سال تاسیس:</span>
+              <span class="value">{{ companyInfo.founded_year }}</span>
+            </div>
+          </div>
+          <div v-else class="loading">
+            <p>در حال بارگذاری...</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import { contactService } from '../services/api';
+
 export default {
-  name: 'Contact'
+  name: 'Contact',
+  data() {
+    return {
+      form: {
+        name: '',
+        phone: '',
+        email: '',
+        message: ''
+      },
+      companyInfo: null,
+      isLoading: false,
+      showSuccess: false,
+      errorMessage: ''
+    }
+  },
+  mounted() {
+    this.loadCompanyInfo();
+  },
+  methods: {
+    async loadCompanyInfo() {
+      try {
+        const response = await contactService.getCompanyInfo();
+        this.companyInfo = response.data;
+      } catch (error) {
+        console.error('Error loading company info:', error);
+      }
+    },
+    async submitForm() {
+      this.errorMessage = '';
+      
+      // Validation
+      if (!this.form.name || !this.form.phone || !this.form.email || !this.form.message) {
+        this.errorMessage = 'لطفا تمام فیلدها را پر کنید';
+        return;
+      }
+      
+      this.isLoading = true;
+      
+      try {
+        await contactService.submit({
+          name: this.form.name,
+          phone: this.form.phone,
+          email: this.form.email,
+          message: this.form.message
+        });
+        
+        this.showSuccess = true;
+        this.form = { name: '', phone: '', email: '', message: '' };
+        
+        setTimeout(() => {
+          this.showSuccess = false;
+        }, 5000);
+      } catch (error) {
+        console.error('Error submitting contact form:', error);
+        this.errorMessage = 'خطا در ارسال پیام. لطفا دوباره تلاش کنید.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    clearError() {
+      this.errorMessage = '';
+    }
+  }
 }
 </script>
 
@@ -56,20 +179,58 @@ export default {
   width: 100%;
 }
 
-.contact-map {
+.contact-info {
   border-radius: 8px;
   overflow: hidden;
+  background: white;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.contact-map img {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.company-info h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1abc9c;
 }
 
-.contact-map:hover img {
-  transform: scale(1.05);
+.info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.info-item .label {
+  font-weight: bold;
+  color: #333;
+  min-width: 80px;
+}
+
+.info-item .value {
+  color: #666;
+}
+
+.info-item a {
+  color: #1abc9c;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.info-item a:hover {
+  color: #16a085;
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #999;
 }
 
 .contact-form {
@@ -115,11 +276,26 @@ export default {
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+  background: #d4edda;
+  padding: 12px 15px;
+  border-radius: 6px;
+  color: #155724;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  background: #f8d7da;
+  padding: 12px 15px;
+  border-radius: 6px;
+  color: #721c24;
 }
 
 .success-check {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   background: #27ae60;
   border-radius: 50%;
   display: flex;
@@ -127,6 +303,7 @@ export default {
   justify-content: center;
   color: white;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .btn-send {
@@ -142,6 +319,20 @@ export default {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   min-height: 44px;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: #16a085;
+  transform: translateY(-2px);
+}
+
+.btn-send:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-send:hover {

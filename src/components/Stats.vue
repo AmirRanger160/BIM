@@ -72,7 +72,8 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .stats {
+    .stats {
+    display: none;  /* اضافه کردن این خط */
     grid-template-columns: repeat(2, 1fr);
     padding: 30px 20px;
     gap: 20px;

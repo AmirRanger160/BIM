@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { projectService } from '../services/api';
+
 export default {
   name: 'Projects',
   inject: ['navigateTo'],
@@ -50,78 +52,12 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        // Using sample data for now - replace with API call when frontend integration is set up
-        this.projects = [
-          {
-            id: 1,
-            title_en: 'BIM Modeling Project',
-            title_fa: 'پروژه مدل‌سازی BIM',
-            description_en: 'A comprehensive 3D BIM model created for a commercial building complex.',
-            description_fa: 'یک مدل BIM سه‌بعدی جامع برای مجتمع تجاری ایجاد شده است.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%231abc9c%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3EBIM Project 1%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM'
-          },
-          {
-            id: 2,
-            title_en: '3D Point Cloud Processing',
-            title_fa: 'پردازش ابر نقطه سه‌بعدی',
-            description_en: 'Point cloud registration and processing for a historical structure survey.',
-            description_fa: 'ثبت و پردازش ابر نقطه برای بررسی یک ساختار تاریخی.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%232d5f3f%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3EPoint Cloud 2%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'Surveying'
-          },
-          {
-            id: 3,
-            title_en: 'Urban Survey Analysis',
-            title_fa: 'تحلیل نقشه‌برداری شهری',
-            description_en: 'Detailed surveying and documentation of urban development zone.',
-            description_fa: 'نقشه‌برداری و مستندسازی دقیق منطقه توسعه شهری.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%23333%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3EUrban Survey 3%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'Surveying'
-          },
-          {
-            id: 4,
-            title_en: 'Renovation Assessment',
-            title_fa: 'ارزیابی نوسازی',
-            description_en: 'Complete BIM assessment for building renovation project.',
-            description_fa: 'ارزیابی جامع BIM برای پروژه نوسازی ساختمان.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%234a7c59%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3ERenovation 4%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM'
-          },
-          {
-            id: 5,
-            title_en: 'Infrastructure Mapping',
-            title_fa: 'نقشه‌برداری زیرساخت',
-            description_en: 'Large-scale infrastructure survey with laser scanning.',
-            description_fa: 'نقشه‌برداری زیرساخت در مقیاس بزرگ با اسکن لیزری.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%235a8c6e%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3EInfrastructure 5%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'Surveying'
-          },
-          {
-            id: 6,
-            title_en: 'Industrial Complex BIM',
-            title_fa: 'BIM مجتمع صنعتی',
-            description_en: 'BIM modeling of large industrial manufacturing facility.',
-            description_fa: 'مدل‌سازی BIM تاسیسات تولید صنعتی بزرگ.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%236a5a3e%27 width=%27300%27 height=%27250%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2724%27%3EIndustrial 6%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM'
-          }
-        ];
+        const response = await projectService.getAll({ is_featured: true });
+        this.projects = response.data.slice(0, 6);
       } catch (err) {
         this.error = 'خطا در بارگذاری پروژه‌ها';
         console.error('Error fetching projects:', err);
+        this.projects = [];
       } finally {
         this.loading = false;
       }
@@ -132,7 +68,7 @@ export default {
 
 <style scoped>
 .projects-section {
-  padding: 60px 50px;
+  padding: 40px 50px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
@@ -143,22 +79,21 @@ export default {
   font-size: 32px;
   font-weight: bold;
   text-align: right;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #1a1a1a;
 }
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 50px;
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
-  margin-top: 50px;
+  margin-top: 25px;
 }
 
 .project-card {
   background: #ffffff;
-  border: 1px solid #e8e8e8;
   cursor: pointer;
   transition: all 0.3s ease-out;
   text-align: right;
@@ -166,7 +101,6 @@ export default {
 }
 
 .project-card:hover {
-  border-color: #1abc9c;
   transform: translateY(-4px);
 }
 
@@ -189,7 +123,7 @@ export default {
 }
 
 .project-content {
-  padding: 25px;
+  padding: 15px;
 }
 
 .project-card h3 {
@@ -218,32 +152,33 @@ export default {
 .btn-link {
   display: inline-block;
   padding: 10px 15px;
-  background: #1abc9c;
-  color: white;
+  background: transparent;
+  color: #666;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   text-align: center;
-  border: none;
+  border: 1px solid #ddd;
   border-radius: 2px;
 }
 
 .btn-link:hover {
-  background: #16a085;
+  background: #f5f5f5;
+  border-color: #999;
   transform: scale(1.02);
 }
 
 .btn-link.secondary {
-  background: #f0f0f0;
-  color: #333;
+  background: transparent;
+  color: #666;
   border: 1px solid #ddd;
 }
 
 .btn-link.secondary:hover {
-  background: #e8e8e8;
-  border-color: #1abc9c;
+  background: #f5f5f5;
+  border-color: #999;
 }
 
 /* View All Button */
@@ -256,20 +191,20 @@ export default {
 .btn-view-all {
   display: inline-block;
   padding: 14px 40px;
-  background: #f0f0f0;
-  color: #1abc9c;
+  background: transparent;
+  color: #666;
   text-decoration: none;
   font-size: 14px;
   font-weight: 700;
-  border: 2px solid #1abc9c;
+  border: 1px solid #999;
   border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .btn-view-all:hover {
-  background: #1abc9c;
-  color: white;
+  background: #f5f5f5;
+  color: #333;
   transform: scale(1.02);
 }
 

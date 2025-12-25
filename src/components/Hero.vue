@@ -7,16 +7,27 @@
       <h1 class="fade-in">راهکارهای جغرافیایی<br>با کیفیت بالا</h1>
       <p class="fade-in" style="animation-delay: 0.2s;">شرکت ما خدمات مختلفی و راهکارهای جغرافیایی برای کسب‌وکارهای سراسر جهان ارائه می‌دهد.</p>
       <div class="hero-buttons">
-        <div class="play-btn fade-in" style="animation-delay: 0.4s;">▶</div>
+        <button class="play-btn fade-in" style="animation-delay: 0.4s;" @click="playVideo">▶</button>
         <button class="btn btn-primary fade-in" style="animation-delay: 0.4s;">تماس با ما</button>
       </div>
     </div>
+    <video-popup ref="videoPopup"></video-popup>
   </section>
 </template>
 
 <script>
+import VideoPopup from './VideoPopup.vue'
+
 export default {
-  name: 'Hero'
+  name: 'Hero',
+  components: {
+    VideoPopup
+  },
+  methods: {
+    playVideo() {
+      this.$refs.videoPopup.openPopup('/video-1080-2.mp4')
+    }
+  }
 }
 </script>
 

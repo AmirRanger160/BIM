@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { articleService } from '../services/api';
+
 export default {
   name: 'FeaturedArticles',
   inject: ['navigateTo'],
@@ -51,45 +53,12 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        // Using sample data for now - replace with API call when frontend integration is set up
-        this.articles = [
-          {
-            id: 1,
-            slug: 'bim-benefits-2024',
-            title_en: 'Benefits of BIM Technology in Modern Construction',
-            title_fa: 'فوایدی فناوری BIM در ساخت و ساز مدرن',
-            summary_en: 'Explore how BIM technology is revolutionizing the construction industry.',
-            summary_fa: 'کاوش کنید که چگونه فناوری BIM صنعت ساخت و ساز را متحول می‌کند.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 200%27%3E%3Crect fill=%27%231abc9c%27 width=%27300%27 height=%27200%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2720%27%3EBIM Article%3C/text%3E%3C/svg%3E',
-            category: 'BIM',
-            publish_date: '2025-01-15T10:00:00'
-          },
-          {
-            id: 2,
-            slug: 'laser-scanning-guide',
-            title_en: 'Complete Guide to Laser Scanning and Point Clouds',
-            title_fa: 'راهنمای کامل اسکن لیزری و ابر نقاط',
-            summary_en: 'Learn about the latest laser scanning techniques and their applications.',
-            summary_fa: 'درباره آخرین تکنیک‌های اسکن لیزری و کاربردهای آن بیاموزید.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 200%27%3E%3Crect fill=%27%232d5f3f%27 width=%27300%27 height=%27200%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2720%27%3ELaser Scanning%3C/text%3E%3C/svg%3E',
-            category: 'Surveying',
-            publish_date: '2025-01-10T10:00:00'
-          },
-          {
-            id: 3,
-            slug: 'digital-twin-technology',
-            title_en: 'Digital Twin Technology in Real Estate',
-            title_fa: 'فناوری دیجیتال دوقلو در املاک و مستغلات',
-            summary_en: 'How digital twins are transforming property management.',
-            summary_fa: 'چگونه دوقلوهای دیجیتالی مدیریت اموال را تغییر می‌دهند.',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 200%27%3E%3Crect fill=%27%23333%27 width=%27300%27 height=%27200%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2720%27%3EDigital Twin%3C/text%3E%3C/svg%3E',
-            category: 'Technology',
-            publish_date: '2025-01-05T10:00:00'
-          }
-        ];
+        const response = await articleService.getAll({ skip: 0, limit: 3, is_published: true });
+        this.articles = response.data.slice(0, 3);
       } catch (err) {
         this.error = 'خطا در بارگذاری مقالات';
         console.error('Error fetching articles:', err);
+        this.articles = [];
       } finally {
         this.loading = false;
       }
@@ -100,7 +69,7 @@ export default {
 
 <style scoped>
 .featured-articles-section {
-  padding: 60px 50px;
+  padding: 40px 50px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
@@ -118,16 +87,15 @@ export default {
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  gap: 25px;
   width: 100%;
   max-width: 1200px;
-  margin-top: 50px;
+  margin-top: 25px;
   margin-bottom: 0;
 }
 
 .article-card {
   background: #ffffff;
-  border: 1px solid #e8e8e8;
   cursor: pointer;
   transition: all 0.3s ease-out;
   text-align: right;
@@ -135,7 +103,6 @@ export default {
 }
 
 .article-card:hover {
-  border-color: #1abc9c;
   transform: translateY(-4px);
 }
 
@@ -171,7 +138,7 @@ export default {
 }
 
 .article-content {
-  padding: 25px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
 }
@@ -212,19 +179,20 @@ export default {
 .btn-read-more {
   display: inline-block;
   padding: 8px 16px;
-  background: #1abc9c;
-  color: white;
+  background: transparent;
+  color: #666;
   text-decoration: none;
   font-size: 12px;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  border: none;
+  border: 1px solid #ddd;
   border-radius: 2px;
 }
 
 .btn-read-more:hover {
-  background: #16a085;
+  background: #f5f5f5;
+  border-color: #999;
   transform: scale(1.02);
 }
 
@@ -239,20 +207,20 @@ export default {
 .btn-view-all {
   display: inline-block;
   padding: 14px 40px;
-  background: #f0f0f0;
-  color: #1abc9c;
+  background: transparent;
+  color: #666;
   text-decoration: none;
   font-size: 14px;
   font-weight: 700;
-  border: 2px solid #1abc9c;
+  border: 1px solid #999;
   border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .btn-view-all:hover {
-  background: #1abc9c;
-  color: white;
+  background: #f5f5f5;
+  border-color: #666;
   transform: scale(1.02);
 }
 

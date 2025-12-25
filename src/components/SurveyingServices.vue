@@ -2,30 +2,55 @@
   <section class="surveying-services" id="surveying">
     <h2 class="section-title animate-on-scroll">خدمات نقشه‌برداری</h2>
     <div class="services-grid">
-      <div class="service-card animate-on-scroll">
-        <h3>اسکن لیزری</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%238b6f47' width='300' height='250'/%3E%3C/svg%3E" alt="اسکن لیزری">
-        <p>اسکن لیزری سه‌بعدی روشی سریع و کارآمد برای جمع‌آوری داده‌های فضایی است. جئوبیرو یکی از رهبران صنعت اسکن لیزری در بوسنی و هرزگوین است.</p>
-      </div>
-
-      <div class="service-card animate-on-scroll">
-        <h3>ژئودزی مهندسی</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%234a7c7e' width='300' height='250'/%3E%3C/svg%3E" alt="ژئودزی مهندسی">
-        <p>پشتیبانی ژئودتیکی اهمیت بسیاری در طراحی و اجرای کارهای ساختمانی دارد. متخصصان نقشه‌برداری مبانی طراحی را فراهم می‌کنند و کنترل اجرای ساختارهای پیش‌بینی‌شده را انجام می‌دهند.</p>
-      </div>
-
-      <div class="service-card animate-on-scroll">
-        <h3>نظارت</h3>
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'%3E%3Crect fill='%234a9d6f' width='300' height='250'/%3E%3C/svg%3E" alt="نظارت">
-        <p>تأثیرات مختلفی بر تاسیسات ساخته‌شده باعث جابه‌جایی‌های نسبی آنها در فضا می‌شود. نظارت ژئودتیکی نظام‌مند ضروری است تا این جابه‌جایی‌ها شناسایی و ثبت شوند.</p>
+      <div class="service-card animate-on-scroll" v-for="service in surveyingServices" :key="service.id">
+        <h3>{{ service.title_fa || service.title_en }}</h3>
+        <img 
+          :src="service.image_url || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 250%27%3E%3Crect fill=%27%23ddd%27 width=%27300%27 height=%27250%27/%3E%3C/svg%3E'" 
+          :alt="service.title_fa || service.title_en"
+        >
+        <p>{{ service.description_fa || service.description_en }}</p>
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import { serviceService } from '../services/api';
+
 export default {
-  name: 'SurveyingServices'
+  name: 'SurveyingServices',
+  data() {
+    return {
+      surveyingServices: [],
+      loading: false,
+      error: null
+    }
+  },
+  mounted() {
+    this.fetchServices();
+    this.$nextTick(() => {
+      setTimeout(() => {
+        const elements = this.$el.querySelectorAll('.animate-on-scroll');
+        elements.forEach(el => el.classList.add('in-view'));
+      }, 50);
+    });
+  },
+  methods: {
+    async fetchServices() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await serviceService.getAll({ category: 'Surveying' });
+        this.surveyingServices = response.data;
+      } catch (err) {
+        this.error = 'خطا در بارگذاری خدمات';
+        console.error('Error fetching surveying services:', err);
+        this.surveyingServices = [];
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
 }
 </script>
 
