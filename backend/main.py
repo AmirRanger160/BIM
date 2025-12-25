@@ -1,7 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request, status, HTTPException
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
@@ -67,6 +67,14 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Incoming request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code} for {request.method} {request.url}")
+    return response
+
 
 # CORS Configuration
 app.add_middleware(
@@ -77,6 +85,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
+        "http://0.0.0.0:8000",
+        "http://127.0.0.1:8000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -108,8 +118,6 @@ if os.path.exists(static_dir):
     assets_dir = os.path.join(static_dir, "assets")
     if os.path.exists(assets_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
-    # Mount root static files
-    app.mount("/", StaticFiles(directory=static_dir), name="static")
 
 
 # Include routers
@@ -133,11 +141,53 @@ async def health_check():
         "version": "1.0.0"
     }
 
+# Check video endpoint
+@app.get("/check_video")
+async def check_video():
+    static_file_path = os.path.join(static_dir, "video-1080-2.mp4")
+    exists = os.path.exists(static_file_path)
+    is_file = os.path.isfile(static_file_path) if exists else False
+    size = os.path.getsize(static_file_path) if is_file else 0
+    return {
+        "exists": exists,
+        "path": static_file_path,
+        "is_file": is_file,
+        "size": size,
+        "files_in_static": os.listdir(static_dir) if os.path.exists(static_dir) else []
+    }
+
+
+# SPA fallback: serve index.html for non-API routes
+@app.get("/{path:path}")
+async def serve_spa(path: str):
+    """Serve the Vue.js SPA for client-side routing."""
+    logger.info(f"Serving path: {path}")
+    if path.startswith(("api/", "uploads/", "assets/")):
+        logger.info(f"Path starts with excluded prefix: {path}")
+        raise HTTPException(status_code=404, detail="Not found")
+
+    # Check if it's a static file
+    static_file_path = os.path.join(static_dir, path)
+    logger.info(f"Checking static file: {static_file_path}, exists: {os.path.exists(static_file_path)}, isfile: {os.path.isfile(static_file_path)}")
+    if os.path.exists(static_file_path) and os.path.isfile(static_file_path):
+        logger.info(f"Serving static file: {static_file_path}")
+        return FileResponse(static_file_path)
+
+    # Otherwise, serve SPA
+    index_path = os.path.join(static_dir, "index.html")
+    logger.info(f"Serving SPA index: {index_path}, exists: {os.path.exists(index_path)}")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    raise HTTPException(status_code=404, detail="Not found")
+
 
 # Root endpoint
 @app.get("/")
 async def root():
-    """API root endpoint."""
+    """Serve the Vue.js SPA."""
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
     return {
         "message": "Welcome to GeoBiro API",
         "docs": "/api/docs",

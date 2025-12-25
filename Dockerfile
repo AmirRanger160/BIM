@@ -3,6 +3,9 @@ FROM node:18-alpine as frontend-build
 
 WORKDIR /app
 
+# Set API URL for production build
+ENV VITE_API_URL=/api
+
 # Copy frontend files
 COPY package*.json ./
 COPY src ./src

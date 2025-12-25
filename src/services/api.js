@@ -25,8 +25,12 @@ api.interceptors.request.use(
 
 // Handle 401 responses
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API Response Success:', response.config.url, response.status);
+    return response;
+  },
   (error) => {
+    console.error('API Response Error:', error.config?.url, error.response?.status, error.message);
     if (error.response?.status === 401) {
       localStorage.removeItem('admin_token');
       if (window.location.pathname.startsWith('/admin') && !window.location.pathname.includes('/login')) {

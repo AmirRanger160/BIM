@@ -9,10 +9,11 @@
           </svg>
         </button>
         <div class="video-wrapper">
-          <video 
-            v-if="videoSource" 
-            controls 
+          <video
+            v-if="videoSource"
+            controls
             autoplay
+            muted
             class="video-element"
             @click.stop
           >

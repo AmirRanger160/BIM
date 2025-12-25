@@ -23,6 +23,16 @@ export default {
   components: {
     VideoPopup
   },
+  mounted() {
+    const video = this.$el.querySelector('.hero-video')
+    console.log('Hero video element:', video)
+    if (video) {
+      video.addEventListener('loadeddata', () => console.log('Video loaded successfully'))
+      video.addEventListener('error', (e) => console.error('Video failed to load:', e))
+      video.addEventListener('canplay', () => console.log('Video can play'))
+      console.log('Video src:', video.src)
+    }
+  },
   methods: {
     playVideo() {
       this.$refs.videoPopup.openPopup('/video-1080-2.mp4')
