@@ -9,6 +9,33 @@ const api = axios.create({
   }
 });
 
+// Event emitter for error notifications
+export const apiErrorEmitter = {
+  listeners: [],
+  on(callback) {
+    this.listeners.push(callback);
+  },
+  off(callback) {
+    this.listeners = this.listeners.filter(l => l !== callback);
+  },
+  emit(error) {
+    this.listeners.forEach(callback => callback(error));
+  }
+};
+
+// Track refresh token request to avoid multiple simultaneous requests
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach(callback => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
 // Add auth token to requests
 api.interceptors.request.use(
   (config) => {
@@ -23,21 +50,75 @@ api.interceptors.request.use(
   }
 );
 
-// Handle 401 responses
+// Handle responses with comprehensive error handling
 api.interceptors.response.use(
   (response) => {
     console.log('API Response Success:', response.config.url, response.status);
     return response;
   },
-  (error) => {
-    console.error('API Response Error:', error.config?.url, error.response?.status, error.message);
-    if (error.response?.status === 401) {
-      localStorage.removeItem('admin_token');
-      if (window.location.pathname.startsWith('/admin') && !window.location.pathname.includes('/login')) {
-        window.history.pushState(null, '', '/admin/login');
-        window.dispatchEvent(new PopStateEvent('popstate'));
+  async (error) => {
+    const config = error.config;
+    
+    console.error('API Response Error:', config?.url, error.response?.status, error.message);
+    
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && !config._retry) {
+      config._retry = true;
+      
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          addRefreshSubscriber((token) => {
+            config.headers.Authorization = `Bearer ${token}`;
+            resolve(api(config));
+          });
+        });
+      }
+      
+      isRefreshing = true;
+      
+      try {
+        // Attempt to refresh token by re-logging in (simple approach)
+        // In a production app, you'd have a refresh token endpoint
+        localStorage.removeItem('admin_token');
+        isRefreshing = false;
+        onRefreshed(null);
+        
+        // Redirect to login
+        if (window.location.pathname.startsWith('/admin') && !window.location.pathname.includes('/login')) {
+          apiErrorEmitter.emit({
+            type: 'auth_expired',
+            message: 'Session expired. Please login again.'
+          });
+          window.history.pushState(null, '', '/admin/login');
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      } catch (err) {
+        isRefreshing = false;
+        apiErrorEmitter.emit({
+          type: 'refresh_error',
+          message: 'Failed to refresh session'
+        });
       }
     }
+    
+    // Emit error for UI notification
+    if (error.response) {
+      const message = error.response.data?.detail || 
+                     error.response.data?.message || 
+                     `Error: ${error.response.status}`;
+      
+      apiErrorEmitter.emit({
+        type: 'api_error',
+        status: error.response.status,
+        message
+      });
+    } else if (error.request) {
+      apiErrorEmitter.emit({
+        type: 'network_error',
+        message: 'Network error. Please check your connection.'
+      });
+    }
+    
     return Promise.reject(error);
   }
 );
@@ -70,11 +151,23 @@ export const licenseService = {
 
 export const contactService = {
   submit: (data) => api.post('/contact', data),
-  getCompanyInfo: () => api.get('/company-info'),
+  getCompanyInfo: () => api.get('/contact/company-info'),
 };
 
 export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
+};
+
+export const uploadService = {
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+  }
 };
 
 export const adminAuthService = {
@@ -94,8 +187,18 @@ export const adminArticleService = {
 export const adminProjectService = {
   getAll: (params = {}) => api.get('/projects', { params }),
   getById: (id) => api.get(`/projects/${id}`),
-  create: (data) => api.post('/projects', data),
-  update: (id, data) => api.put(`/projects/${id}`, data),
+  create: (data) => {
+    try {
+      console.debug('adminProjectService.create payload:', data);
+    } catch (e) {}
+    return api.post('/projects', data);
+  },
+  update: (id, data) => {
+    try {
+      console.debug('adminProjectService.update payload:', { id, ...data });
+    } catch (e) {}
+    return api.put(`/projects/${id}`, data);
+  },
   delete: (id) => api.delete(`/projects/${id}`),
 };
 

@@ -1,5 +1,6 @@
 <template>
   <div class="admin-dashboard" :class="sidebarClasses">
+    <ToastContainer />
     <AdminSidebar @navigate="handleNavigation" @sidebar-state-change="handleSidebarStateChange" />
     <div class="main-content">
       <div class="dashboard-header">
@@ -33,13 +34,15 @@
 <script>
 import AdminSidebar from './AdminSidebar.vue'
 import DashboardStats from './DashboardStats.vue'
+import ToastContainer from './ToastContainer.vue'
 import { adminSettingsService } from '../services/api'
 
 export default {
   name: 'AdminDashboard',
   components: {
     AdminSidebar,
-    DashboardStats
+    DashboardStats,
+    ToastContainer
   },
   data() {
     return {

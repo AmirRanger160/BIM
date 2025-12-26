@@ -79,6 +79,7 @@
 
 <script>
 import Loader from './Loader.vue';
+import { articleService } from '../services/api';
 
 export default {
   name: 'ArticleDetail',
@@ -128,69 +129,28 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        // Sample data - replace with API call
-        const allArticles = [
-          {
-            id: 1,
-            slug: 'bim-benefits-2024',
-            title_en: 'Benefits of BIM Technology in Modern Construction',
-            title_fa: 'فوایدی فناوری BIM در ساخت و ساز مدرن',
-            summary_en: 'Explore how BIM technology is revolutionizing the construction industry.',
-            summary_fa: 'کاوش کنید که چگونه فناوری BIM صنعت ساخت و ساز را متحول می‌کند.',
-            content_en: '<h2>What is BIM?</h2><p>Building Information Modeling (BIM) is a digital representation of the physical and functional characteristics of a building. It serves as a shared knowledge resource for information about a facility, forming a reliable basis for decisions during its life cycle...</p><h2>Key Benefits</h2><p>BIM technology offers numerous advantages including improved collaboration, better visualization, reduced costs, and enhanced project delivery...</p>',
-            content_fa: '<h2>BIM چیست؟</h2><p>مدل‌سازی اطلاعات ساختمان (BIM) نمایش دیجیتالی از ویژگی‌های فیزیکی و عملکردی یک ساختمان است. این به عنوان یک منبع دانش مشترک برای اطلاعات درباره یک تاسیسات عمل می‌کند...</p><h2>فوایدی اصلی</h2><p>فناوری BIM مزایای متعددی از جمله همکاری بهتر، بصری‌سازی بهتر، کاهش هزینه‌ها و تحویل پروژه بهتر ارائه می‌دهد...</p>',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 800 400%27%3E%3Crect fill=%27%231abc9c%27 width=%27800%27 height=%27400%27/%3E%3C/svg%3E',
-            category: 'BIM',
-            tags: 'BIM, Construction, Technology',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-15T10:00:00'
-          },
-          {
-            id: 2,
-            slug: 'laser-scanning-guide',
-            title_en: 'Complete Guide to Laser Scanning and Point Clouds',
-            title_fa: 'راهنمای کامل اسکن لیزری و ابر نقاط',
-            summary_en: 'Learn about the latest laser scanning techniques and their applications.',
-            summary_fa: 'درباره آخرین تکنیک‌های اسکن لیزری و کاربردهای آن بیاموزید.',
-            content_en: '<h2>Introduction to Laser Scanning</h2><p>Laser scanning technology has revolutionized the surveying industry by providing accurate and detailed 3D information about objects and environments...</p>',
-            content_fa: '<h2>مقدمه‌ای بر اسکن لیزری</h2><p>فناوری اسکن لیزری صنعت نقشه‌برداری را با ارائه اطلاعات سه‌بعدی دقیق و جزئی درباره اشیاء و محیط‌ها متحول کرده است...</p>',
-            image_url: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 800 400%27%3E%3Crect fill=%27%232d5f3f%27 width=%27800%27 height=%27400%27/%3E%3C/svg%3E',
-            category: 'Surveying',
-            tags: 'Laser Scanning, Point Cloud',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-10T10:00:00'
-          },
-          {
-            id: 3,
-            slug: 'digital-twin-technology',
-            title_en: 'Digital Twin Technology in Real Estate',
-            title_fa: 'فناوری دیجیتال دوقلو در املاک و مستغلات',
-            summary_en: 'How digital twins are transforming property management.',
-            summary_fa: 'چگونه دوقلوهای دیجیتالی مدیریت اموال را تغییر می‌دهند.',
-            content_en: '<p>Digital twin technology...</p>',
-            content_fa: '<p>فناوری دوقلو دیجیتالی...</p>',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 800 400%27%3E%3Crect fill=%27%23333%27 width=%27800%27 height=%27400%27/%3E%3C/svg%3E',
-            category: 'Technology',
-            tags: 'Digital Twin, Real Estate',
-            author: 'GeoBiro Team',
-            publish_date: '2025-01-05T10:00:00'
-          }
-        ];
-
-        // Find article by ID or slug
-        this.article = allArticles.find(a => 
-          a.id == this.articleId || a.slug === this.articleId
-        );
+        // Fetch article from API
+        const response = await articleService.getBySlug(this.articleId);
+        this.article = response.data;
 
         if (!this.article) {
           this.error = 'مقاله مورد نظر یافت نشد.';
           return;
         }
 
-        // Get related articles (same category, different article)
-        this.relatedArticles = allArticles
-          .filter(a => a.category === this.article.category && a.id !== this.article.id)
-          .slice(0, 3);
+        // Get all articles to find related ones
+        try {
+          const allResponse = await articleService.getAll({ limit: 100 });
+          const allArticles = allResponse.data;
+          
+          // Get related articles (same category, different article)
+          this.relatedArticles = allArticles
+            .filter(a => a.category === this.article.category && a.id !== this.article.id)
+            .slice(0, 3);
+        } catch (err) {
+          console.warn('خطا در بارگذاری مقالات مرتبط:', err);
+          this.relatedArticles = [];
+        }
 
       } catch (err) {
         this.error = 'خطا در بارگذاری مقاله';

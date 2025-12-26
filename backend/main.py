@@ -12,7 +12,7 @@ from app.core.config import get_settings
 from app.database import engine
 from app.models.models import Base
 from app.cache import init_redis
-from app.routers import auth, services, team, certificates, licenses, contact, projects, articles, users
+from app.routers import auth, services, team, certificates, licenses, contact, projects, articles, users, upload
 
 # Configure logging
 logging.basicConfig(
@@ -87,6 +87,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://0.0.0.0:8000",
         "http://127.0.0.1:8000",
+        "*"  # Allow all origins for development (restrict in production)
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -122,6 +123,7 @@ if os.path.exists(static_dir):
 
 # Include routers
 app.include_router(auth.router, prefix="/api")
+app.include_router(upload.router, prefix="/api")
 app.include_router(services.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(articles.router, prefix="/api")

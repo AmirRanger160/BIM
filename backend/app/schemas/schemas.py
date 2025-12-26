@@ -324,15 +324,15 @@ class ArticleBase(BaseModel):
     title_en: str = Field(..., min_length=1, max_length=255)
     title_fa: Optional[str] = None
     slug: str = Field(..., min_length=1, max_length=255)
-    summary_en: str
+    summary_en: str = Field(..., min_length=1)
     summary_fa: Optional[str] = None
-    content_en: str
+    content_en: str = Field(..., min_length=1)
     content_fa: Optional[str] = None
     image_url: Optional[str] = None
     tags: Optional[str] = None
     category: Optional[str] = None
     author: Optional[str] = None
-    is_published: bool = True
+    is_published: bool = False
 
 
 class ArticleCreate(ArticleBase):

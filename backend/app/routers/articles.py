@@ -17,27 +17,12 @@ router = APIRouter(prefix="/articles", tags=["Articles"])
 @router.get("", response_model=List[ArticleResponse])
 async def get_articles(
     skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1, le=50),
+    limit: int = Query(10, ge=1, le=100),
     tag: str = Query(None, description="Filter by tag"),
     category: str = Query(None, description="Filter by category"),
     db: Session = Depends(get_db)
 ):
     """Get articles with pagination and optional filtering."""
-    # Build cache key
-    cache_key_parts = [CACHE_KEYS['articles']]
-    if tag:
-        cache_key_parts.append(f"tag:{tag}")
-    if category:
-        cache_key_parts.append(f"category:{category}")
-    cache_key_parts.extend([f"skip:{skip}", f"limit:{limit}"])
-    
-    cache_key = ":".join(cache_key_parts)
-    
-    # Try cache
-    cached_data = await get_cached(cache_key)
-    if cached_data:
-        return cached_data
-    
     # Query database
     query = db.query(Article).filter(Article.is_published == True).order_by(Article.publish_date.desc())
     
@@ -47,13 +32,6 @@ async def get_articles(
         query = query.filter(Article.category == category)
     
     articles = query.offset(skip).limit(limit).all()
-    
-    # Cache result
-    await set_cache(
-        cache_key,
-        [ArticleResponse.from_orm(a).dict() for a in articles],
-        ttl=CACHE_TTL['articles']
-    )
     
     return articles
 
@@ -186,3 +164,95 @@ async def get_all_tags(db: Session = Depends(get_db)):
             tags_set.update(tags)
     
     return sorted(list(tags_set))
+
+
+@router.post("/seed-demo", response_model=dict)
+async def seed_demo_articles(db: Session = Depends(get_db)):
+    """Seed demo articles for development. (Development only)"""
+    from datetime import datetime, timedelta
+    
+    # Check if articles already exist
+    existing = db.query(Article).count()
+    if existing > 0:
+        return {"message": f"Articles already exist: {existing} articles found"}
+    
+    sample_articles = [
+        Article(
+            title_en="Introduction to BIM Technology",
+            title_fa="معرفی فناوری BIM",
+            slug="introduction-to-bim",
+            summary_en="Learn the basics of Building Information Modeling and its impact on modern construction.",
+            summary_fa="آشنایی با اصول مدل‌سازی اطلاعات ساختمان و تاثیر آن بر ساخت و ساز مدرن",
+            content_en="<p>BIM (Building Information Modeling) is a comprehensive approach to building design, construction, and management.</p>",
+            content_fa="<p>BIM (مدل‌سازی اطلاعات ساختمان) روشی جامع برای طراحی، ساخت و مدیریت ساختمان است.</p>",
+            category="BIM",
+            author="Geobiro Team",
+            tags="BIM, technology, construction",
+            is_published=True,
+            publish_date=datetime.utcnow() - timedelta(days=7)
+        ),
+        Article(
+            title_en="Surveying: The Foundation of Construction",
+            title_fa="نقشه‌برداری: بنیان ساخت و ساز",
+            slug="surveying-foundation-construction",
+            summary_en="Explore the essential role of surveying in modern construction projects.",
+            summary_fa="بررسی نقش حیاتی نقشه‌برداری در پروژه‌های ساخت و ساز مدرن",
+            content_en="<p>Surveying is the process of determining positions and distances in the landscape.</p>",
+            content_fa="<p>نقشه‌برداری فرایند تعیین موقعیت‌ها و فاصله‌ها در سرزمین است.</p>",
+            category="Surveying",
+            author="Geobiro Team",
+            tags="surveying, GPS, mapping",
+            is_published=True,
+            publish_date=datetime.utcnow() - timedelta(days=5)
+        ),
+        Article(
+            title_en="Latest Updates in Geospatial Technology",
+            title_fa="آخرین به‌روزرسانی‌های فناوری جغرافیایی",
+            slug="geospatial-technology-updates",
+            summary_en="Stay informed about the latest developments in geospatial technology.",
+            summary_fa="از آخرین پیشرفت‌های فناوری جغرافیایی آگاه بمانید",
+            content_en="<p>Geospatial technology is rapidly evolving with new tools and methodologies.</p>",
+            content_fa="<p>فناوری جغرافیایی به سرعت در حال تکامل است.</p>",
+            category="Technology",
+            author="Geobiro Team",
+            tags="geospatial, AI, technology",
+            is_published=True,
+            publish_date=datetime.utcnow() - timedelta(days=3)
+        ),
+        Article(
+            title_en="Success Stories: BIM in Large-Scale Projects",
+            title_fa="داستان‌های موفقیت: BIM در پروژه‌های بزرگ",
+            slug="bim-success-stories",
+            summary_en="Learn how BIM has revolutionized major construction projects.",
+            summary_fa="بیاموزید چگونه BIM پروژه‌های ساخت و ساز بزرگ را متحول کرده است",
+            content_en="<p>Major infrastructure projects have successfully implemented BIM.</p>",
+            content_fa="<p>پروژه‌های زیربنایی بزرگ با موفقیت BIM را پیاده‌سازی کرده‌اند.</p>",
+            category="BIM",
+            author="Geobiro Team",
+            tags="BIM, projects, infrastructure",
+            is_published=True,
+            publish_date=datetime.utcnow() - timedelta(days=1)
+        ),
+        Article(
+            title_en="Drone Technology in Land Surveying",
+            title_fa="فناوری درون‌بین در نقشه‌برداری زمین",
+            slug="drone-surveying-technology",
+            summary_en="Discover how drones are transforming surveying and mapping practices.",
+            summary_fa="کشف کنید چگونه درون‌بین‌ها عملیات نقشه‌برداری را تغییر می‌دهند",
+            content_en="<p>Unmanned Aerial Vehicles have become indispensable tools in surveying.</p>",
+            content_fa="<p>خودروهای بدون سرنشین به ابزارهای ضروری در نقشه‌برداری تبدیل شده‌اند.</p>",
+            category="Surveying",
+            author="Geobiro Team",
+            tags="drone, surveying, UAV",
+            is_published=True,
+            publish_date=datetime.utcnow()
+        )
+    ]
+    
+    db.add_all(sample_articles)
+    db.commit()
+    
+    return {
+        "message": f"Successfully seeded {len(sample_articles)} demo articles",
+        "count": len(sample_articles)
+    }

@@ -173,7 +173,8 @@ export default {
     return {
       isOpen: true,
       isMobile: false,
-      currentRoute: window.location.pathname
+      currentRoute: window.location.pathname,
+      routeWatchInterval: null
     }
   },
   mounted() {
@@ -197,6 +198,11 @@ export default {
   beforeUnmount() {
     window.removeEventListener('resize', this.checkScreenSize);
     document.removeEventListener('click', this.handleOutsideClick);
+    // Clear the interval to prevent memory leak
+    if (this.routeWatchInterval) {
+      clearInterval(this.routeWatchInterval);
+      this.routeWatchInterval = null;
+    }
   },
   methods: {
     checkScreenSize() {
@@ -245,13 +251,14 @@ export default {
       }
     },
     watchRoute() {
-      // Watch for URL changes every 100ms to update active state
-      setInterval(() => {
+      // Watch for URL changes to update active state
+      // Store interval ID so we can clean it up on unmount
+      this.routeWatchInterval = setInterval(() => {
         const currentPath = window.location.pathname;
         if (currentPath !== this.currentRoute) {
           this.currentRoute = currentPath;
         }
-      }, 100);
+      }, 500); // Increased to 500ms to reduce CPU usage
     },
     isActive(route) {
       return this.currentRoute === route;
@@ -272,7 +279,7 @@ export default {
   top: 15px;
   right: 15px;
   z-index: 101;
-  background: #1abc9c;
+  background: #35dde9;
   color: white;
   border: none;
   border-radius: 8px;
@@ -283,7 +290,7 @@ export default {
 }
 
 .sidebar-toggle:hover {
-  background: #16a085;
+  background: #27c3ce;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(26, 188, 156, 0.4);
 }

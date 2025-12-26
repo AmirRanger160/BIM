@@ -28,7 +28,7 @@
           <img :src="project.image_url || 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%23ddd%27 width=%271000%27 height=%27600%27/%3E%3C/svg%3E'" :alt="project.title_fa || project.title_en">
         </div>
 
-        <!-- Iframe Section (if URL exists) -->
+        <!-- Iframe Section (if URL exists) - Displayed first for prominence -->
         <div v-if="project.iframe_url" class="iframe-section">
           <h2>پروژه تعاملی</h2>
           <div class="iframe-container">
@@ -146,95 +146,19 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        // Sample data - replace with API call
-        const allProjects = [
-          {
-            id: 1,
-            title_en: 'BIM Modeling Project',
-            title_fa: 'پروژه مدل‌سازی BIM',
-            description_en: 'A comprehensive 3D BIM model was created for this commercial building complex. The project included detailed modeling of all structural and MEP systems, enabling better coordination and clash detection during the design phase. The final model was delivered in IFC format for compatibility across various software platforms.',
-            description_fa: 'یک مدل BIM سه‌بعدی جامع برای این مجتمع تجاری ایجاد شد. پروژه شامل مدل‌سازی دقیق تمام سیستم‌های ساختاری و MEP بود که امکان هماهنگی بهتر و تشخیص تضادها را در مرحله طراحی فراهم کرد. مدل نهایی در قالب IFC تحویل داده شد.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%231abc9c%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EBIM Project 1%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM',
-            created_at: '2024-06-15T10:00:00',
-            updated_at: '2024-12-15T10:00:00'
-          },
-          {
-            id: 2,
-            title_en: '3D Point Cloud Processing',
-            title_fa: 'پردازش ابر نقطه سه‌بعدی',
-            description_en: 'An extensive point cloud survey was conducted for this historical structure using advanced laser scanning technology. The resulting point cloud containing over 500 million points was processed and registered to create accurate 2D drawings and 3D models for restoration planning.',
-            description_fa: 'یک نقشه‌برداری ابر نقطه گسترده برای این ساختار تاریخی با استفاده از فناوری اسکن لیزری پیشرفته انجام شد. ابر نقطه حاصل با بیش از ۵۰۰ میلیون نقطه برای ایجاد نقشه‌های دقیق دو‌بعدی و مدل‌های سه‌بعدی پردازش شد.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%232d5f3f%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EPoint Cloud%3C/text%3E%3C/svg%3E',
-            iframe_url: 'about:blank', // Sample URL - would be actual 3D viewer
-            archive_url: null,
-            category: 'Surveying',
-            created_at: '2024-05-20T10:00:00',
-            updated_at: '2024-11-20T10:00:00'
-          },
-          {
-            id: 3,
-            title_en: 'Urban Survey Analysis',
-            title_fa: 'تحلیل نقشه‌برداری شهری',
-            description_en: 'Detailed surveying and documentation of an urban development zone covering an area of 50 hectares. The project included topographic surveys, boundary delineation, and utility mapping.',
-            description_fa: 'نقشه‌برداری و مستندسازی دقیق منطقه توسعه شهری در مساحت ۵۰ هکتار. پروژه شامل نقشه‌برداری توپوگرافی، تعیین مرزها و نقشه‌برداری سیستم‌های زیرساخت بود.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%23333%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EUrban Survey%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'Surveying',
-            created_at: '2024-04-10T10:00:00',
-            updated_at: '2024-10-10T10:00:00'
-          },
-          {
-            id: 4,
-            title_en: 'Renovation Assessment',
-            title_fa: 'ارزیابی نوسازی',
-            description_en: 'Complete BIM assessment and documentation for a major building renovation project. The as-built BIM model was created from laser scans and used to plan the renovation work.',
-            description_fa: 'ارزیابی جامع BIM و مستندسازی برای پروژه نوسازی ساختمان بزرگ. مدل BIM به‌حال‌فعلی از اسکن لیزری ایجاد شد و برای برنامه‌ریزی کار نوسازی استفاده شد.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%234a7c59%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3ERenovation%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM',
-            created_at: '2024-03-15T10:00:00',
-            updated_at: '2024-09-15T10:00:00'
-          },
-          {
-            id: 5,
-            title_en: 'Infrastructure Mapping',
-            title_fa: 'نقشه‌برداری زیرساخت',
-            description_en: 'Large-scale infrastructure survey covering several kilometers of highway and underground utilities. Laser scanning was used to map the existing conditions.',
-            description_fa: 'نقشه‌برداری زیرساخت در مقیاس بزرگ که شامل چندین کیلومتر بزرگراه و سیستم‌های زیرزمینی بود. اسکن لیزری برای نقشه‌برداری شرایط موجود استفاده شد.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%235a8c6e%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EInfrastructure%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'Surveying',
-            created_at: '2024-02-20T10:00:00',
-            updated_at: '2024-08-20T10:00:00'
-          },
-          {
-            id: 6,
-            title_en: 'Industrial Complex BIM',
-            title_fa: 'BIM مجتمع صنعتی',
-            description_en: 'BIM modeling of a large industrial manufacturing facility with complex MEP systems. The model included coordination between structural, architectural, and mechanical systems.',
-            description_fa: 'مدل‌سازی BIM تاسیسات تولید صنعتی بزرگ با سیستم‌های MEP پیچیده. مدل شامل هماهنگی میان سیستم‌های ساختاری، معماری و مکانیکی بود.',
-            image_url: 'data:image/svg+xml/%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1000 600%27%3E%3Crect fill=%27%236a5a3e%27 width=%271000%27 height=%27600%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27white%27 font-size=%2748%27%3EIndustrial%3C/text%3E%3C/svg%3E',
-            iframe_url: null,
-            archive_url: null,
-            category: 'BIM',
-            created_at: '2024-01-10T10:00:00',
-            updated_at: '2024-07-10T10:00:00'
-          }
-        ];
-
-        // Find project
-        this.project = allProjects.find(p => p.id === this.projectId);
-
-        if (!this.project) {
+        // Fetch from API
+        const response = await fetch(`/api/projects/${this.projectId}`);
+        
+        if (!response.ok) {
           this.error = 'پروژه مورد نظر یافت نشد.';
           return;
         }
+
+        this.project = await response.json();
+
+        // Fetch all projects for related projects
+        const allResponse = await fetch('/api/projects');
+        const allProjects = await allResponse.json();
 
         // Get related projects (same category, different project)
         this.relatedProjects = allProjects
@@ -372,7 +296,7 @@ export default {
 
 .iframe-container {
   width: 100%;
-  height: 600px;
+  height: 900px;
   border: 1px solid #e8e8e8;
   border-radius: 2px;
   overflow: hidden;

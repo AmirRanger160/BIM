@@ -122,7 +122,7 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        const response = await articleService.getAll({ skip: 0, limit: 100, is_published: true });
+        const response = await articleService.getAll({ skip: 0, limit: 100 });
         this.articles = response.data;
         this.filterAndPaginate();
       } catch (err) {
