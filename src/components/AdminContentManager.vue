@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-content-manager">
-    <AdminSidebar @navigate="handleNavigation" />
+  <div class="admin-content-manager" :class="sidebarClasses">
+    <AdminSidebar @navigate="handleNavigation" @sidebar-state-change="handleSidebarStateChange" />
     <div class="main-content">
       <div class="content-header">
         <h1>{{ getContentTypeLabel() }}</h1>
@@ -60,7 +60,24 @@ export default {
       items: [],
       loading: false,
       showForm: false,
-      editingItem: null
+      editingItem: null,
+      sidebarState: {
+        isOpen: true,
+        isMobile: false
+      },
+      lastPath: ''
+    }
+  },
+  computed: {
+    sidebarClasses() {
+      const classes = [];
+      if (!this.sidebarState.isOpen && !this.sidebarState.isMobile) {
+        classes.push('sidebar-collapsed');
+      }
+      if (this.sidebarState.isMobile && !this.sidebarState.isOpen) {
+        classes.push('sidebar-closed');
+      }
+      return classes;
     }
   },
   provide() {
@@ -71,10 +88,29 @@ export default {
   inject: ['navigateTo'],
   mounted() {
     this.checkAuth();
+    this.lastPath = window.location.pathname;
     this.determineContentType();
     this.loadItems();
+
+    // Listen for route changes
+    window.addEventListener('popstate', this.handleRouteChange);
+    // Also listen for programmatic navigation
+    this.watchRoute();
+  },
+  beforeUnmount() {
+    window.removeEventListener('popstate', this.handleRouteChange);
   },
   methods: {
+    watchRoute() {
+      // Watch for URL changes every 100ms
+      setInterval(() => {
+        const currentPath = window.location.pathname;
+        if (currentPath !== this.lastPath) {
+          this.lastPath = currentPath;
+          this.handleRouteChange();
+        }
+      }, 100);
+    },
     checkAuth() {
       const token = localStorage.getItem('admin_token');
       if (!token) {
@@ -147,6 +183,41 @@ export default {
             { key: 'is_published', label: 'وضعیت', type: 'boolean' },
             { key: 'publish_date', label: 'تاریخ انتشار', type: 'date' }
           ];
+        case 'projects':
+          return [
+            { key: 'title_fa', label: 'عنوان' },
+            { key: 'category', label: 'دسته‌بندی' },
+            { key: 'is_featured', label: 'برجسته', type: 'boolean' },
+            { key: 'order', label: 'ترتیب' },
+            { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
+          ];
+        case 'services':
+          return [
+            { key: 'title', label: 'عنوان' },
+            { key: 'category', label: 'دسته‌بندی' },
+            { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
+          ];
+        case 'team':
+          return [
+            { key: 'name_fa', label: 'نام' },
+            { key: 'position_fa', label: 'سمت' },
+            { key: 'email', label: 'ایمیل' },
+            { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
+          ];
+        case 'certificates':
+          return [
+            { key: 'title_fa', label: 'عنوان' },
+            { key: 'issue_date', label: 'تاریخ صدور' },
+            { key: 'expiry_date', label: 'تاریخ انقضا' },
+            { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
+          ];
+        case 'licenses':
+          return [
+            { key: 'title_fa', label: 'عنوان' },
+            { key: 'issue_authority', label: 'مرجع صادرکننده' },
+            { key: 'issue_date', label: 'تاریخ صدور' },
+            { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
+          ];
         case 'contacts':
           return [
             { key: 'name', label: 'نام' },
@@ -197,6 +268,19 @@ export default {
     },
     handleNavigation(route) {
       this.navigateTo(route);
+    },
+    handleSidebarStateChange(state) {
+      this.sidebarState = { ...state };
+    },
+    handleRouteChange() {
+      // Re-determine content type and reload when route changes
+      const oldContentType = this.contentType;
+      this.determineContentType();
+
+      // Only reload if content type actually changed
+      if (oldContentType !== this.contentType) {
+        this.loadItems();
+      }
     }
   }
 }
@@ -208,12 +292,24 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
   direction: rtl;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px;
+  --sidebar-margin: var(--sidebar-width);
+}
+
+.admin-content-manager.sidebar-collapsed {
+  --sidebar-margin: var(--sidebar-collapsed-width);
+}
+
+.admin-content-manager.sidebar-closed {
+  --sidebar-margin: 0px;
 }
 
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-right: 250px;
+  margin-right: var(--sidebar-margin);
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .content-header {

@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-users">
-    <AdminSidebar @navigate="handleNavigation" />
+  <div class="admin-users" :class="sidebarClasses">
+    <AdminSidebar @navigate="handleNavigation" @sidebar-state-change="handleSidebarStateChange" />
     <div class="main-content">
       <div class="content-header">
         <h1>مدیریت کاربران</h1>
@@ -125,12 +125,28 @@ export default {
         { key: 'is_admin', label: 'ادمین', type: 'boolean' },
         { key: 'is_active', label: 'فعال', type: 'boolean' },
         { key: 'created_at', label: 'تاریخ ایجاد', type: 'date' }
-      ]
+      ],
+      sidebarState: {
+        isOpen: true,
+        isMobile: false
+      }
     }
   },
   provide() {
     return {
       navigateTo: this.navigateTo
+    }
+  },
+  computed: {
+    sidebarClasses() {
+      const classes = [];
+      if (!this.sidebarState.isOpen && !this.sidebarState.isMobile) {
+        classes.push('sidebar-collapsed');
+      }
+      if (this.sidebarState.isMobile && !this.sidebarState.isOpen) {
+        classes.push('sidebar-closed');
+      }
+      return classes;
     }
   },
   inject: ['navigateTo'],
@@ -212,6 +228,9 @@ export default {
     },
     handleNavigation(route) {
       this.navigateTo(route);
+    },
+    handleSidebarStateChange(state) {
+      this.sidebarState = { ...state };
     }
   }
 }
@@ -223,12 +242,24 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
   direction: rtl;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px;
+  --sidebar-margin: var(--sidebar-width);
+}
+
+.admin-users.sidebar-collapsed {
+  --sidebar-margin: var(--sidebar-collapsed-width);
+}
+
+.admin-users.sidebar-closed {
+  --sidebar-margin: 0px;
 }
 
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-right: 250px;
+  margin-right: var(--sidebar-margin);
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .content-header {

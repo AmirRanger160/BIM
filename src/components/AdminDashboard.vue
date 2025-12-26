@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-dashboard">
-    <AdminSidebar @navigate="handleNavigation" />
+  <div class="admin-dashboard" :class="sidebarClasses">
+    <AdminSidebar @navigate="handleNavigation" @sidebar-state-change="handleSidebarStateChange" />
     <div class="main-content">
       <div class="dashboard-header">
         <h1>داشبورد مدیریت</h1>
@@ -48,7 +48,23 @@ export default {
         projects: 0,
         contacts: { total: 0, new: 0 },
         team: 0
+      },
+      sidebarState: {
+        isOpen: true,
+        isMobile: false
       }
+    }
+  },
+  computed: {
+    sidebarClasses() {
+      const classes = [];
+      if (!this.sidebarState.isOpen && !this.sidebarState.isMobile) {
+        classes.push('sidebar-collapsed');
+      }
+      if (this.sidebarState.isMobile && !this.sidebarState.isOpen) {
+        classes.push('sidebar-closed');
+      }
+      return classes;
     }
   },
   provide() {
@@ -89,6 +105,9 @@ export default {
     handleNavigation(route) {
       this.navigateTo(route);
     },
+    handleSidebarStateChange(state) {
+      this.sidebarState = { ...state };
+    },
     logout() {
       localStorage.removeItem('admin_token');
       this.navigateTo('/admin/login');
@@ -103,12 +122,24 @@ export default {
   min-height: 100vh;
   background: #f5f5f5;
   direction: rtl;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px;
+  --sidebar-margin: var(--sidebar-width);
+}
+
+.admin-dashboard.sidebar-collapsed {
+  --sidebar-margin: var(--sidebar-collapsed-width);
+}
+
+.admin-dashboard.sidebar-closed {
+  --sidebar-margin: 0px;
 }
 
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-right: 250px; /* Sidebar width */
+  margin-right: var(--sidebar-margin);
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dashboard-header {

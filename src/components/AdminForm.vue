@@ -148,6 +148,75 @@ export default {
             { key: 'is_published', label: 'منتشر شود', type: 'checkbox' },
             { key: 'featured_image', label: 'تصویر شاخص', type: 'file', accept: 'image/*' }
           ];
+        case 'projects':
+          return [
+            { key: 'title_fa', label: 'عنوان (فارسی)', type: 'text', placeholder: 'عنوان پروژه به فارسی' },
+            { key: 'title_en', label: 'عنوان (انگلیسی)', type: 'text', placeholder: 'Project title in English' },
+            { key: 'description_fa', label: 'توضیحات (فارسی)', type: 'textarea', placeholder: 'توضیحات پروژه به فارسی', rows: 4 },
+            { key: 'description_en', label: 'توضیحات (انگلیسی)', type: 'textarea', placeholder: 'Project description in English', rows: 4 },
+            {
+              key: 'category',
+              label: 'دسته‌بندی',
+              type: 'select',
+              options: [
+                { value: 'BIM', label: 'BIM' },
+                { value: 'Surveying', label: 'Surveying' }
+              ]
+            },
+            { key: 'image_url', label: 'تصویر شاخص', type: 'file', accept: 'image/*' },
+            { key: 'archive_url', label: 'لینک دانلود آرشیو', type: 'text', placeholder: 'https://...' },
+            { key: 'iframe_url', label: 'URL iframe', type: 'text', placeholder: 'https://...' },
+            { key: 'order', label: 'ترتیب نمایش', type: 'number', default: 0 },
+            { key: 'is_featured', label: 'پروژه برجسته', type: 'checkbox' }
+          ];
+        case 'services':
+          return [
+            { key: 'title', label: 'عنوان', type: 'text', placeholder: 'عنوان خدمت' },
+            { key: 'description', label: 'توضیحات', type: 'textarea', placeholder: 'توضیحات خدمت', rows: 4 },
+            {
+              key: 'category',
+              label: 'دسته‌بندی',
+              type: 'select',
+              options: [
+                { value: 'BIM', label: 'BIM' },
+                { value: 'Surveying', label: 'Surveying' }
+              ]
+            },
+            { key: 'image_url', label: 'تصویر شاخص', type: 'file', accept: 'image/*' },
+            { key: 'software_tools', label: 'ابزارهای نرم‌افزاری', type: 'text', placeholder: 'ابزار1, ابزار2' }
+          ];
+        case 'team':
+          return [
+            { key: 'name_fa', label: 'نام (فارسی)', type: 'text', placeholder: 'نام عضو تیم به فارسی' },
+            { key: 'name_en', label: 'نام (انگلیسی)', type: 'text', placeholder: 'Member name in English' },
+            { key: 'position_fa', label: 'سمت (فارسی)', type: 'text', placeholder: 'سمت عضو تیم به فارسی' },
+            { key: 'position_en', label: 'سمت (انگلیسی)', type: 'text', placeholder: 'Position in English' },
+            { key: 'email', label: 'ایمیل', type: 'email', placeholder: 'email@example.com' },
+            { key: 'phone', label: 'شماره تلفن', type: 'text', placeholder: '۰۹۱۲۱۲۳۴۵۶۷' },
+            { key: 'bio_fa', label: 'بیوگرافی (فارسی)', type: 'textarea', placeholder: 'بیوگرافی عضو تیم به فارسی', rows: 4 },
+            { key: 'bio_en', label: 'بیوگرافی (انگلیسی)', type: 'textarea', placeholder: 'Team member bio in English', rows: 4 },
+            { key: 'image_url', label: 'تصویر پروفایل', type: 'file', accept: 'image/*' }
+          ];
+        case 'certificates':
+          return [
+            { key: 'title_fa', label: 'عنوان (فارسی)', type: 'text', placeholder: 'عنوان گواهینامه به فارسی' },
+            { key: 'title_en', label: 'عنوان (انگلیسی)', type: 'text', placeholder: 'Certificate title in English' },
+            { key: 'description_fa', label: 'توضیحات (فارسی)', type: 'textarea', placeholder: 'توضیحات گواهینامه به فارسی', rows: 4 },
+            { key: 'description_en', label: 'توضیحات (انگلیسی)', type: 'textarea', placeholder: 'Certificate description in English', rows: 4 },
+            { key: 'issue_date', label: 'تاریخ صدور', type: 'text', placeholder: '۱۴۰۲/۰۱/۱۵' },
+            { key: 'expiry_date', label: 'تاریخ انقضا', type: 'text', placeholder: '۱۴۰۴/۰۱/۱۵' },
+            { key: 'image_url', label: 'تصویر گواهینامه', type: 'file', accept: 'image/*' }
+          ];
+        case 'licenses':
+          return [
+            { key: 'title_fa', label: 'عنوان (فارسی)', type: 'text', placeholder: 'عنوان مجوز به فارسی' },
+            { key: 'title_en', label: 'عنوان (انگلیسی)', type: 'text', placeholder: 'License title in English' },
+            { key: 'description_fa', label: 'توضیحات (فارسی)', type: 'textarea', placeholder: 'توضیحات مجوز به فارسی', rows: 4 },
+            { key: 'description_en', label: 'توضیحات (انگلیسی)', type: 'textarea', placeholder: 'License description in English', rows: 4 },
+            { key: 'issue_date', label: 'تاریخ صدور', type: 'text', placeholder: '۱۴۰۲/۰۱/۱۵' },
+            { key: 'issue_authority', label: 'مرجع صادرکننده', type: 'text', placeholder: 'نام مرجع صادرکننده' },
+            { key: 'image_url', label: 'تصویر مجوز', type: 'file', accept: 'image/*' }
+          ];
         case 'contacts':
           return [
             { key: 'name', label: 'نام', type: 'text', placeholder: 'نام تماس گیرنده' },
