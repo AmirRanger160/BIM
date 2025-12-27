@@ -1,8 +1,29 @@
 {
   "app": "b1m",
-  "port": 3000,
+  "port": 8000,
   "build": {
-    "location": "germany"
+    "location": "iran",
+    "dockerfile": "Dockerfile"
   },
-  "disks": []
+  "disks": [
+    {
+      "name": "data",
+      "mountPath": "/app/data",
+      "size": 1024
+    },
+    {
+      "name": "uploads",
+      "mountPath": "/app/uploads",
+      "size": 5120
+    }
+  ],
+  "environment": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "ENVIRONMENT": "production",
+    "DATABASE_URL": "sqlite:///./data/geobiro.db",
+    "ADMIN_USERNAME": "admin",
+    "ADMIN_EMAIL": "admin@geobiro.ba",
+    "ADMIN_PASSWORD": "Admin@123456"
+  }
 }

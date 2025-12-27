@@ -1,0 +1,50 @@
+# Alternative: Full Stack Dockerfile (Frontend + Backend)
+# Use this if deploying Frontend and Backend together
+
+FROM node:18-alpine as frontend-build
+
+WORKDIR /frontend
+
+# Build frontend
+COPY package*.json ./
+COPY src ./src
+COPY public ./public
+COPY index.html ./
+COPY vite.config.js ./
+COPY vite-plugin-spa-fallback.js ./
+
+RUN npm install
+RUN npm run build
+
+# Backend stage
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PORT=8000
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend/ .
+
+# Copy built frontend to static directory
+COPY --from=frontend-build /frontend/dist ./static
+
+# Create directories
+RUN mkdir -p /app/data /app/uploads/team /app/uploads/certificates /app/uploads/licenses
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

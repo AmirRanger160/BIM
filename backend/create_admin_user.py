@@ -15,19 +15,18 @@ def create_admin_user():
     """Create a test admin user."""
     # Ensure all tables exist
     Base.metadata.create_all(bind=engine)
-    
     db = SessionLocal()
     try:
         # Check if admin user already exists
-        admin_user = db.query(User).filter(User.username == "admin").first()
+        admin_user = db.query(User).filter(User.username == "adminn").first()
         if admin_user:
             print(f"✓ Admin user already exists: {admin_user.username} ({admin_user.email})")
             return admin_user
         
         # Create new admin user
         test_admin = User(
-            username="admin",
-            email="admin@geobiro.local",
+            username="adminn",
+            email="admin@gmail.local",
             hashed_password=hash_password("admin123"),
             is_admin=True,
             is_active=True

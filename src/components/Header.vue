@@ -132,7 +132,7 @@ export default {
 
 .header-content {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
