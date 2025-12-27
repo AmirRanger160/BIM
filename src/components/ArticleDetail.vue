@@ -45,6 +45,25 @@
         <!-- Main Content -->
         <div class="article-body" v-html="article.content_fa || article.content_en"></div>
 
+        <!-- Embedded Images -->
+        <div v-if="article.images && article.images.length > 0" class="embedded-images">
+          <div 
+            v-for="image in article.images" 
+            :key="image.id"
+            class="embedded-image-item"
+          >
+            <img 
+              :src="image.image_url" 
+              :alt="image.alt_text_fa || image.alt_text_en"
+              class="embedded-image"
+            />
+            <div v-if="image.caption_fa || image.caption_en" class="image-caption">
+              <p v-if="image.caption_fa">{{ image.caption_fa }}</p>
+              <p v-if="image.caption_en"><em>{{ image.caption_en }}</em></p>
+            </div>
+          </div>
+        </div>
+
         <!-- Sharing Section -->
         <div class="article-sharing">
           <h3>اشتراک‌گذاری این مقاله:</h3>
@@ -136,6 +155,17 @@ export default {
         if (!this.article) {
           this.error = 'مقاله مورد نظر یافت نشد.';
           return;
+        }
+
+        // Load article images if article has an ID
+        if (this.article.id) {
+          try {
+            const imagesResponse = await articleService.getImages(this.article.id);
+            this.article.images = imagesResponse.data || [];
+          } catch (err) {
+            console.warn('خطا در بارگذاری تصاویر مقاله:', err);
+            this.article.images = [];
+          }
         }
 
         // Get all articles to find related ones
@@ -458,6 +488,57 @@ export default {
   color: #1a1a1a;
   text-align: right;
   line-height: 1.4;
+}
+
+/* Embedded Images */
+.embedded-images {
+  margin: 40px 0;
+  display: grid;
+  gap: 30px;
+}
+
+.embedded-image-item {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.embedded-image-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.embedded-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 600px;
+  object-fit: cover;
+}
+
+.image-caption {
+  padding: 15px;
+  text-align: center;
+  border-top: 1px solid #e8e8e8;
+  background: #fff;
+}
+
+.image-caption p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.image-caption p:first-child {
+  color: #333;
+  font-weight: 500;
+}
+
+.image-caption p em {
+  color: #888;
+  font-style: italic;
 }
 
 /* Responsive */

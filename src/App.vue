@@ -65,6 +65,10 @@
       <div v-else-if="currentPage === 'admin-users'" class="page-content">
         <AdminUsers />
       </div>
+
+      <div v-else-if="currentPage === 'admin-contacts'" class="page-content">
+        <AdminContacts />
+      </div>
     <ScrollToTop />
     <VideoPopup ref="videoPopup" />
     <div v-if="appLoading" class="app-loader">
@@ -99,6 +103,7 @@ import AdminDashboard from './components/AdminDashboard.vue'
 import AdminContentManager from './components/AdminContentManager.vue'
 import AdminSettings from './components/AdminSettings.vue'
 import AdminUsers from './components/AdminUsers.vue'
+import AdminContacts from './components/AdminContacts.vue'
 import Loader from './components/Loader.vue'
 
 export default {
@@ -129,6 +134,7 @@ export default {
     AdminContentManager,
     AdminSettings,
     AdminUsers,
+    AdminContacts,
     Loader
   },
   data() {
@@ -180,6 +186,8 @@ export default {
             this.currentPage = 'admin-settings';
           } else if (pathname.includes('/users')) {
             this.currentPage = 'admin-users';
+          } else if (pathname.includes('/contacts')) {
+            this.currentPage = 'admin-contacts';
           } else {
             this.currentPage = 'admin-content';
           }

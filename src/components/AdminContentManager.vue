@@ -21,7 +21,16 @@
 
         <!-- Form View -->
         <div v-else class="form-view">
+          <!-- Use ArticleEditor for articles -->
+          <ArticleEditor
+            v-if="contentType === 'articles'"
+            :article="editingItem"
+            @save="saveItem"
+            @cancel="cancelForm"
+          />
+          <!-- Use regular AdminForm for other content types -->
           <AdminForm
+            v-else
             :contentType="contentType"
             :item="editingItem"
             @save="saveItem"
@@ -37,6 +46,7 @@
 import AdminSidebar from './AdminSidebar.vue'
 import AdminTable from './AdminTable.vue'
 import AdminForm from './AdminForm.vue'
+import ArticleEditor from './ArticleEditor.vue'
 import {
   adminArticleService,
   adminProjectService,
@@ -52,7 +62,8 @@ export default {
   components: {
     AdminSidebar,
     AdminTable,
-    AdminForm
+    AdminForm,
+    ArticleEditor
   },
   data() {
     return {

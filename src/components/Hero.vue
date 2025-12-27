@@ -48,7 +48,7 @@ export default {
   color: white;
   padding: 150px 50px;
   text-align: center;
-  min-height: 732px;
+  min-height: 710px;
   display: flex;
   align-items: center;
   overflow: hidden;

@@ -3,8 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database import get_db
-from app.models.models import Article
-from app.schemas.schemas import ArticleCreate, ArticleUpdate, ArticleResponse
+from app.models.models import Article, ArticleImage
+from app.schemas.schemas import (
+    ArticleCreate, ArticleUpdate, ArticleResponse,
+    ArticleImageCreate, ArticleImageUpdate, ArticleImageResponse
+)
 from app.core.security import require_admin
 from app.cache import (
     get_cached, set_cache, delete_cache, invalidate_pattern,
@@ -256,3 +259,116 @@ async def seed_demo_articles(db: Session = Depends(get_db)):
         "message": f"Successfully seeded {len(sample_articles)} demo articles",
         "count": len(sample_articles)
     }
+
+
+# ============ Article Images Endpoints ============
+
+@router.post("/{article_id}/images", response_model=ArticleImageResponse, dependencies=[Depends(require_admin)])
+async def add_article_image(
+    article_id: int,
+    image: ArticleImageCreate,
+    db: Session = Depends(get_db)
+):
+    """Add an image to an article (admin only)."""
+    # Check if article exists
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Article not found"
+        )
+    
+    # Create image record
+    db_image = ArticleImage(article_id=article_id, **image.dict())
+    db.add(db_image)
+    db.commit()
+    db.refresh(db_image)
+    
+    # Invalidate cache
+    await invalidate_pattern(CACHE_KEYS['articles'])
+    
+    return db_image
+
+
+@router.get("/{article_id}/images", response_model=List[ArticleImageResponse])
+async def get_article_images(
+    article_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get all images for an article."""
+    # Check if article exists
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Article not found"
+        )
+    
+    images = db.query(ArticleImage).filter(
+        ArticleImage.article_id == article_id
+    ).order_by(ArticleImage.order).all()
+    
+    return images
+
+
+@router.put("/{article_id}/images/{image_id}", response_model=ArticleImageResponse, dependencies=[Depends(require_admin)])
+async def update_article_image(
+    article_id: int,
+    image_id: int,
+    image: ArticleImageUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update an article image (admin only)."""
+    # Check if image exists and belongs to article
+    db_image = db.query(ArticleImage).filter(
+        ArticleImage.id == image_id,
+        ArticleImage.article_id == article_id
+    ).first()
+    
+    if not db_image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found or does not belong to this article"
+        )
+    
+    # Update image fields
+    update_data = image.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_image, field, value)
+    
+    db.add(db_image)
+    db.commit()
+    db.refresh(db_image)
+    
+    # Invalidate cache
+    await invalidate_pattern(CACHE_KEYS['articles'])
+    
+    return db_image
+
+
+@router.delete("/{article_id}/images/{image_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_admin)])
+async def delete_article_image(
+    article_id: int,
+    image_id: int,
+    db: Session = Depends(get_db)
+):
+    """Delete an article image (admin only)."""
+    # Check if image exists and belongs to article
+    db_image = db.query(ArticleImage).filter(
+        ArticleImage.id == image_id,
+        ArticleImage.article_id == article_id
+    ).first()
+    
+    if not db_image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found or does not belong to this article"
+        )
+    
+    db.delete(db_image)
+    db.commit()
+    
+    # Invalidate cache
+    await invalidate_pattern(CACHE_KEYS['articles'])
+    
+    return None

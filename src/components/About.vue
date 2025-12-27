@@ -86,7 +86,7 @@ export default {
   right: 0;
   width: 60px;
   height: 2px;
-  background: #1abc9c;
+  background: #29deeb;
   transition: width 0.6s ease-out;
 }
 
@@ -124,7 +124,7 @@ export default {
 
 .feature-icon {
   font-size: 24px;
-  color: #1abc9c;
+  color: #00eeff;
   min-width: 30px;
 }
 

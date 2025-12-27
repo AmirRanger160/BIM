@@ -7,10 +7,7 @@
       <p>ایمیل: <a href="mailto:info@geobiro.ba">info@geobiro.ba</a></p>
       
       <div class="footer-logos">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'%3E%3Crect fill='%23e0e0e0' width='80' height='40'/%3E%3C/svg%3E" alt="Logo 1">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'%3E%3Crect fill='%23e0e0e0' width='80' height='40'/%3E%3C/svg%3E" alt="Logo 2">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'%3E%3Crect fill='%23e0e0e0' width='80' height='40'/%3E%3C/svg%3E" alt="Logo 3">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'%3E%3Crect fill='%23e0e0e0' width='80' height='40'/%3E%3C/svg%3E" alt="Logo 4">
+        <img src="/cert.png" alt="Certificate">
       </div>
     </div>
     <div>

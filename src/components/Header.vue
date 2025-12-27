@@ -3,19 +3,19 @@
     <div class="header-content">
       <!-- Logo -->
       <div class="logo-container" @click="navigateHome">
-        <span class="logo">geo<span class="logo-highlight">biro</span></span>
+        <img src="https://b1m.ir/wp-content/uploads/2021/05/21b1m-logo-450.png" alt="logo" class="logo">
       </div>
 
       <!-- Desktop Navigation -->
       <nav class="nav-desktop">
         <ul class="nav-list">
-          <li><a href="#" @click.prevent="handleNavigation('/')">صفحه اول</a></li>
-          <li><a href="#" @click.prevent="handleNavigation('bim')">خدمات BIM</a></li>
-          <li><a href="#" @click.prevent="handleNavigation('surveying')">خدمات نقشه‌برداری</a></li>
-          <li><a href="#" @click.prevent="handleNavigation('/projects-archive')">پروژه‌ها</a></li>
-          <li><a href="#" @click.prevent="handleNavigation('/articles')">مقالات</a></li>
           <li><a href="#" @click.prevent="handleNavigation('about')">درباره</a></li>
           <li><a href="#" @click.prevent="handleNavigation('contact')">تماس</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('/articles')">مقالات</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('/projects-archive')">پروژه‌ها</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('surveying')">خدمات نقشه‌برداری</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('bim')">خدمات BIM</a></li>
+          <li><a href="#" @click.prevent="handleNavigation('/')">صفحه اول</a></li>
         </ul>
       </nav>
 
@@ -133,7 +133,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -148,14 +148,9 @@ export default {
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #333333;
-  letter-spacing: -1px;
-}
-
-.logo-highlight {
-  color: #7cb342;
+  height: 50px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* Desktop Navigation */

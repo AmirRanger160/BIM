@@ -29,16 +29,15 @@ export default {
 .stats {
   background: #00BFFF;
   color: white;
-  padding: 22px 30px;
+  padding: 25px 250px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 40px;
   text-align: center;
   direction: rtl;
 }
 
 .stat-item {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.8, 0, 0.2, 1);
 }
 
 .stat-item:hover {
@@ -62,8 +61,8 @@ export default {
 
 @media (max-width: 1024px) {
   .stats {
-    padding: 40px 30px;
-    gap: 30px;
+    padding: 30px 30px;
+    gap: 50px;
   }
 
   .stat-item h3 {
@@ -73,7 +72,7 @@ export default {
 
 @media (max-width: 768px) {
     .stats {
-    display: none;  /* اضافه کردن این خط */
+    display: none;
     grid-template-columns: repeat(2, 1fr);
     padding: 30px 20px;
     gap: 20px;

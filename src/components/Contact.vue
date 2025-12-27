@@ -35,7 +35,7 @@
           ></textarea>
         </div>
         <div v-if="errorMessage" class="error-message">
-          <span>{{ errorMessage }}</span>
+          <span style="white-space: pre-wrap;">{{ errorMessage }}</span>
         </div>
         <div v-if="showSuccess" class="success-message">
           <div class="success-check">✓</div>
@@ -49,51 +49,25 @@
           {{ isLoading ? 'در حال ارسال...' : 'ارسال' }}
         </button>
       </div>
-      <div class="contact-info animate-on-scroll">
-        <div class="company-info">
-          <h3>اطلاعات تماس</h3>
-          <div v-if="companyInfo" class="info-items">
-            <div class="info-item">
-              <span class="label">شرکت:</span>
-              <span class="value">{{ companyInfo.name }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">آدرس:</span>
-              <span class="value">{{ companyInfo.location }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">تلفن:</span>
-              <span class="value">
-                <a :href="`tel:${companyInfo.phone}`">{{ companyInfo.phone }}</a>
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="label">ایمیل:</span>
-              <span class="value">
-                <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
-              </span>
-            </div>
-            <div v-if="companyInfo.founded_year" class="info-item">
-              <span class="label">سال تاسیس:</span>
-              <span class="value">{{ companyInfo.founded_year }}</span>
-            </div>
-          </div>
-          <Loader v-else />
-        </div>
-      </div>
+      <iframe
+        class="contact-map"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.8649200949627!2d51.38791!3d35.68919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDQxJzIyLjMiTiA1McKB1IidMDkuMyJF!5e0!3m2!1sfa!2sir!4v1234567890"
+        width="100%"
+        height="400"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
   </section>
 </template>
 
 <script>
 import { contactService } from '../services/api';
-import Loader from './Loader.vue';
 
 export default {
   name: 'Contact',
-  components: {
-    Loader
-  },
   data() {
     return {
       form: {
@@ -102,30 +76,49 @@ export default {
         email: '',
         message: ''
       },
-      companyInfo: null,
       isLoading: false,
       showSuccess: false,
       errorMessage: ''
     }
   },
   mounted() {
-    this.loadCompanyInfo();
+    // No need to load company info anymore
   },
   methods: {
-    async loadCompanyInfo() {
-      try {
-        const response = await contactService.getCompanyInfo();
-        this.companyInfo = response.data;
-      } catch (error) {
-        console.error('Error loading company info:', error);
-      }
-    },
     async submitForm() {
       this.errorMessage = '';
       
-      // Validation
-      if (!this.form.name || !this.form.phone || !this.form.email || !this.form.message) {
-        this.errorMessage = 'لطفا تمام فیلدها را پر کنید';
+      // Front-end validation
+      const errors = [];
+      
+      if (!this.form.name || this.form.name.trim() === '') {
+        errors.push('نام: لطفا نام خود را وارد کنید');
+      } else if (this.form.name.length > 255) {
+        errors.push('نام: نام نباید بیشتر از 255 کاراکتر باشد');
+      }
+      
+      if (!this.form.phone || this.form.phone.trim() === '') {
+        errors.push('شماره تلفن: لطفا شماره تلفن خود را وارد کنید');
+      } else if (this.form.phone.length < 5) {
+        errors.push('شماره تلفن: شماره تلفن باید حداقل 5 کاراکتر باشد');
+      } else if (this.form.phone.length > 20) {
+        errors.push('شماره تلفن: شماره تلفن نباید بیشتر از 20 کاراکتر باشد');
+      }
+      
+      if (!this.form.email || this.form.email.trim() === '') {
+        errors.push('ایمیل: لطفا ایمیل خود را وارد کنید');
+      } else if (!this.isValidEmail(this.form.email)) {
+        errors.push('ایمیل: لطفا ایمیل معتبری وارد کنید');
+      }
+      
+      if (!this.form.message || this.form.message.trim() === '') {
+        errors.push('پیام: لطفا پیام خود را وارد کنید');
+      } else if (this.form.message.length < 10) {
+        errors.push('پیام: پیام باید حداقل 10 کاراکتر باشد');
+      }
+      
+      if (errors.length > 0) {
+        this.errorMessage = errors.join('\n');
         return;
       }
       
@@ -147,10 +140,40 @@ export default {
         }, 5000);
       } catch (error) {
         console.error('Error submitting contact form:', error);
-        this.errorMessage = 'خطا در ارسال پیام. لطفا دوباره تلاش کنید.';
+        
+        // Handle validation errors from API
+        if (error.response?.status === 422 && error.response?.data?.detail) {
+          const validationErrors = error.response.data.detail;
+          if (Array.isArray(validationErrors)) {
+            const messages = validationErrors.map(err => {
+              const field = err.loc?.[1] || 'نامعلوم';
+              const msg = err.msg || 'خطای تایید';
+              
+              // Translate field names
+              const fieldNames = {
+                'name': 'نام',
+                'phone': 'شماره تلفن',
+                'email': 'ایمیل',
+                'message': 'پیام'
+              };
+              
+              return `${fieldNames[field] || field}: ${msg}`;
+            });
+            this.errorMessage = messages.join('\n');
+          } else {
+            this.errorMessage = 'خطا در تایید داده‌ها. لطفا مقادیر صحیح وارد کنید.';
+          }
+        } else {
+          this.errorMessage = 'خطا در ارسال پیام. لطفا دوباره تلاش کنید.';
+        }
       } finally {
         this.isLoading = false;
       }
+    },
+    isValidEmail(email) {
+      // Basic email validation regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
     },
     clearError() {
       this.errorMessage = '';
@@ -161,8 +184,6 @@ export default {
 
 <style scoped>
 .contact {
-  padding: 60px 50px;
-  background: #f9f9f9;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -179,60 +200,6 @@ export default {
   gap: 60px;
   margin-top: 50px;
   width: 100%;
-}
-
-.contact-info {
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  padding: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.company-info h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #87CEEB;
-}
-
-.info-items {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.info-item {
-  display: flex;
-  gap: 15px;
-  align-items: flex-start;
-}
-
-.info-item .label {
-  font-weight: bold;
-  color: #333;
-  min-width: 80px;
-}
-
-.info-item .value {
-  color: #666;
-}
-
-.info-item a {
-  color: #87CEEB;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.info-item a:hover {
-  color: #16a085;
-  text-decoration: underline;
-}
-
-.loading {
-  text-align: center;
-  padding: 20px;
-  color: #999;
 }
 
 .contact-form {
@@ -277,7 +244,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
   background: #d4edda;
   padding: 12px 15px;
   border-radius: 6px;
@@ -286,13 +252,14 @@ export default {
 
 .error-message {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 5px;
   background: #f8d7da;
   padding: 12px 15px;
   border-radius: 6px;
   color: #721c24;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .success-check {
@@ -316,20 +283,14 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   font-family: inherit;
+  margin-bottom: 100px;
   min-height: 44px;
 }
 
 .btn-send:hover:not(:disabled) {
   background: #16a085;
-  transform: translateY(-2px);
-}
-
-.btn-send:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 .btn-send:disabled {
@@ -337,72 +298,25 @@ export default {
   cursor: not-allowed;
 }
 
-.btn-send:hover {
-  background: #16a085;
-  transform: translateY(-2px);
-}
-
-.btn-send:active {
-  transform: translateY(0);
-}
-
-@media (max-width: 1024px) {
-  .contact {
-    padding: 40px 30px;
-  }
+.contact-map {
+  width: 100%;
+  height: 400px;
 }
 
 @media (max-width: 768px) {
-  .contact {
-    padding: 30px 20px;
-  }
-
   .contact-container {
     grid-template-columns: 1fr;
     gap: 30px;
   }
 
-  .contact-map img {
+  .contact-map {
     height: 300px;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 12px;
-    font-size: 13px;
-    min-height: 44px;
-  }
-
-  .btn-send {
-    padding: 12px 30px;
-    font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .contact {
-    padding: 20px 15px;
-  }
-
-  .contact-map img {
+  .contact-map {
     height: 250px;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 10px;
-    font-size: 12px;
-    min-height: 44px;
-  }
-
-  .form-group textarea {
-    min-height: 100px;
-  }
-
-  .btn-send {
-    padding: 10px 25px;
-    font-size: 11px;
-    min-height: 44px;
   }
 }
 </style>

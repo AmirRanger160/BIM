@@ -130,7 +130,7 @@ app.include_router(articles.router, prefix="/api")
 app.include_router(team.router, prefix="/api")
 app.include_router(certificates.router, prefix="/api")
 app.include_router(licenses.router, prefix="/api")
-app.include_router(contact.router, prefix="/api")
+app.include_router(contact.router, prefix="/api/contact")
 app.include_router(users.router, prefix="/api")
 
 

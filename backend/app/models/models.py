@@ -100,7 +100,7 @@ class ContactSubmission(Base):
     phone = Column(String(20), nullable=False)
     email = Column(String(255), nullable=False, index=True)
     message = Column(Text, nullable=False)
-    status = Column(String(50), default="new", index=True)  # new, read, replied
+    status = Column(String(50), default="new", index=True)  # new, read, replied, archived
     ip_address = Column(String(50), nullable=True)
     user_agent = Column(String(500), nullable=True)
     submitted_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -175,3 +175,25 @@ class Article(Base):
     publish_date = Column(DateTime, default=datetime.utcnow, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship to article images
+    images = relationship("ArticleImage", back_populates="article", cascade="all, delete-orphan")
+
+
+class ArticleImage(Base):
+    """Model for images embedded within article content."""
+    __tablename__ = "article_images"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    article_id = Column(Integer, ForeignKey("articles.id"), nullable=False, index=True)
+    image_url = Column(String(500), nullable=False)
+    caption_en = Column(Text, nullable=True)
+    caption_fa = Column(Text, nullable=True)
+    alt_text_en = Column(String(500), nullable=True)
+    alt_text_fa = Column(String(500), nullable=True)
+    order = Column(Integer, default=0)  # For ordering images in article
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship back to article
+    article = relationship("Article", back_populates="images")

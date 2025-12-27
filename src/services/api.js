@@ -131,6 +131,10 @@ export const projectService = {
 export const articleService = {
   getAll: (params = {}) => api.get('/articles', { params }),
   getBySlug: (slug) => api.get(`/articles/${slug}`),
+  getImages: (articleId) => api.get(`/articles/${articleId}/images`),
+  addImage: (articleId, imageData) => api.post(`/articles/${articleId}/images`, imageData),
+  updateImage: (articleId, imageId, imageData) => api.put(`/articles/${articleId}/images/${imageId}`, imageData),
+  deleteImage: (articleId, imageId) => api.delete(`/articles/${articleId}/images/${imageId}`),
 };
 
 export const teamService = {

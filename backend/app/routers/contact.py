@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models.models import ContactSubmission, CompanyInfo, Statistics
 from app.schemas.schemas import (
     ContactSubmissionCreate, ContactSubmissionResponse, ContactSubmissionDetail,
+    ContactSubmissionStatusUpdate,
     CompanyInfoCreate, CompanyInfoUpdate, CompanyInfoResponse,
     StatisticsUpdate, StatisticsResponse
 )
@@ -21,7 +22,7 @@ router = APIRouter(tags=["Contact & Company"])
 
 # ============ Contact Form Endpoints ============
 
-@router.post("/contact", response_model=ContactSubmissionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ContactSubmissionResponse, status_code=status.HTTP_201_CREATED)
 async def submit_contact_form(
     contact_data: ContactSubmissionCreate,
     request: Request,
@@ -115,7 +116,7 @@ async def get_contact_submission(
 @router.patch("/admin/contact-submissions/{submission_id}/status")
 async def update_submission_status(
     submission_id: int,
-    status_value: str,
+    status_update: ContactSubmissionStatusUpdate,
     db: Session = Depends(get_db),
     admin: object = Depends(require_admin)
 ):
@@ -130,13 +131,7 @@ async def update_submission_status(
             detail="Contact submission not found"
         )
     
-    if status_value not in ["new", "read", "replied"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid status. Must be: new, read, or replied"
-        )
-    
-    submission.status = status_value
+    submission.status = status_update.status
     db.commit()
     db.refresh(submission)
     
