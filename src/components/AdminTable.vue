@@ -52,6 +52,7 @@
           </td>
           <td class="actions">
             <button @click="$emit('edit', item)" class="btn-edit">ویرایش</button>
+            <button v-if="isUserTable(item)" @click="$emit('change-password', item)" class="btn-password">تغییر رمز</button>
             <button @click="$emit('delete', item)" class="btn-delete">حذف</button>
           </td>
         </tr>
@@ -186,6 +187,10 @@ export default {
       const date = new Date(dateString);
       return date.toLocaleDateString('fa-IR');
     },
+    isUserTable(item) {
+      // Check if this is a user object by looking for user-specific fields
+      return 'username' in item && 'is_admin' in item;
+    },
     previousPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
@@ -254,7 +259,7 @@ export default {
 
 .items-per-page select:focus {
   outline: none;
-  border-color: #1abc9c;
+  border-color: #0099FF;
 }
 
 .total-items {
@@ -279,8 +284,8 @@ export default {
 
 .search-input:focus {
   outline: none;
-  border-color: #1abc9c;
-  box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1);
+  border-color: #0099FF;
+  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.1);
 }
 
 .loading {
@@ -348,7 +353,8 @@ export default {
 }
 
 .btn-edit,
-.btn-delete {
+.btn-delete,
+.btn-password {
   padding: 6px 12px;
   border: none;
   border-radius: 4px;
@@ -360,14 +366,25 @@ export default {
 }
 
 .btn-edit {
-  background: #3498db;
+  background: #0099FF;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #2980b9;
+  background: #0077cc;
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 153, 255, 0.3);
+}
+
+.btn-password {
+  background: #9b59b6;
+  color: white;
+}
+
+.btn-password:hover {
+  background: #8e44ad;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(155, 89, 182, 0.3);
 }
 
 .btn-delete {
@@ -415,14 +432,14 @@ export default {
 
 .btn-pagination:hover:not(:disabled),
 .btn-page-number:hover {
-  border-color: #1abc9c;
-  color: #1abc9c;
+  border-color: #0099FF;
+  color: #0099FF;
 }
 
 .btn-page-number.active {
-  background: #1abc9c;
+  background: #0099FF;
   color: white;
-  border-color: #1abc9c;
+  border-color: #0099FF;
 }
 
 .btn-pagination:disabled {

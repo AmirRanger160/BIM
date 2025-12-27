@@ -4,8 +4,8 @@ from typing import List
 
 from app.database import get_db
 from app.models.models import User
-from app.schemas.schemas import UserCreate, UserUpdate, UserResponse
-from app.core.security import require_admin, hash_password
+from app.schemas.schemas import UserCreate, UserUpdate, UserResponse, PasswordChange
+from app.core.security import require_admin, hash_password, verify_password
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -110,3 +110,30 @@ async def delete_user(
     db.commit()
 
     return None
+
+
+@router.put("/{user_id}/password", response_model=UserResponse, dependencies=[Depends(require_admin)])
+async def change_user_password(
+    user_id: int,
+    password_data: PasswordChange,
+    db: Session = Depends(get_db)
+):
+    """Change a user's password (admin only)."""
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Verify old password
+    if not verify_password(password_data.old_password, db_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Old password is incorrect"
+        )
+
+    # Update password
+    db_user.hashed_password = hash_password(password_data.new_password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user

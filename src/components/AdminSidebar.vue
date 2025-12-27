@@ -26,7 +26,7 @@
       <div class="sidebar-header">
         <div class="header-content">
           <div class="logo">
-            <span class="logo-icon">🎯</span>
+            <img src="/logo.png" alt="BIM Logo" class="logo-img">
             <span v-if="isOpen" class="logo-text">پنل مدیریت</span>
           </div>
           <button
@@ -42,17 +42,6 @@
       <!-- Navigation -->
       <nav class="sidebar-nav">
         <ul class="nav-list">
-          <li class="nav-item">
-            <a
-              href="#"
-              class="nav-link"
-              @click.prevent="handleNavigate('/admin')"
-              :class="{ active: isActive('/admin') }"
-            >
-              <span class="nav-icon">📊</span>
-              <span v-if="isOpen" class="nav-text">داشبورد</span>
-            </a>
-          </li>
           <li class="nav-item">
             <a
               href="#"
@@ -344,7 +333,7 @@ export default {
 /* Header */
 .sidebar-header {
   padding: 0;
-  background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+  background: linear-gradient(135deg, #0099FF 0%, #0077cc 100%);
   color: white;
   border-bottom: none;
   position: relative;
@@ -362,6 +351,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .logo-icon {
@@ -430,12 +426,12 @@ export default {
 }
 
 .nav-link:hover {
-  background: rgba(26, 188, 156, 0.1);
-  color: #1abc9c;
+  background: rgba(0, 153, 255, 0.1);
+  color: #0099FF;
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+  background: linear-gradient(135deg, #0099FF 0%, #0077cc 100%);
   color: white;
 }
 

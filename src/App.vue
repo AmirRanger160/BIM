@@ -50,10 +50,6 @@
        <AdminLogin />
      </div>
 
-     <div v-else-if="currentPage === 'admin-dashboard'" class="page-content">
-       <AdminDashboard />
-     </div>
-
      <div v-else-if="currentPage === 'admin-content'" class="page-content">
        <AdminContentManager />
      </div>
@@ -99,7 +95,6 @@ import ProjectDetail from './components/ProjectDetail.vue'
 import FeaturedArticles from './components/FeaturedArticles.vue'
 import VideoPopup from './components/VideoPopup.vue'
 import AdminLogin from './components/AdminLogin.vue'
-import AdminDashboard from './components/AdminDashboard.vue'
 import AdminContentManager from './components/AdminContentManager.vue'
 import AdminSettings from './components/AdminSettings.vue'
 import AdminUsers from './components/AdminUsers.vue'
@@ -130,7 +125,6 @@ export default {
     FeaturedArticles,
     VideoPopup,
     AdminLogin,
-    AdminDashboard,
     AdminContentManager,
     AdminSettings,
     AdminUsers,
@@ -180,8 +174,8 @@ export default {
         this.currentPage = 'admin-login';
       } else if (pathname.startsWith('/admin')) {
         if (this.checkAdminAuth()) {
-          if (pathname === '/admin' || pathname === '/admin/') {
-            this.currentPage = 'admin-dashboard';
+          if (pathname === '/admin-settings' || pathname === '/admin/') {
+            this.currentPage = 'admin-';
           } else if (pathname.includes('/settings')) {
             this.currentPage = 'admin-settings';
           } else if (pathname.includes('/users')) {

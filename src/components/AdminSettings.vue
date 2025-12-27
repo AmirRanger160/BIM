@@ -280,7 +280,7 @@ export default {
   margin: 0 0 20px 0;
   color: #333;
   font-size: 18px;
-  border-bottom: 2px solid #1abc9c;
+  border-bottom: 2px solid #0099FF;
   padding-bottom: 10px;
 }
 

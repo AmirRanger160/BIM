@@ -340,7 +340,7 @@ export default {
 }
 
 .btn-primary {
-  background: #1abc9c;
+  background: #0099FF;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -351,7 +351,7 @@ export default {
 }
 
 .btn-primary:hover {
-  background: #16a085;
+  background: #0077cc;
 }
 
 .content-body {

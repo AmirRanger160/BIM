@@ -16,6 +16,7 @@
             :loading="loading"
             @edit="editUser"
             @delete="deleteUser"
+            @change-password="openChangePasswordDialog"
           />
         </div>
 
@@ -91,19 +92,29 @@
         </div>
       </div>
     </div>
+
+    <!-- Change Password Dialog -->
+    <ChangePasswordDialog
+      :is-open="showChangePasswordDialog"
+      :user-id="selectedUserId"
+      @close="showChangePasswordDialog = false"
+      @success="handlePasswordChangeSuccess"
+    />
   </div>
 </template>
 
 <script>
 import AdminSidebar from './AdminSidebar.vue'
 import AdminTable from './AdminTable.vue'
+import ChangePasswordDialog from './ChangePasswordDialog.vue'
 import { adminUserService } from '../services/api'
 
 export default {
   name: 'AdminUsers',
   components: {
     AdminSidebar,
-    AdminTable
+    AdminTable,
+    ChangePasswordDialog
   },
   data() {
     return {
@@ -112,6 +123,8 @@ export default {
       showForm: false,
       editingUser: null,
       saving: false,
+      showChangePasswordDialog: false,
+      selectedUserId: null,
       formData: {
         username: '',
         email: '',
@@ -226,6 +239,14 @@ export default {
         }
       }
     },
+    openChangePasswordDialog(user) {
+      this.selectedUserId = user.id;
+      this.showChangePasswordDialog = true;
+    },
+    handlePasswordChangeSuccess() {
+      this.loadUsers();
+      alert('رمز عبور با موفقیت تغییر یافت.');
+    },
     handleNavigation(route) {
       this.navigateTo(route);
     },
@@ -279,7 +300,7 @@ export default {
 }
 
 .btn-primary {
-  background: #1abc9c;
+  background: #0099FF;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -290,7 +311,7 @@ export default {
 }
 
 .btn-primary:hover {
-  background: #16a085;
+  background: #0077cc;
 }
 
 .content-body {
@@ -339,7 +360,7 @@ export default {
 
 .form-group input:focus {
   outline: none;
-  border-color: #1abc9c;
+  border-color: #0099FF;
 }
 
 .checkbox-label {

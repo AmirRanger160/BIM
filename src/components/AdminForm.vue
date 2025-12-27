@@ -57,6 +57,14 @@
             :disabled="saving"
           ></textarea>
 
+          <!-- Rich Text Editor -->
+          <RichTextEditor
+            v-else-if="field.type === 'richtext'"
+            :model-value="formData[field.key] || ''"
+            :placeholder="field.placeholder"
+            @update:modelValue="(value) => { formData[field.key] = value; validateField(field); }"
+          />
+
           <!-- Select -->
           <select
             v-else-if="field.type === 'select'"
@@ -141,12 +149,14 @@
 import { useFormValidation } from '../composables/useFormValidation';
 import { useToast } from '../composables/useToast';
 import FileUpload from './FileUpload.vue'
+import RichTextEditor from './RichTextEditor.vue'
 import { uploadService } from '../services/api';
 
 export default {
   name: 'AdminForm',
   components: {
-    FileUpload
+    FileUpload,
+    RichTextEditor
   },
   props: {
     contentType: {
@@ -214,8 +224,8 @@ export default {
             { key: 'slug', label: 'اسلاگ', type: 'text', placeholder: 'article-slug', required: true },
             { key: 'summary_fa', label: 'خلاصه (فارسی)', type: 'textarea', placeholder: 'خلاصه مقاله به فارسی', rows: 3, required: true },
             { key: 'summary_en', label: 'خلاصه (انگلیسی)', type: 'textarea', placeholder: 'Article summary in English', rows: 3, required: true },
-            { key: 'content_fa', label: 'محتوا (فارسی)', type: 'textarea', placeholder: 'محتوای مقاله به فارسی', rows: 6, required: true },
-            { key: 'content_en', label: 'محتوا (انگلیسی)', type: 'textarea', placeholder: 'Article content in English', rows: 6, required: true },
+            { key: 'content_fa', label: 'محتوا (فارسی)', type: 'richtext', placeholder: 'محتوای مقاله به فارسی', required: true },
+            { key: 'content_en', label: 'محتوا (انگلیسی)', type: 'richtext', placeholder: 'Article content in English', required: true },
             { key: 'category', label: 'دسته‌بندی', type: 'text', placeholder: 'دسته‌بندی مقاله' },
             { key: 'tags', label: 'برچسب‌ها', type: 'text', placeholder: 'برچسب1, برچسب2' },
             { key: 'author', label: 'نویسنده', type: 'text', placeholder: 'نام نویسنده' },
@@ -481,8 +491,8 @@ export default {
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #1abc9c;
-  box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1);
+  border-color: #0099FF;
+  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.1);
 }
 
 .form-group input:disabled,
@@ -544,12 +554,12 @@ export default {
 }
 
 .btn-save {
-  background: #1abc9c;
+  background: #0099FF;
   color: white;
 }
 
 .btn-save:hover:not(:disabled) {
-  background: #16a085;
+  background: #0077cc;
 }
 
 .btn-save:disabled {

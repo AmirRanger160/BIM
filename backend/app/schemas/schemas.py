@@ -62,6 +62,11 @@ class UserResponse(UserBase):
         from_attributes = True
 
 
+class PasswordChange(BaseModel):
+    old_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8)
+
+
 class LoginRequest(BaseModel):
     username: str
     password: str
