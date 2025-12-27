@@ -2,6 +2,11 @@
   <div class="admin-login">
     <div class="login-container">
       <div class="login-card">
+        <!-- Logo -->
+        <div class="logo-section">
+          <img src="/logo b1m 404/لوگو-404-مشاور-بیم.png" alt="BIM Logo" class="login-logo" title="لوگو مشاور BIM">
+        </div>
+
         <h2 class="login-title">ورود به پنل مدیریت</h2>
         <form @submit.prevent="handleLogin" class="login-form">
           <div class="form-group">
@@ -105,21 +110,38 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
 }
 
 .login-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
 }
 
 .login-card {
   background: white;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 50px 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   text-align: center;
+}
+
+.logo-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .login-title {
@@ -144,22 +166,23 @@ export default {
 .form-group label {
   font-weight: bold;
   color: #333;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-size: 14px;
 }
 
 .form-group input {
   padding: 12px 15px;
-  border: 2px solid #ddd;
-  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #1abc9c;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-group input::placeholder {
@@ -169,32 +192,38 @@ export default {
 .error-message {
   background: #f8d7da;
   color: #721c24;
-  padding: 10px 15px;
-  border-radius: 6px;
+  padding: 12px 15px;
+  border-radius: 8px;
   font-size: 14px;
   text-align: center;
+  border: 1px solid #f5c6cb;
 }
 
 .btn-login {
-  background: #1abc9c;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 12px 40px;
+  padding: 14px 40px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
   font-size: 16px;
   transition: all 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-login:hover:not(:disabled) {
-  background: #16a085;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-login:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-login:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
@@ -204,16 +233,27 @@ export default {
     padding: 30px 20px;
   }
 
+  .logo-section {
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .login-logo {
+    height: 80px;
+  }
+
   .login-title {
     font-size: 20px;
+    margin-bottom: 20px;
   }
 
   .form-group input {
-    padding: 10px 12px;
+    padding: 11px 12px;
+    font-size: 16px;
   }
 
   .btn-login {
-    padding: 10px 30px;
+    padding: 12px 30px;
     font-size: 14px;
   }
 }

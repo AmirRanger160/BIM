@@ -3,7 +3,10 @@
     <div class="header-content">
       <!-- Logo -->
       <div class="logo-container" @click="navigateHome">
-        <img src="https://b1m.ir/wp-content/uploads/2021/05/21b1m-logo-450.png" alt="logo" class="logo">
+        <!-- Desktop & Tablet Logo -->
+        <img src="/logo b1m 404/لوگو-404-مشاور-بیم.png" alt="logo" class="logo logo-full" title="لوگو کامل">
+        <!-- Mobile Logo -->
+        <img src="/logo b1m 404/لوگوتک-404-مشاور-بیم.png" alt="logo" class="logo logo-single" title="لوگو تک">
       </div>
 
       <!-- Desktop Navigation -->
@@ -41,13 +44,13 @@
     <transition name="slide">
       <nav v-if="mobileMenuOpen" class="nav-mobile">
         <ul class="nav-list-mobile">
-          <li><a href="#" @click.prevent="handleNavClick('/')">صفحه اول</a></li>
-          <li><a href="#" @click.prevent="handleNavClick('bim')">خدمات BIM</a></li>
-          <li><a href="#" @click.prevent="handleNavClick('surveying')">خدمات نقشه‌برداری</a></li>
-          <li><a href="#" @click.prevent="handleNavClick('/projects-archive')">پروژه‌ها</a></li>
-          <li><a href="#" @click.prevent="handleNavClick('/articles')">مقالات</a></li>
-          <li><a href="#" @click.prevent="handleNavClick('about')">درباره</a></li>
           <li><a href="#" @click.prevent="handleNavClick('contact')">تماس</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('about')">درباره</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('/articles')">مقالات</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('/projects-archive')">پروژه‌ها</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('surveying')">خدمات نقشه‌برداری</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('bim')">خدمات BIM</a></li>
+          <li><a href="#" @click.prevent="handleNavClick('/')">صفحه اول</a></li>
         </ul>
       </nav>
     </transition>
@@ -148,9 +151,42 @@ export default {
 }
 
 .logo {
-  height: 50px;
+  height: auto;
   width: auto;
   object-fit: contain;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.logo-full {
+  height: 70px;
+  display: block;
+}
+
+.logo-single {
+  height: 50px;
+  display: none;
+}
+
+.logo-container:hover .logo-full,
+.logo-container:hover .logo-single {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .logo-full {
+    display: none;
+  }
+  
+  .logo-single {
+    display: block;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-single {
+    height: 50px;
+  }
 }
 
 /* Desktop Navigation */
@@ -348,11 +384,7 @@ export default {
 
 @media (max-width: 480px) {
   .header-content {
-    padding: 0.5rem 1rem;
-  }
-
-  .logo {
-    font-size: 1.1rem;
+    padding: 0.5rem 0.75rem;
   }
 
   .hamburger {
