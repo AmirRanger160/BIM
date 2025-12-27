@@ -6,10 +6,6 @@ from app.database import get_db
 from app.models.models import Service
 from app.schemas.schemas import ServiceCreate, ServiceUpdate, ServiceResponse
 from app.core.security import require_admin
-from app.cache import (
-    get_cached, set_cache, delete_cache, invalidate_pattern,
-    CACHE_KEYS, CACHE_TTL
-)
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
@@ -20,12 +16,6 @@ async def get_services(
     db: Session = Depends(get_db)
 ):
     """Get all services with optional category filter."""
-    # Try to get from cache
-    cache_key = f"{CACHE_KEYS['services']}:{category}" if category else CACHE_KEYS['services']
-    cached_data = await get_cached(cache_key)
-    if cached_data:
-        return cached_data
-    
     # Query database
     query = db.query(Service)
     if category:
@@ -52,13 +42,6 @@ async def get_services(
         }
         response_list.append(service_dict)
     
-    # Cache result
-    await set_cache(
-        cache_key,
-        response_list,
-        ttl=CACHE_TTL['services']
-    )
-    
     return response_list
 
 
@@ -68,12 +51,6 @@ async def get_service(
     db: Session = Depends(get_db)
 ):
     """Get a specific service by ID."""
-    # Try to get from cache
-    cache_key = CACHE_KEYS['service_detail'].format(id=service_id)
-    cached_data = await get_cached(cache_key)
-    if cached_data:
-        return cached_data
-    
     service = db.query(Service).filter(Service.id == service_id).first()
     if not service:
         raise HTTPException(
@@ -96,13 +73,6 @@ async def get_service(
         'created_at': service.created_at,
         'updated_at': service.updated_at,
     }
-    
-    # Cache result
-    await set_cache(
-        cache_key,
-        service_dict,
-        ttl=CACHE_TTL['services']
-    )
     
     return service_dict
 
@@ -140,9 +110,6 @@ async def create_service(
     db.commit()
     db.refresh(new_service)
     
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['services'] + "*")
-    
     return new_service
 
 
@@ -168,11 +135,6 @@ async def update_service(
     db.commit()
     db.refresh(service)
     
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['services'] + "*")
-    cache_key = CACHE_KEYS['service_detail'].format(id=service_id)
-    await delete_cache(cache_key)
-    
     return service
 
 
@@ -192,8 +154,3 @@ async def delete_service(
     
     db.delete(service)
     db.commit()
-    
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['services'] + "*")
-    cache_key = CACHE_KEYS['service_detail'].format(id=service_id)
-    await delete_cache(cache_key)

@@ -35,7 +35,7 @@ limiter = Limiter(key_func=get_remote_address)
 async def lifespan(app: FastAPI):
     """Manage application startup and shutdown."""
     # Startup
-    logger.info("🚀 Starting GeoBiro FastAPI Backend")
+    logger.info("🚀 Starting GeoBiro FastAPI Backend (SQLite + No Redis)")
     init_redis()
     
     yield

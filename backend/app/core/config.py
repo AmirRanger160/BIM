@@ -11,10 +11,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost:5432/geobiro_db"
-
-    # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
+    DATABASE_URL: str = "sqlite:///./geobiro.db"
 
     # JWT
     SECRET_KEY: str = "your-secret-key-change-in-production-min-32-chars"

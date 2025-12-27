@@ -9,10 +9,6 @@ from app.schemas.schemas import (
     ArticleImageCreate, ArticleImageUpdate, ArticleImageResponse
 )
 from app.core.security import require_admin
-from app.cache import (
-    get_cached, set_cache, delete_cache, invalidate_pattern,
-    CACHE_KEYS, CACHE_TTL
-)
 
 router = APIRouter(prefix="/articles", tags=["Articles"])
 
@@ -45,12 +41,6 @@ async def get_article(
     db: Session = Depends(get_db)
 ):
     """Get a specific article by ID or slug."""
-    # Try cache
-    cache_key = f"{CACHE_KEYS['articles']}:{article_id_or_slug}"
-    cached_data = await get_cached(cache_key)
-    if cached_data:
-        return cached_data
-    
     # Try to get by ID first (if numeric)
     article = None
     if article_id_or_slug.isdigit():
@@ -62,13 +52,6 @@ async def get_article(
     
     if not article:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Article not found")
-    
-    # Cache result
-    await set_cache(
-        cache_key,
-        ArticleResponse.from_orm(article).dict(),
-        ttl=CACHE_TTL['articles']
-    )
     
     return article
 
@@ -91,9 +74,6 @@ async def create_article(
     db.add(db_article)
     db.commit()
     db.refresh(db_article)
-    
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['articles'])
     
     return db_article
 
@@ -130,9 +110,6 @@ async def update_article(
     db.commit()
     db.refresh(db_article)
     
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['articles'])
-    
     return db_article
 
 
@@ -148,9 +125,6 @@ async def delete_article(
     
     db.delete(db_article)
     db.commit()
-    
-    # Invalidate cache
-    await invalidate_pattern(CACHE_KEYS['articles'])
     
     return None
 

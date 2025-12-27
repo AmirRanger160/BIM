@@ -1,0 +1,19 @@
+[Unit]
+Description=BIM Project Daily Backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/home/unique/projects/BIM
+ExecStart=/home/unique/projects/BIM/backup.sh full
+StandardOutput=journal
+StandardError=journal
+Environment="SEND_EMAIL=false"
+
+# Timeout for long-running backups
+TimeoutStartSec=3600
+
+[Install]
+WantedBy=multi-user.target
