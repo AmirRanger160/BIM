@@ -19,10 +19,14 @@
       <a href="#contact">تماس</a>
     </div>
     <div>
-      <div class="footer-logo">geo<span style="color: #7cb342;">biro</span></div>
+      <div class="footer-logo">
+        <a href="/">
+          <img src="/logo-foter-bim.png" alt="BIM Logo" class="footer-logo-img">
+        </a>
+      </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; ۲۰۲۴ جئوبیرو. تمام حقوق محفوظ است.</p>
+      <p>&copy; ۲۰۲۴ مشاور بیم. تمام حقوق محفوظ است.</p>
     </div>
   </footer>
 </template>
@@ -49,12 +53,18 @@ footer {
 }
 
 .footer-logo {
-  font-size: 36px;
-  font-weight: bold;
-  color: white;
   margin-bottom: 30px;
   flex-basis: 100%;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-logo-img {
+  max-width: 200px;
+  height: auto;
+  object-fit: contain;
 }
 
 footer h3 {
