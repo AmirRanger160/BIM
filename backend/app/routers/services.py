@@ -33,14 +33,33 @@ async def get_services(
     
     services = query.order_by(Service.created_at.desc()).all()
     
+    # Convert services to response format with proper field mapping
+    response_list = []
+    for s in services:
+        service_dict = {
+            'id': s.id,
+            'title': s.title,
+            'title_en': s.title_en or s.title,
+            'title_fa': s.title_fa,
+            'description': s.description,
+            'description_en': s.description_en or s.description,
+            'description_fa': s.description_fa,
+            'category': s.category,
+            'image_url': s.image_url,
+            'software_tools': s.software_tools,
+            'created_at': s.created_at,
+            'updated_at': s.updated_at,
+        }
+        response_list.append(service_dict)
+    
     # Cache result
     await set_cache(
         cache_key,
-        [ServiceResponse.from_orm(s).dict() for s in services],
+        response_list,
         ttl=CACHE_TTL['services']
     )
     
-    return services
+    return response_list
 
 
 @router.get("/{service_id}", response_model=ServiceResponse)
@@ -62,14 +81,30 @@ async def get_service(
             detail="Service not found"
         )
     
+    # Convert to response format with proper field mapping
+    service_dict = {
+        'id': service.id,
+        'title': service.title,
+        'title_en': service.title_en or service.title,
+        'title_fa': service.title_fa,
+        'description': service.description,
+        'description_en': service.description_en or service.description,
+        'description_fa': service.description_fa,
+        'category': service.category,
+        'image_url': service.image_url,
+        'software_tools': service.software_tools,
+        'created_at': service.created_at,
+        'updated_at': service.updated_at,
+    }
+    
     # Cache result
     await set_cache(
         cache_key,
-        ServiceResponse.from_orm(service).dict(),
+        service_dict,
         ttl=CACHE_TTL['services']
     )
     
-    return service
+    return service_dict
 
 
 @router.post("", response_model=ServiceResponse, status_code=status.HTTP_201_CREATED)
@@ -86,7 +121,21 @@ async def create_service(
             detail="Category must be 'BIM' or 'Surveying'"
         )
     
-    new_service = Service(**service_data.dict())
+    # Convert to dict and handle field mapping
+    data = service_data.dict(exclude_none=True)
+    
+    # Handle bilingual fields: ensure both old and new formats are stored
+    if data.get('title_en'):
+        data['title'] = data['title_en']
+    if data.get('title') and not data.get('title_en'):
+        data['title_en'] = data['title']
+    
+    if data.get('description_en'):
+        data['description'] = data['description_en']
+    if data.get('description') and not data.get('description_en'):
+        data['description_en'] = data['description']
+    
+    new_service = Service(**data)
     db.add(new_service)
     db.commit()
     db.refresh(new_service)

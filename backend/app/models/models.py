@@ -25,8 +25,15 @@ class Service(Base):
     __tablename__ = "services"
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False, index=True)
-    description = Column(Text, nullable=False)
+    # New bilingual fields
+    title_en = Column(String(255), nullable=True, index=True)
+    title_fa = Column(String(255), nullable=True)
+    description_en = Column(Text, nullable=True)
+    description_fa = Column(Text, nullable=True)
+    # Old fields for backward compatibility
+    title = Column(String(255), nullable=True, index=True)
+    description = Column(Text, nullable=True)
+    # Common fields
     category = Column(String(50), nullable=False, index=True)  # "BIM" or "Surveying"
     image_url = Column(String(500), nullable=True)
     software_tools = Column(String(500), nullable=True)  # Comma-separated list

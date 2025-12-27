@@ -45,8 +45,12 @@ class TokenResponse(BaseModel):
 # ============ Service Schemas ============
 
 class ServiceBase(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
-    description: str
+    title_en: Optional[str] = None
+    title_fa: Optional[str] = None
+    title: Optional[str] = None  # For backward compatibility
+    description_en: Optional[str] = None
+    description_fa: Optional[str] = None
+    description: Optional[str] = None  # For backward compatibility
     category: str = Field(..., description="BIM or Surveying")
     image_url: Optional[str] = None
     software_tools: Optional[str] = None
@@ -57,15 +61,28 @@ class ServiceCreate(ServiceBase):
 
 
 class ServiceUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title_en: Optional[str] = None
+    title_fa: Optional[str] = None
+    title: Optional[str] = None  # For backward compatibility
+    description_en: Optional[str] = None
+    description_fa: Optional[str] = None
+    description: Optional[str] = None  # For backward compatibility
     category: Optional[str] = None
     image_url: Optional[str] = None
     software_tools: Optional[str] = None
 
 
-class ServiceResponse(ServiceBase):
+class ServiceResponse(BaseModel):
     id: int
+    title_en: Optional[str] = None
+    title_fa: Optional[str] = None
+    title: Optional[str] = None
+    description_en: Optional[str] = None
+    description_fa: Optional[str] = None
+    description: Optional[str] = None
+    category: str
+    image_url: Optional[str] = None
+    software_tools: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     
